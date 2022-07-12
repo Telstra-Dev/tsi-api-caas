@@ -4,6 +4,10 @@ using Telstra.Common.Models;
 
 namespace Telstra.Common
 {
+    public class StorageAppSettings
+    {
+        public string Uri { get; set; }
+    }
     public class StorageSettings
     {
         public DBSetting MyDb { get; set; }
@@ -15,6 +19,7 @@ namespace Telstra.Common
         public StorageSettings Storage { get; set; }
         public AzureAdConfiguration AzureAd { get; set; }
         public bool UseAd { get; set; }
+        public StorageAppSettings StorageAppGrpc { get; set; }
     }
 
     public class DBSetting

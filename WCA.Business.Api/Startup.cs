@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Newtonsoft.Json.Serialization;
 using Telstra.Common;
+using WCA.Storage.Api.Proto;
+using WCA.Business.Api.Models;
 
 namespace Telstra.Core.Api
 {
@@ -72,10 +74,12 @@ namespace Telstra.Core.Api
             services.AddSwaggerGen();
             //services.AddAuth(Configuration, this.appSettings);
 
-            Console.WriteLine(appSettings.Storage.MyDb.ConnectionString);
+            services.AddGrpcClient<WCA.Storage.Api.Proto.Customer.CustomerClient>(o =>
+            {
+                o.Address = new Uri(appSettings.StorageAppGrpc.Uri);
+            });
             services
-                .AddHealthChecks()
-                .AddNpgSql(appSettings.Storage.MyDb.ConnectionString);
+                .AddHealthChecks();
         }
 
         public virtual void ConfigureContainer(IServiceCollection container)

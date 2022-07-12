@@ -21,7 +21,6 @@ namespace Telstra.Core.Api
             var appSettings = configuration.Bind<AppSettings>();
             @this.AddSingleton(f => appSettings);
             @this.AddHttpContextAccessor();
-
             
             @this.RegisterMultiTenantStore<TenantStoreDbContext>(appSettings.Storage.MyDb, "tenant");
             @this.RegisterContextBuilderOptions<MyMultiTenantContext>(appSettings.Storage.MyDb);

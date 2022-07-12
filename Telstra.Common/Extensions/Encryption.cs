@@ -30,7 +30,7 @@ namespace Telstra.Common
 
             var keyBytes = password.GetBytes(keysize / 8);
 
-            var symmetricKey = new RijndaelManaged { Mode = CipherMode.CBC };
+            var symmetricKey = Aes.Create("AesManaged");
 
             var encryptor = symmetricKey.CreateEncryptor(keyBytes, initVectorBytes);
 
@@ -59,7 +59,7 @@ namespace Telstra.Common
             var password = new Rfc2898DeriveBytes(passPhrase, salt);
             var keyBytes = password.GetBytes(keysize / 8);
 
-            var symmetricKey = new RijndaelManaged { Mode = CipherMode.CBC };
+            var symmetricKey = Aes.Create("AesManaged");
 
             var decryptor = symmetricKey.CreateDecryptor(keyBytes, initVectorBytes);
 
