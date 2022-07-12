@@ -4,6 +4,6 @@ namespace WCA.Business.Api.Services.ServicesInterfaces
 {
     public interface IOrganisationService
     {
-        public OrganisationViewModel[] GetOrganisation(int customerId);
+        public OrganisationViewModel GetOrganisation(int customerId, bool includeChildren);
     }
 }

@@ -27,9 +27,11 @@ namespace WCA.Business.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetOrganisations([FromRoute] int customerId)
+        public IActionResult GetOrganisations([FromRoute] int customerId,
+                                              [FromQuery] bool includeChildren = true,
+                                              [FromQuery] bool displaySearchTree = true)
         {
-            return Ok(this.service.GetOrganisation(customerId));
+            return Ok(this.service.GetOrganisation(customerId, includeChildren));
         }
     }
 }

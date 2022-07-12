@@ -12,35 +12,44 @@ namespace WCA.Business.Api.Services
             this._repo = Repo;
         }
 
-        public OrganisationViewModel[] GetOrganisation(int customerId)
+        public OrganisationViewModel GetOrganisation(int customerId, bool includeChildren)
         {
             OrganisationViewModel[] grandChild = new OrganisationViewModel[1];
-            grandChild[0] = new OrganisationViewModel {
-                    CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
-                    CustomerName = "Grandchild Org 1",
-                    Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-                    Alias = "TS",
-                    CreatedAt = 1649906502253,
-                    Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
-                };
             OrganisationViewModel[] children = new OrganisationViewModel[2];
-            children[0] = new OrganisationViewModel {
-                    CustomerId = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-                    CustomerName = "Child Org 1",
-                    Parent = "manual-test-customer-id",
-                    Alias = "TS",
-                    CreatedAt = 1649906487737,
-                    Id = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-                    Children = grandChild
-                };
-            children[1] = new OrganisationViewModel {
-                    CustomerId = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe",
-                    CustomerName = "Child Org 2",
-                    Parent = "manual-test-customer-id",
-                    Alias = "TS",
-                    CreatedAt = 1649907827892,
-                    Id = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe"
-                };
+            if (includeChildren)
+            {
+                grandChild[0] = new OrganisationViewModel {
+                        CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
+                        CustomerName = "Grandchild Org 1",
+                        Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+                        Alias = "TS",
+                        CreatedAt = 1649906502253,
+                        Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
+                    };
+
+                children[0] = new OrganisationViewModel {
+                        CustomerId = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+                        CustomerName = "Child Org 1",
+                        Parent = "manual-test-customer-id",
+                        Alias = "TS",
+                        CreatedAt = 1649906487737,
+                        Id = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+                        Children = grandChild
+                    };
+                children[1] = new OrganisationViewModel {
+                        CustomerId = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe",
+                        CustomerName = "Child Org 2",
+                        Parent = "manual-test-customer-id",
+                        Alias = "TS",
+                        CreatedAt = 1649907827892,
+                        Id = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe"
+                    };
+            }
+            else
+            {
+                children=null;
+            }
+            
             OrganisationViewModel organisation = new OrganisationViewModel
             {
                 CustomerId = "manual-test-customer-id",
@@ -49,7 +58,7 @@ namespace WCA.Business.Api.Services
                 Id = "manual-test-customer-id",
                 Children = children
             };
-            return children;
+            return organisation;
         }
     }
 }
