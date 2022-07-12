@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Telstra.Core.Api.Helpers;
 
-namespace Telstra.Core.Api.Controllers
+namespace WCA.Business.Api.Controllers
 {
     public class BaseController : ControllerBase
     {

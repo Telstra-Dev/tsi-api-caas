@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telstra.Core.Repo", "Telstr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCA.Business.Api.Tests", "WCA.Business.Api.Tests\WCA.Business.Api.Tests.csproj", "{90096314-8938-4624-B9EC-B5C4E68D61B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telstra.Core.Contracts", "Telstra.Core.Contracts\Telstra.Core.Contracts.csproj", "{887304BC-86F2-41FD-9E52-2179E250C0AA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

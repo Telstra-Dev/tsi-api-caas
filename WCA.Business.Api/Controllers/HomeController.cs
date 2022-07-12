@@ -1,14 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Telstra.Core.Contracts;
-using Telstra.Core.Api.Helpers;
-using Grpc.Net.Client;
-using WCA.Storage.Api.Proto;
-using System.Net;
-using System.Net.Http;
+using WCA.Business.Api.Services.ServicesInterfaces;
 
-namespace Telstra.Core.Api.Controllers
+namespace WCA.Business.Api.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]

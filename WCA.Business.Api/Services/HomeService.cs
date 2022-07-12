@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Telstra.Core.Contracts;
-using Telstra.Core.Data.Entities;
+﻿using System.Threading.Tasks;
 using Telstra.Core.Repo;
+using Telstra.Core.Data.Entities;
+using WCA.Business.Api.Services.ServicesInterfaces;
 
-namespace Telstra.Core.Api.Services
+namespace WCA.Business.Api.Services
 {
     public class HomeService : IHomeService
     {
