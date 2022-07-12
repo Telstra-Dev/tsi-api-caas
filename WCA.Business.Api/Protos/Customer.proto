@@ -1,0 +1,19 @@
+syntax = "proto3";  
+
+option csharp_namespace = "WCA.Storage.Api.Proto";  
+
+package WCA;
+
+service Customer{  
+  rpc GetCustomerById2(CustomerModelRequest) returns (CustomerModelReply);  
+}  
+
+message CustomerModelRequest{  
+    int32 CustomerId = 1;
+}
+
+message CustomerModelReply{  
+    int32 CustomerId = 1;  
+    string Name = 2;  
+    string Alias = 3;  
+} 

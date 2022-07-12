@@ -1,0 +1,245 @@
+trigger:
+  branches:
+    include:
+    - main          # for prod releases
+    - develop       # for dev releases
+    # note: staging is triggered by `main` branch policy
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  workingDirectory: '$(Build.SourcesDirectory)'
+  isPullRequest: $[eq(variables['Build.Reason'], 'PullRequest')]
+  isDevelopSourceBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+  isReleaseSourceBranch: $[startsWith(variables['System.PullRequest.SourceBranch'], 'refs/heads/release/')]
+  isHotfixSourceBranch: $[startsWith(variables['System.PullRequest.SourceBranch'], 'refs/heads/hotfix/')]
+  isMainSourceBranch: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  isMainTargetBranch: $[eq(variables['System.PullRequest.TargetBranch'], 'refs/heads/main')]
+  AGENT_POOL_DEVELOPMENT: ss2devv1pipelineagentspool
+  AGENT_POOL_STAGING: ss2stagingv1pipelineagentspool
+  AGENT_POOL_PRODUCTION: ss2prodv1pipelineagentspool
+  APP_NAME_DEVELOPMENT: wca-dev-api-business-feature-x
+  APP_NAME_STAGING: wcastagingv1wcabusiness
+  APP_NAME_PRODUCTION: wcaprodv1wcabusiness
+  SERVICE_CONNECTION_DEVELOPMENT: Smart Spaces Development 2.0 (bb692fd0-5b3d-4bee-a37a-c2d5bf85a432)
+
+stages:
+  - stage: build
+    dependsOn: []
+    displayName: Build
+    jobs:
+      - job: api
+        displayName: build, test and package api
+        variables:
+          #frontendDirectory: ./api
+          CI: true
+        steps:
+          - task: UseDotNet@2
+            displayName: Install .NET 6 SDK
+            inputs:
+              packageType: 'sdk'
+              version: '6.x'
+
+          - script: dotnet build ./wca-api-business.sln --configuration $(buildConfiguration)
+            displayName: Build
+            workingDirectory: $(workingDirectory)
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: publish
+              projects: '**/Wca.Api.Business.csproj'
+              publishWebProjects: false
+              arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+              zipAfterPublish: true
+              workingDirectory: $(workingDirectory)
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+              artifactName: 'wca-api-business'
+
+#  - stage: test
+##    dependsOn: ["build"]
+#    displayName: Test
+#    jobs:
+#      - job: api
+#        pool: $(AGENT_POOL_TEST)
+#        variables:
+#          - group: mwp-api-employee-test-integration
+#          - group: mwp-api-employee-deploy-dev
+#        displayName: test api
+#        steps:
+#          - task: AzureKeyVault@1
+#            inputs:
+#              azureSubscription: $(SERVICE_CONNECTION_DEV)
+#              KeyVaultName: "myworkplacewebapi"
+#            displayName: "Download Azure Key Vault secrets"
+          
+#          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+#            inputs:
+#              tokenPrefix: "{{"
+#              tokenSuffix: "}}"
+#              targetFiles: "**/Telstra.MyWorkplace.Data.Test/appsettings.json"
+#            displayName: "Replace Tokens"
+
+#          - task: UseDotNet@2
+#            displayName: Install .NET 5 SDK
+#            inputs:
+#              packageType: 'sdk'
+#              version: '5.x'
+
+#          - script: |
+#              echo "##vso[task.setvariable variable=TaskRan;isOutput=true]Yes"
+
+#              if [ "$(docker ps -q -f name=postgres-localhost)" ]; then
+#                docker stop postgres-localhost || true && docker rm -f postgres-localhost || true
+#              fi
+#              docker run --name postgres-localhost -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin -p 5432:5432 -d postgres
+#            displayName: Run Local Postgres Instance
+#            name: PgRunTask
+
+#          - script: |
+#              echo ">>>1. Setting up postgres-client"
+#              sudo apt update && sudo apt -y install gnupg2
+#              wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+#              echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+#              sudo apt-get update && sudo apt-get -y install postgresql-client-12
+              
+#              echo ">>>2. Dumping the integration DB from Smart Spaces Dev"
+#              PGPASSWORD=$(IntegrationTestDatabasePass) pg_dump \
+#                        -h $(IntegrationTestDatabaseHost) \
+#                        -p $(IntegrationTestDatabasePort) \
+#                        -U $(IntegrationTestDatabaseUser) \
+#                        -s \
+#                        -C \
+#                        -x \
+#                        -O \
+#                        -f createIntegrationDB.sql \
+#                        mw-dev-smartspaces 1>/dev/null
+
+              # Change windows specific locale over to linux recognised ones
+#              sed -i 's/English_United States.1252/en_US.UTF-8/g' createIntegrationDB.sql
+
+#              # These are required to be set up - should be done in the integration test suite!
+#              echo "insert into connected_buildings.customer (customer_id,customer_name, cidn) values (1001,'TELSTRA','CIDN 1');" >> createIntegrationDB.sql
+#              echo "insert into connected_buildings.customer_tenant (customer_id,tenant_id,tenant_identifier,tenant_name,connection_string) values (1001,'tenant-telstra-d043a056','TELSTRA','Telstra','unused');" >> createIntegrationDB.sql
+
+#              echo ">>>3. Restoring the integration DB to a local postgres"
+#              PGPASSWORD=admin psql \
+#                     -h localhost \
+#                     -p 5432 \
+#                     -U postgres \
+#                     -f createIntegrationDB.sql 1>/dev/null
+              
+#              echo ">>>4. Dump/Restore completed!"
+#            displayName: Dump/Restore Integration DB
+
+#          - script: |
+#              echo "##vso[task.setvariable variable=TaskRan;isOutput=true]Yes"
+#              dotnet test ./Telstra.MyWorkplace.sln --configuration $(buildConfiguration) --logger trx
+#            displayName: Test
+#            name: TestTask
+#            workingDirectory: $(workingDirectory)
+
+#          - task: PublishTestResults@2
+#            displayName: Publish Test Results
+#            condition: and(succeededOrFailed(), eq(variables['TestTask.TaskRan'], 'Yes'))
+#            inputs:
+#              failTaskOnFailedTests: false
+#              testResultsFormat: 'VSTest'
+#              testResultsFiles: '**/*.trx'
+
+#          - script: |
+#              if ! command -v coverlet &> /dev/null
+#              then
+#                dotnet tool install --global coverlet.console
+#              fi
+
+#              coverlet ./Telstra.Data.Test/bin/Release/net5.0/Telstra.Data.Test.dll --target "dotnet" --targetargs "test ./Telstra.Data.Test/Telstra.Data.Test.csproj --configuration Release --no-build"
+#              coverlet ./Telstra.Bookings.Tests/bin/Release/net5.0/Telstra.Bookings.Tests.dll --target "dotnet" --targetargs "test ./Telstra.Bookings.Tests/Telstra.Bookings.Tests.csproj --configuration Release --no-build" --merge-with "coverage.json"
+#              coverlet ./Telstra.MyWorkplace.Api.Test/bin/Release/net5.0/Telstra.MyWorkplace.Api.Test.dll --target "dotnet" --targetargs "test ./Telstra.MyWorkplace.Api.Test/Telstra.MyWorkplace.Api.Test.csproj --configuration Release --no-build" --merge-with "coverage.json"
+#              coverlet ./Telstra.MyWorkplace.Data.Test/bin/Release/net5.0/Telstra.MyWorkplace.Data.Test.dll --target "dotnet" --targetargs "test ./Telstra.MyWorkplace.Data.Test/Telstra.MyWorkplace.Data.Test.csproj --configuration Release --no-build" --merge-with "coverage.json" --format cobertura
+#            displayName: Test Coverage
+#            workingDirectory: $(workingDirectory)
+
+#          - task: PublishCodeCoverageResults@1
+ #           displayName: Publish Test Coverage Results
+#            inputs:
+#              codeCoverageTool: 'Cobertura'
+#              summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+
+#          - script: |
+#              if [ "$(docker ps -q -f name=postgres-localhost)" ]; then
+#                docker stop postgres-localhost || true && docker rm -f postgres-localhost || true
+#              fi
+#            displayName: Postgres Clean Up
+#            condition: and(succeededOrFailed(), eq(variables['PgRunTask.TaskRan'], 'Yes'))
+
+  - stage: deployToDevelopment
+    dependsOn: ["build"]
+    displayName: Deploy to Development
+    condition:
+      or(
+        and(
+          succeeded(),
+          eq(variables.isPullRequest, 'false'),
+          eq(variables.isDevelopSourceBranch, 'true')
+        ),
+          eq(variables['Build.Reason'], 'Manual')
+      )
+    variables:
+    - group: wca-api-business-deploy-development
+    jobs:
+      - deployment: deployToDevelopment
+        pool: $(AGENT_POOL_DEVELOPMENT)
+        displayName: Deploy to Development
+        environment: wca-api-business-development
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - bash: |
+                    sudo apt-get update
+                    sudo apt-get install -y wget apt-transport-https software-properties-common unzip
+                    
+                  displayName: Setup Prequisites
+                - template: deployment-steps.yml
+                  parameters:
+                    adosServiceConnectionName: $(SERVICE_CONNECTION_DEVELOPMENT)
+                    appName: $(APP_NAME_DEVELOPMENT)
+
+#  - stage: deployToProduction
+#    dependsOn: ["build"]
+#    displayName: Deploy to Production
+#    condition:
+#      and(
+#        succeeded(),
+#        eq(variables.isPullRequest, 'false'),
+#        eq(variables.isMainSourceBranch, 'true')
+#      )
+#    variables:
+#    - group: wca-api-business-production
+#    jobs:
+#      - deployment: deployToProduction
+#        displayName: Deploy to Production
+#        environment: wca-api-business-development
+#        pool: $(AGENT_POOL_PRODUCTION)
+#        strategy:
+#          runOnce:
+#            deploy:
+#              steps:
+#                - bash: |
+#                    sudo apt-get update
+#                    sudo apt-get install -y wget apt-transport-https software-properties-common unzip
+                    
+#                  displayName: Setup Prequisites
+#                - template: deployment-steps.yml
+#                  parameters:
+#                    adosServiceConnectionName: $(SERVICE_CONNECTION_PRODUCTION)
+#                    appName: $(APP_NAME_PRODUCTION)
+#                    keyVaultName: $(KEY_VAULT_NAME_PRODUCTION)
+
+ 
+  
