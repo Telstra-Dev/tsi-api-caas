@@ -6,10 +6,8 @@ namespace WCA.Consumer.Api.Services
 {
     public class OrganisationService : IOrganisationService
     {
-        private MyMultitenantRepository _repo;
-        public OrganisationService(MyMultitenantRepository Repo)
+        public OrganisationService()
         {
-            this._repo = Repo;
         }
 
         public Organisation GetOrganisation(int customerId, bool includeChildren)

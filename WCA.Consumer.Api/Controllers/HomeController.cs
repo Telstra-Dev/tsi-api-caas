@@ -22,11 +22,5 @@ namespace WCA.Consumer.Api.Controllers
         {
             return Ok(new { result = "API up and Running" });
         }
-
-        [HttpGet("user/{id}")]
-        public IActionResult GetUserById(int id)
-        {
-            return Ok(this.service.GetUserById(id));
-        }
     }
 }

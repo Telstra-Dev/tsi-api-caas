@@ -10,13 +10,13 @@ namespace Telstra.Consumer.Api
     {
 
         public static string ENV_PREFIX =>
-            Environment.GetEnvironmentVariable("MYAPP_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Environment.GetEnvironmentVariable("WCA_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             // Development, Production, MyEnvironment
         public static IConfiguration ConfigurationBuilder => new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                    .AddJsonFile("appsettings.json", false, true)
+                    .AddJsonFile("appsettings.json", true, true)
                     .AddJsonFile($"appsettings.{ENV_PREFIX}.json", true)
-                    .AddEnvironmentVariables("MYAPP_")
+                    .AddEnvironmentVariables("WCA_")
                     .AddUserSecrets(typeof(Startup).GetTypeInfo().Assembly)
                     .Build();
 
@@ -39,13 +39,7 @@ namespace Telstra.Consumer.Api
                             serverOptions.ListenAnyIP(configuration.GetValue<int>("ports:http"));
 
                         if ((configuration.GetValue<int?>("ports:https") ?? 0) != 0)
-                            serverOptions.ListenAnyIP(configuration.GetValue<int>("ports:https"), options =>
-                            {
-                                if (configuration["certificate:path"] != "" && configuration["certificate:path"] != "NA")
-                                    options.UseHttps(configuration["certificate:path"], configuration["certificate:password"]);
-                                else
-                                    options.UseHttps();
-                            });
+                            serverOptions.ListenAnyIP(configuration.GetValue<int>("ports:https"));
                     });
                 });
         

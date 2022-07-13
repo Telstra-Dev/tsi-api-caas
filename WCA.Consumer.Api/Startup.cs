@@ -117,7 +117,7 @@ namespace Telstra.Consumer.Api
 
             app.UseAuth(env, Configuration);
 
-            app.UseMultiTenant();
+            //app.UseMultiTenant();
 
             app.UseEndpoints(endpoints =>
             {

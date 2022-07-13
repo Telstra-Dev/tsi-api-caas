@@ -6,6 +6,5 @@ namespace Telstra.Core.Contracts
 {
     public interface IHomeService
     {
-        Task<User> GetUserById(int UserId);
     }
 }
