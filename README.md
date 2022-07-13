@@ -14,8 +14,8 @@ example: the port no. specified needs to be changed depending on the available p
  ​},
 ```
 ​ This can be done by modifying the env variables. <br/>
-eg. MYAPP_ports_http = [yyyy] <br/>
-​the prefix "MYAPP" will depend on the values specified in program.cs file 
+eg. WCA_ports_http = [yyyy] <br/>
+​the prefix "WCA" will depend on the values specified in program.cs file 
 
 # Telstra.Core.Api->Program.cs
 Update the environment variable prefix. <br/>
