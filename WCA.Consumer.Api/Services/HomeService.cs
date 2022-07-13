@@ -7,16 +7,8 @@ namespace WCA.Consumer.Api.Services
 {
     public class HomeService : IHomeService
     {
-        private MyMultitenantRepository _repo;
-        public HomeService(MyMultitenantRepository Repo)
+        public HomeService()
         {
-            this._repo = Repo;
-        }
-
-
-        public async Task<User> GetUserById(int UserId)
-        {
-            return await this._repo.GetUser(UserId);
         }
     }
 }

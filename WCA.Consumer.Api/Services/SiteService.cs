@@ -7,10 +7,8 @@ namespace WCA.Consumer.Api.Services
 {
     public class SiteService : ISiteService
     {
-        private MyMultitenantRepository _repo;
-        public SiteService(MyMultitenantRepository Repo)
+        public SiteService()
         {
-            this._repo = Repo;
         }
 
         public IList<Site> GetSitesForCustomer(string? customerId)
