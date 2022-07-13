@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/WCA.Business.Api/WCA.Business.Api.csproj",
+                "${workspaceFolder}/WCA.Consumer.Api/WCA.Consumer.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/WCA.Business.Api/WCA.Business.Api.csproj",
+                "${workspaceFolder}/WCA.Consumer.Api/WCA.Consumer.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/WCA.Business.Api/WCA.Business.Api.csproj"
+                "${workspaceFolder}/WCA.Consumer.Api/WCA.Consumer.Api.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

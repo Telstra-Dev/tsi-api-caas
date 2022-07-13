@@ -13,9 +13,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/WCA.Business.Api/bin/Debug/net6.0/WCA.Business.Api.dll",
+            "program": "${workspaceFolder}/WCA.Consumer.Api/bin/Debug/net6.0/WCA.Consumer.Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/WCA.Business.Api",
+            "cwd": "${workspaceFolder}/WCA.Consumer.Api",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
