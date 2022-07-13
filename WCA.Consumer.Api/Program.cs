@@ -10,13 +10,13 @@ namespace Telstra.Consumer.Api
     {
 
         public static string ENV_PREFIX =>
-            Environment.GetEnvironmentVariable("MYAPP_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Environment.GetEnvironmentVariable("WCA_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             // Development, Production, MyEnvironment
         public static IConfiguration ConfigurationBuilder => new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                     .AddJsonFile("appsettings.json", false, true)
                     .AddJsonFile($"appsettings.{ENV_PREFIX}.json", true)
-                    .AddEnvironmentVariables("MYAPP_")
+                    .AddEnvironmentVariables("WCA_")
                     .AddUserSecrets(typeof(Startup).GetTypeInfo().Assembly)
                     .Build();
 
