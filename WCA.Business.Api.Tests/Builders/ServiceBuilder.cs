@@ -32,12 +32,12 @@ namespace Telstra.Core.Api.Tests.Builders
         {
             LaunchSettingsFixture.InitEnv();
             var rootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
-            Console.WriteLine($"Environment - {Environment.GetEnvironmentVariable("MYAPP_ENVIRONMENT")}");
+            Console.WriteLine($"Environment - {Environment.GetEnvironmentVariable("WCA_ENVIRONMENT")}");
 
             var configs = new ConfigurationBuilder().SetBasePath(rootPath);
             configs.AddJsonFile("appsettings.json", false, true);
-            configs.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("MYAPP_ENVIRONMENT")}.json", true);
-            configs.AddEnvironmentVariables("MYAPP");
+            configs.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("WCA_ENVIRONMENT")}.json", true);
+            configs.AddEnvironmentVariables("WCA");
             configs.AddUserSecrets(typeof(Startup).Assembly);
 
             var configRoot = configs.Build();
