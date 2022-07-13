@@ -64,4 +64,4 @@ steps:
       Action: "Swap Slots"
       WebAppName: ${{ parameters.appName }}
       ResourceGroupName: ${{ parameters.resourceGroupName }}
-      SlotName: ${{ parameters.appSlotName }}
+      SourceSlot: ${{ parameters.appSlotName }}
