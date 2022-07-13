@@ -18,7 +18,7 @@ steps:
     deployToSlotOrASE: true
     ResourceGroupName: ${{ parameters.resourceGroupName }}
     SlotName: ${{ parameters.appSlotName }}
-    packageForLinux: '$(Pipeline.Workspace)/wca-api-business/WCA.Business.Api.zip'
+    packageForLinux: '$(Pipeline.Workspace)/wca-api-consumer/WCA.Consumer.Api.zip'
     RuntimeStack: 'DOTNETCORE|6.0'
     #StartupCommand: 'test'
     #AppSettings: 'test1'
