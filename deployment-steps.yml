@@ -60,7 +60,12 @@ steps:
           "name": "WEBSITES_ENABLE_APP_CACHE",
           "value": false,
           "slotSetting": false
-        }
+        },
+        {
+          "name": "WCA_UseAd",
+          "value": true,
+          "slotSetting": false
+        },
       ]
 
 # - task: AzureAppServiceManage@0
