@@ -39,13 +39,7 @@ namespace Telstra.Consumer.Api
                             serverOptions.ListenAnyIP(configuration.GetValue<int>("ports:http"));
 
                         if ((configuration.GetValue<int?>("ports:https") ?? 0) != 0)
-                            serverOptions.ListenAnyIP(configuration.GetValue<int>("ports:https"), options =>
-                            {
-                                if (configuration["certificate:path"] != "" && configuration["certificate:path"] != "NA")
-                                    options.UseHttps(configuration["certificate:path"], configuration["certificate:password"]);
-                                else
-                                    options.UseHttps();
-                            });
+                            serverOptions.ListenAnyIP(configuration.GetValue<int>("ports:https"));
                     });
                 });
         
