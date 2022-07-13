@@ -60,7 +60,7 @@ stages:
           - task: DotNetCoreCLI@2
             inputs:
               command: publish
-              projects: '**/Wca.Api.Consumer.csproj'
+              projects: '**/WCA.Api.Consumer.csproj'
               publishWebProjects: false
               arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
               zipAfterPublish: true
