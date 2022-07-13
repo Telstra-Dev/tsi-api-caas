@@ -4,6 +4,6 @@ namespace Telstra.Core.Contracts
 {
     public interface IOrganisationService
     {
-        public OrganisationViewModel GetOrganisation(int customerId, bool includeChildren);
+        public Organisation GetOrganisation(int customerId, bool includeChildren);
     }
 }

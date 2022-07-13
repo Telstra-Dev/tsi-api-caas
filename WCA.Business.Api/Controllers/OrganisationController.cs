@@ -23,7 +23,7 @@ namespace WCA.Business.Api.Controllers
         /// <param name="customerId"></param>
         /// <returns></returns>
         [HttpGet("organisations/{customerId}")]
-        [ProducesResponseType(typeof(OrganisationViewModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]

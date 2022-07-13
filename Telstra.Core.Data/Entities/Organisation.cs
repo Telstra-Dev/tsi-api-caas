@@ -1,6 +1,6 @@
 namespace Telstra.Core.Data.Entities
 {
-    public class OrganisationViewModel
+    public class Organisation
     {
             public string CustomerId { get; set; }
             public string CustomerName { get; set; } 
@@ -8,7 +8,7 @@ namespace Telstra.Core.Data.Entities
             public string? Id {get;set;}
             public string? Alias {get; set;}
             public long? CreatedAt {get; set;}
-            public OrganisationViewModel[] Children {get; set;}
+            public Organisation[] Children {get; set;}
 
     }
 }

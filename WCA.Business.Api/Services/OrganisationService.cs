@@ -12,13 +12,13 @@ namespace WCA.Business.Api.Services
             this._repo = Repo;
         }
 
-        public OrganisationViewModel GetOrganisation(int customerId, bool includeChildren)
+        public Organisation GetOrganisation(int customerId, bool includeChildren)
         {
-            OrganisationViewModel[] grandChild = new OrganisationViewModel[1];
-            OrganisationViewModel[] children = new OrganisationViewModel[2];
+            Organisation[] grandChild = new Organisation[1];
+            Organisation[] children = new Organisation[2];
             if (includeChildren)
             {
-                grandChild[0] = new OrganisationViewModel {
+                grandChild[0] = new Organisation {
                         CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
                         CustomerName = "Grandchild Org 1",
                         Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
@@ -27,7 +27,7 @@ namespace WCA.Business.Api.Services
                         Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
                     };
 
-                children[0] = new OrganisationViewModel {
+                children[0] = new Organisation {
                         CustomerId = "5722000a-9552-4972-add4-32ca5f9a0c3b",
                         CustomerName = "Child Org 1",
                         Parent = "manual-test-customer-id",
@@ -36,7 +36,7 @@ namespace WCA.Business.Api.Services
                         Id = "5722000a-9552-4972-add4-32ca5f9a0c3b",
                         Children = grandChild
                     };
-                children[1] = new OrganisationViewModel {
+                children[1] = new Organisation {
                         CustomerId = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe",
                         CustomerName = "Child Org 2",
                         Parent = "manual-test-customer-id",
@@ -50,7 +50,7 @@ namespace WCA.Business.Api.Services
                 children=null;
             }
             
-            OrganisationViewModel organisation = new OrganisationViewModel
+            Organisation organisation = new Organisation
             {
                 CustomerId = "manual-test-customer-id",
                 CustomerName = "Postman & Test Account-01",
