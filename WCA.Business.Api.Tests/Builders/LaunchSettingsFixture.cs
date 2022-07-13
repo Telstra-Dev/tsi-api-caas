@@ -10,7 +10,7 @@ namespace Telstra.Core.Api.Tests.Builders
     {
         public static void InitEnv()
         {
-            if (Environment.GetEnvironmentVariable("MYAPP_ENVIRONMENT") != null)
+            if (Environment.GetEnvironmentVariable("WCA_ENVIRONMENT") != null)
                 return;
 
             using (var file = File.OpenText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "launchSettings.json")))
