@@ -1,7 +1,11 @@
 parameters:
   - name: adosServiceConnectionName
     type: string
+  - name: resourceGroupName
+    type: string
   - name: appName
+    type: string
+  - name: appSlotName
     type: string
 
 steps:
@@ -11,9 +15,9 @@ steps:
     azureSubscription: ${{ parameters.adosServiceConnectionName }}
     appType: 'webAppLinux'
     WebAppName: ${{ parameters.appName }}
-#    deployToSlotOrASE: true
-    ResourceGroupName: 'wca-dev'
-#    SlotName: 'inactive-slot'
+    deployToSlotOrASE: true
+    ResourceGroupName: ${{ parameters.resourceGroupName }}
+    SlotName: ${{ parameters.appSlotName }}
     packageForLinux: '$(Pipeline.Workspace)/wca-api-business/WCA.Business.Api.zip'
     RuntimeStack: 'DOTNETCORE|6.0'
     #StartupCommand: 'test'
@@ -24,7 +28,7 @@ steps:
   inputs:
     azureSubscription: ${{ parameters.adosServiceConnectionName }}
     appName: ${{ parameters.appName }}
-#    slotName: 'inactive-slot'
+    slotName: ${{ parameters.appSlotName }}
     appSettings: |
       [
         {
@@ -54,11 +58,10 @@ steps:
         }
       ]
 
-#- task: AzureAppServiceManage@0
-#  inputs:
-#    azureSubscription: 'Smart Spaces Development 2.0 (bb692fd0-5b3d-4bee-a37a-c2d5bf85a432)'
-#    Action: 'Swap Slots'
-#    WebAppName: 'wca-dev-api-business-feature-x'
-#    ResourceGroupName: 'wca-dev'
-#    SourceSlot: 'inactive-slot'
-#    PreserveVnet: true
+- task: AzureAppServiceManage@0
+  inputs:
+      azureSubscription: ${{ parameters.adosServiceConnectionName }}
+      Action: "Swap Slots"
+      WebAppName: ${{ parameters.appName }}
+      ResourceGroupName: ${{ parameters.resourceGroupName }}
+      SlotName: ${{ parameters.appSlotName }}
