@@ -14,7 +14,7 @@ steps:
 #    deployToSlotOrASE: true
     ResourceGroupName: 'wca-dev'
 #    SlotName: 'inactive-slot'
-    packageForLinux: '$(Pipeline.Workspace)/wca-api-business/Telstra.Core.Api.zip'
+    packageForLinux: '$(Pipeline.Workspace)/wca-api-business/WCA.Business.Api.zip'
     RuntimeStack: 'DOTNETCORE|6.0'
     #StartupCommand: 'test'
     #AppSettings: 'test1'
@@ -28,12 +28,12 @@ steps:
     appSettings: |
       [
         {
-          "name": "MYAPP_ports__http",
+          "name": "WCA_ports__http",
           "value": 80,
           "slotSetting": false
         },
         {
-          "name": "MYAPP_ports__https",
+          "name": "WCA_ports__https",
           "value": 0,
           "slotSetting": false
         },
@@ -48,7 +48,7 @@ steps:
           "slotSetting": false
         },
         {
-          "name": "MYAPP_ENVIRONMENT",
+          "name": "WCA_ENVIRONMENT",
           "value": "Development",
           "slotSetting": false
         }
