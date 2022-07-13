@@ -18,7 +18,7 @@ steps:
     deployToSlotOrASE: true
     ResourceGroupName: ${{ parameters.resourceGroupName }}
     SlotName: ${{ parameters.appSlotName }}
-    packageForLinux: '$(Pipeline.Workspace)/wca-api-business/WCA.Business.Api.zip'
+    packageForLinux: '$(Pipeline.Workspace)/wca-api-consumer/WCA.Consumer.Api.zip'
     RuntimeStack: 'DOTNETCORE|6.0'
     #StartupCommand: 'test'
     #AppSettings: 'test1'
@@ -55,13 +55,20 @@ steps:
           "name": "WCA_ENVIRONMENT",
           "value": "Development",
           "slotSetting": false
+        },
+        {
+          "name": "WEBSITES_ENABLE_APP_CACHE",
+          "value": false,
+          "slotSetting": false
         }
       ]
 
-- task: AzureAppServiceManage@0
-  inputs:
-      azureSubscription: ${{ parameters.adosServiceConnectionName }}
-      Action: "Swap Slots"
-      WebAppName: ${{ parameters.appName }}
-      ResourceGroupName: ${{ parameters.resourceGroupName }}
-      SlotName: ${{ parameters.appSlotName }}
+# - task: AzureAppServiceManage@0
+#   displayName: Swap inactive and active (production) slots
+#   condition: and(succeeded(), ne('${{ parameters.appSlotName }}', 'production'))
+#   inputs:
+#       azureSubscription: ${{ parameters.adosServiceConnectionName }}
+#       Action: "Swap Slots"
+#       WebAppName: ${{ parameters.appName }}
+#       ResourceGroupName: ${{ parameters.resourceGroupName }}
+#       SourceSlot: ${{ parameters.appSlotName }}

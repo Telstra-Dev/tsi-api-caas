@@ -21,8 +21,8 @@ variables:
   SERVICE_CONNECTION_DEVELOPMENT: Smart Spaces Development 2.0 (bb692fd0-5b3d-4bee-a37a-c2d5bf85a432)
   AGENT_POOL_DEVELOPMENT: ss2devv1pipelineagentspool
   APP_RESOURCE_GROUP_NAME_DEVELOPMENT: wca-dev
-  APP_NAME_DEVELOPMENT: wca-dev-api-consumer
-  APP_SLOT_NAME_DEVELOPMENT: inactive-slot
+  APP_NAME_DEVELOPMENT: wca-dev-api-business-consumer
+  APP_SLOT_NAME_DEVELOPMENT: production
 
   SERVICE_CONNECTION_STAGING: ""
   AGENT_POOL_STAGING: ss2stagingv1pipelineagentspool
@@ -53,14 +53,14 @@ stages:
               packageType: 'sdk'
               version: '6.x'
 
-          - script: dotnet build ./wca-api-business.sln --configuration $(buildConfiguration)
+          - script: dotnet build ./wca-api-consumer.sln --configuration $(buildConfiguration)
             displayName: Build
             workingDirectory: $(workingDirectory)
 
           - task: DotNetCoreCLI@2
             inputs:
               command: publish
-              projects: '**/Wca.Api.Business.csproj'
+              projects: '**/WCA.Consumer.Api.csproj'
               publishWebProjects: false
               arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
               zipAfterPublish: true
@@ -69,7 +69,7 @@ stages:
           - task: PublishBuildArtifacts@1
             inputs:
               pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-              artifactName: 'wca-api-business'
+              artifactName: 'wca-api-consumer'
 
 #  - stage: test
 ##    dependsOn: ["build"]
