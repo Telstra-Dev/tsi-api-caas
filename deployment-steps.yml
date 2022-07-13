@@ -65,7 +65,7 @@ steps:
           "name": "WCA_UseAd",
           "value": true,
           "slotSetting": false
-        },
+        }
       ]
 
 # - task: AzureAppServiceManage@0
