@@ -21,7 +21,7 @@ variables:
   SERVICE_CONNECTION_DEVELOPMENT: Smart Spaces Development 2.0 (bb692fd0-5b3d-4bee-a37a-c2d5bf85a432)
   AGENT_POOL_DEVELOPMENT: ss2devv1pipelineagentspool
   APP_RESOURCE_GROUP_NAME_DEVELOPMENT: wca-dev
-  APP_NAME_DEVELOPMENT: wca-dev-api-consumer
+  APP_NAME_DEVELOPMENT: wca-dev-api-business-consumer
   APP_SLOT_NAME_DEVELOPMENT: inactive-slot
 
   SERVICE_CONNECTION_STAGING: ""
