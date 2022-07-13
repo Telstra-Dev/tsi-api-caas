@@ -18,11 +18,11 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         /// <summary>
-        /// Retrieves a singe organisation including any organisation hierarchy
+        /// Retrieves a single organisation including any organisation hierarchy
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
-        [HttpGet("organisations/{customerId}")]
+        [HttpGet("organisation/{customerId}")]
         [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

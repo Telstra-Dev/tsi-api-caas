@@ -41,6 +41,7 @@ namespace Telstra.Consumer.Api
             @this.AddScoped<ICustomerService, CustomerService>();
             @this.AddScoped<IHomeService, HomeService>();
             @this.AddScoped<IOrganisationService, OrganisationService>();
+            @this.AddScoped<ISiteService, SiteService>();
         }
     }
 }
