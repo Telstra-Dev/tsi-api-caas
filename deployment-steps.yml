@@ -55,6 +55,11 @@ steps:
           "name": "WCA_ENVIRONMENT",
           "value": "Development",
           "slotSetting": false
+        },
+        {
+          "name": "WEBSITES_ENABLE_APP_CACHE",
+          "value": false,
+          "slotSetting": false
         }
       ]
 
