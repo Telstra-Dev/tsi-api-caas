@@ -1,6 +1,6 @@
 ﻿namespace Telstra.Core.Data.Entities
 {
-    public class Customer
+    public class Customer 
     {
         public int CustomerId { get; set; }
 
