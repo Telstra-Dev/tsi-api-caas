@@ -65,7 +65,7 @@ steps:
 
 - task: AzureAppServiceManage@0
   displayName: Swap inactive and active (production) slots
-  condition: and(succeeded(), ne(${{ parameters.appSlotName }}, 'production')
+  condition: and(succeeded(), ne("${{ parameters.appSlotName }}", 'production')
   inputs:
       azureSubscription: ${{ parameters.adosServiceConnectionName }}
       Action: "Swap Slots"
