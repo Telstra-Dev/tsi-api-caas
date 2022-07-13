@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using WCA.Business.Api.Models;
-using WCA.Business.Api.Services.ServicesInterfaces;
+using Telstra.Core.Contracts;
+using Telstra.Core.Data.Entities;
 
 namespace WCA.Business.Api.Controllers
 {

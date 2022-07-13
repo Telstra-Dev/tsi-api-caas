@@ -13,8 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Newtonsoft.Json.Serialization;
 using Telstra.Common;
-using WCA.Storage.Api.Proto;
-using WCA.Business.Api.Models;
+
 
 namespace Telstra.Core.Api
 {

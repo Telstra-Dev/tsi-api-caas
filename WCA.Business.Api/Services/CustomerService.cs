@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
-using WCA.Business.Api.Services.ServicesInterfaces;
+﻿using System;
+using System.Threading.Tasks;
+using Telstra.Core.Contracts;
+using Telstra.Core.Data.Entities;
+using Telstra.Core.Repo;
+using Grpc.Net.Client;
 using System.Net;
 using System.Net.Http;
-using WCA.Business.Api.Models;
+using Telstra.Core.Api.Helpers;
 using WCA.Storage.Api.Proto;
 
 namespace WCA.Business.Api.Services
@@ -14,12 +18,12 @@ namespace WCA.Business.Api.Services
         {
             this._client = client;
         }
-        public async Task<WCA.Business.Api.Models.Customer> GetCustomerById(int id)
+        public async Task<Telstra.Core.Data.Entities.Customer> GetCustomerById(int id)
         {
             HttpClient.DefaultProxy = new WebProxy();
             var reply = await _client.GetCustomerById2Async(
                 new CustomerModelRequest { CustomerId = id });
-            WCA.Business.Api.Models.Customer _customer = new WCA.Business.Api.Models.Customer();
+            Telstra.Core.Data.Entities.Customer _customer = new Telstra.Core.Data.Entities.Customer();
             _customer.CustomerId = reply.CustomerId;
             _customer.Name = reply.Name;
             _customer.Alias = reply.Alias;

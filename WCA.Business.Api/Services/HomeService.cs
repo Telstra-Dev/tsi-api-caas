@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Telstra.Core.Repo;
 using Telstra.Core.Data.Entities;
-using WCA.Business.Api.Services.ServicesInterfaces;
+using Telstra.Core.Contracts;
 
 namespace WCA.Business.Api.Services
 {

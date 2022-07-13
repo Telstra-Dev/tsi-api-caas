@@ -8,8 +8,8 @@ using Telstra.Core.Data.Contexts;
 using Telstra.Core.Repo;
 using Microsoft.EntityFrameworkCore;
 using Finbuckle.MultiTenant;
+using Telstra.Core.Contracts;
 using WCA.Business.Api.Services;
-using WCA.Business.Api.Services.ServicesInterfaces;
 
 namespace Telstra.Core.Api
 {

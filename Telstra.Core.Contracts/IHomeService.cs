@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Telstra.Core.Data.Entities;
 
-namespace WCA.Business.Api.Services.ServicesInterfaces
+namespace Telstra.Core.Contracts
 {
     public interface IHomeService
     {

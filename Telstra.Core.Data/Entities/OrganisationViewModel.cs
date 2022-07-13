@@ -1,4 +1,4 @@
-namespace WCA.Business.Api.Models
+namespace Telstra.Core.Data.Entities
 {
     public class OrganisationViewModel
     {

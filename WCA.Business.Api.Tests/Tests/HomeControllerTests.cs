@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json;
+using Telstra.Core.Contracts;
 using WCA.Business.Api.Controllers;
-using WCA.Business.Api.Services.ServicesInterfaces;
 using Xunit;
 
 namespace Telstra.Core.Api.Tests

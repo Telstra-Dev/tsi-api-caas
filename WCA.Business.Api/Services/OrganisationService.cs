@@ -1,6 +1,6 @@
 using Telstra.Core.Repo;
-using WCA.Business.Api.Services.ServicesInterfaces;
-using WCA.Business.Api.Models;
+using Telstra.Core.Contracts;
+using Telstra.Core.Data.Entities;
 
 namespace WCA.Business.Api.Services
 {

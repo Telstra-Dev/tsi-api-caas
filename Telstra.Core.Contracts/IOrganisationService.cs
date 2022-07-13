@@ -1,6 +1,6 @@
-using WCA.Business.Api.Models;
+using Telstra.Core.Data.Entities;
 
-namespace WCA.Business.Api.Services.ServicesInterfaces
+namespace Telstra.Core.Contracts
 {
     public interface IOrganisationService
     {
