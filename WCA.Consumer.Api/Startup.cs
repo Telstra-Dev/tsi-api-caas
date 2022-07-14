@@ -15,7 +15,7 @@ using Newtonsoft.Json.Serialization;
 using Telstra.Common;
 
 
-namespace Telstra.Consumer.Api
+namespace Telstra.Core.Api
 {
     public class Startup
     {

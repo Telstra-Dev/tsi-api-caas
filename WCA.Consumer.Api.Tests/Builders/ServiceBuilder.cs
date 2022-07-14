@@ -4,7 +4,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Telstra.Core.Data.Contexts;
 
-namespace Telstra.Consumer.Api.Tests.Builders
+namespace Telstra.Core.Api.Tests.Builders
 {
     public class ServiceBuilder
     {

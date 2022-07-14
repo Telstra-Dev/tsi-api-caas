@@ -1,7 +1,7 @@
 ﻿using System;
 using Telstra.Common;
 
-namespace Telstra.Consumer.Api.Models
+namespace Telstra.Core.Api.Models
 {
     public class PrincipalKey
     {

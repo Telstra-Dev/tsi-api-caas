@@ -16,7 +16,7 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("customers/{id}")]
         public async System.Threading.Tasks.Task<IActionResult> GetCustomerById(int id)
         {
             return Ok(await _service.GetCustomerById(id));

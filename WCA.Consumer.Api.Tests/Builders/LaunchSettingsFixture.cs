@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Telstra.Consumer.Api.Tests.Builders
+namespace Telstra.Core.Api.Tests.Builders
 {
     public class LaunchSettingsFixture
     {

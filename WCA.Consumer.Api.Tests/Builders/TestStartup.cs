@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace Telstra.Consumer.Api.Tests.Builders
+namespace Telstra.Core.Api.Tests.Builders
 {
     public class TestStartup : Startup
     {

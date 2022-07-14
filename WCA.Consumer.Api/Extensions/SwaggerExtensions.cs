@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace Telstra.Consumer.Api
+namespace Telstra.Core.Api
 {
     public static class SwaggerServicesExtentions
     {

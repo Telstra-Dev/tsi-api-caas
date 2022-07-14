@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace Telstra.Consumer.Api
+namespace Telstra.Core.Api
 {
     public class Program
     {

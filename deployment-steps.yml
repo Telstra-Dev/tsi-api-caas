@@ -7,6 +7,16 @@ parameters:
     type: string
   - name: appSlotName
     type: string
+  - name: azureMapsAuthUri
+    type: string
+  - name: azureMapsAuthCredsClientId
+    type: string
+  - name: azureMapsAuthCredsClientSecret
+    type: string
+  - name: azureMapsAuthCredsGrantType
+    type: string
+  - name: azureMapsAuthCredsResource
+    type: string
 
 steps:
 - task: AzureRmWebAppDeployment@4
@@ -57,13 +67,33 @@ steps:
           "slotSetting": false
         },
         {
-          "name": "WEBSITES_ENABLE_APP_CACHE",
-          "value": false,
+          "name": "WCA_UseAd",
+          "value": true,
           "slotSetting": false
         },
         {
-          "name": "WCA_UseAd",
-          "value": true,
+          "name": "WCA_AzureMapsAuthCredentials__AuthUri",
+          "value": "${{ parameters.azureMapsAuthUri }}",
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__ClientId",
+          "value": "${{ parameters.azureMapsAuthCredsClientId }}",
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__ClientSecret",
+          "value": "${{ parameters.azureMapsAuthCredsClientSecret }}",
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__GrantType",
+          "value": "${{ parameters.azureMapsAuthCredsGrantType }}",
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__Resource",
+          "value": "${{ parameters.azureMapsAuthCredsResource }}",
           "slotSetting": false
         }
       ]
