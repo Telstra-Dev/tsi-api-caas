@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Telstra.Consumer.Api.Extensions
+namespace Telstra.Core.Api.Extensions
 {
     public static class EnvironmentExtensions
     {

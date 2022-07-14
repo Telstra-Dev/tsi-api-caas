@@ -14,7 +14,7 @@ using Microsoft.Identity.Web;
 using Telstra.Common;
 using Telstra.Common.Models;
 
-namespace Telstra.Consumer.Api
+namespace Telstra.Core.Api
 {
     public static class ServiceExtensions
     {

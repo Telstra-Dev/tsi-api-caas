@@ -3,9 +3,9 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.Identity.Web;
 using Telstra.Common;
-using Telstra.Consumer.Api.Models;
+using Telstra.Core.Api.Models;
 
-namespace Telstra.Consumer.Api.Extensions
+namespace Telstra.Core.Api.Extensions
 {
     public static class ClaimPrincipalExtensions
     {

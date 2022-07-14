@@ -3,10 +3,10 @@ using System.Security.Claims;
 using Finbuckle.MultiTenant;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Telstra.Consumer.Api.Extensions;
+using Telstra.Core.Api.Extensions;
 using Telstra.Core.Data;
 
-namespace Telstra.Consumer.Api.Helpers
+namespace Telstra.Core.Api.Helpers
 {
     
     public class FakeADUserInjector

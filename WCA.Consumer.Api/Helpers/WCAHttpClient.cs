@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace Telstra.Consumer.Api.Helpers
+namespace Telstra.Core.Api.Helpers
 {
     public class WCAHttpClient
     {
@@ -15,47 +16,47 @@ namespace Telstra.Consumer.Api.Helpers
                                     BypassProxyOnLocal = false,
                                     UseDefaultCredentials = false
                                 };
-        private StorageFunctionAppConfig config;
+        private AzureMapsAppConfig config;
         private static bool _isDevelopment = false;
         private static HttpClient httpClient;
 
-        private static string STORAGE_FUNCTION_APP_CONFIG = "StorageFunctionApp";
+        private static string AZURE_MAPS_APP_CONFIG = "AzureMapsAuthCredentials";
 
         SemaphoreSlim mutex = new SemaphoreSlim(1);
 
         public WCAHttpClient()
         {
-            if (Program.ConfigurationBuilder.GetSection(STORAGE_FUNCTION_APP_CONFIG).Exists())
+            if (Program.ConfigurationBuilder.GetSection(AZURE_MAPS_APP_CONFIG).Exists())
             {
-                config = Program.ConfigurationBuilder.GetSection(STORAGE_FUNCTION_APP_CONFIG)
-                                        .Get<StorageFunctionAppConfig>();
+                config = Program.ConfigurationBuilder.GetSection(AZURE_MAPS_APP_CONFIG)
+                                        .Get<AzureMapsAppConfig>();
             }
             
             if (isDevelopment() && httpClient == null)
             {
-                if ((config != null) && (config.baseUrl != null))
+                if ((config != null) && (config.AuthUri != null))
                 {
                     httpClient = new HttpClient();
-                    httpClient.BaseAddress = new Uri(config.baseUrl);             
+                    httpClient.BaseAddress = new Uri(config.AuthUri);             
                 }
                 else 
                 {
-                    throw new Exception("StorageFunctionAppConfig not found in configuration (appsettings.json).");
+                    throw new Exception("AzureMapsAppConfig not found in configuration (appsettings.json).");
                 }       
             }
             else if (httpClient == null)
             {
-                if ((config != null) && (config.baseUrl != null))
+                if ((config != null) && (config.AuthUri != null))
                 {
                     var handler = new HttpClientHandler();
                     httpClient = new HttpClient(handler);
-                    httpClient.BaseAddress = new Uri(config.baseUrl);  
+                    httpClient.BaseAddress = new Uri(config.AuthUri);  
                 }      
                 else 
                 {
-                    throw new Exception("StorageFunctionAppConfig not found in configuration.");
+                    throw new Exception("AzureMapsAppConfig not found in configuration.");
                 }          
-            }            
+            } 
         }
 
         public WCAHttpClient(HttpMessageHandler handler, string baseUrl = null) : this()
@@ -65,20 +66,28 @@ namespace Telstra.Consumer.Api.Helpers
             {
                 httpClient.BaseAddress = new Uri(baseUrl);    
                 httpClient.DefaultRequestHeaders.Accept.Add(
-                    new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));     
+                    new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));   
             }         
         }
 
-        public async Task<string> CallFunctionApp()
+        public async Task<string> GetAzureMapsAuthToken()
         {
             string content = String.Empty;
 
             HttpResponseMessage response = new HttpResponseMessage();  
 
+            var data = new[]
+            {
+                new KeyValuePair<string, string>("client_id", config.ClientId),
+                new KeyValuePair<string, string>("client_secret", config.ClientSecret),
+                new KeyValuePair<string, string>("grant_type", config.GrantType),
+                new KeyValuePair<string, string>("resource", config.Resource),
+            };  
+
             await mutex.WaitAsync();
             try 
             {
-                response = httpClient.GetAsync(config.code).Result;
+                response = httpClient.PostAsync(config.AuthUri, new FormUrlEncodedContent(data)).Result;
                 httpClient.DefaultRequestHeaders.Clear();
             }
             finally 
@@ -114,10 +123,12 @@ namespace Telstra.Consumer.Api.Helpers
 
     }
     
-    public class StorageFunctionAppConfig 
+    public class AzureMapsAppConfig 
     {
-        public string baseUrl  { get; set; }
-
-        public string code  { get; set; }
+        public string AuthUri  { get; set; }
+        public string ClientId  { get; set; }
+        public string ClientSecret  { get; set; }
+        public string GrantType  { get; set; }
+        public string Resource  { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Telstra.Core.Repo;
 using Grpc.Net.Client;
 using System.Net;
 using System.Net.Http;
-using Telstra.Consumer.Api.Helpers;
+using Telstra.Core.Api.Helpers;
 using WCA.Storage.Api.Proto;
 
 namespace WCA.Consumer.Api.Services

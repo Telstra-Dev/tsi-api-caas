@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using Telstra.Consumer.Api.Helpers;
+using Telstra.Core.Api.Helpers;
 
 namespace WCA.Consumer.Api.Controllers
 {

@@ -9,9 +9,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Telstra.Common;
-using Telstra.Consumer.Api.Helpers;
+using Telstra.Core.Api.Helpers;
 
-namespace Telstra.Consumer.Api
+namespace Telstra.Core.Api
 {
     public static class AppBuilderExtensions
     {

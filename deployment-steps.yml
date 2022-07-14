@@ -65,6 +65,31 @@ steps:
           "name": "WCA_UseAd",
           "value": true,
           "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__AuthUri",
+          "value": $(AZURE_MAPS_AUTH_URI),
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__ClientId",
+          "value": $(AZURE_MAPS_AUTH_CREDS_CLIENTID),
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__ClientSecret",
+          "value": $(AZURE_MAPS_AUTH_CREDS_CLIENT_SECRET),
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__GrantType",
+          "value": $(AZURE_MAPS_AUTH_CREDS_GRANT_TYPE),
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_AzureMapsAuthCredentials__Resource",
+          "value": $(AZURE_MAPS_AUTH_CREDS_RESOURCE),
+          "slotSetting": false
         }
       ]
 

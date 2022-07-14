@@ -7,7 +7,7 @@ using Telstra.Core.Contracts;
 using WCA.Consumer.Api.Controllers;
 using Xunit;
 
-namespace Telstra.Consumer.Api.Tests
+namespace Telstra.Core.Api.Tests
 { 
     public class HomeControllerTests
     {

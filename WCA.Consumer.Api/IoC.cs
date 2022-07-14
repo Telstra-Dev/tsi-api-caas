@@ -11,7 +11,7 @@ using Finbuckle.MultiTenant;
 using Telstra.Core.Contracts;
 using WCA.Consumer.Api.Services;
 
-namespace Telstra.Consumer.Api
+namespace Telstra.Core.Api
 {
     public static class IoC
     {
@@ -43,6 +43,7 @@ namespace Telstra.Consumer.Api
             @this.AddScoped<IOrganisationService, OrganisationService>();
             @this.AddScoped<ISiteService, SiteService>();
             @this.AddScoped<IDeviceService, DeviceService>();
+            @this.AddScoped<IAzureMapsAuthService, AzureMapsAuthService>();
         }
     }
 }
