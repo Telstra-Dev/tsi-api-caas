@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api")]
     [Produces("application/json")]
     public class AzureMapsController : BaseController
     {

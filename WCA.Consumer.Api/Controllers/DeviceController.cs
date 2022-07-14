@@ -8,7 +8,7 @@ using Telstra.Core.Data.Entities;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/api")]
+    [Route("/api/[controller]s")]
     public class DeviceController : BaseController
     {
         readonly IDeviceService service;
@@ -30,7 +30,7 @@ namespace WCA.Consumer.Api.Controllers
         /// <param name="customerId"></param>
         /// <param name="siteId"></param>
         /// <returns></returns>
-        [HttpGet("devices")]
+        [HttpGet()]
         [ProducesResponseType(typeof(ArrayList), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -41,7 +41,7 @@ namespace WCA.Consumer.Api.Controllers
             return Ok(this.service.GetDevices(customerId, siteId));
         }
 
-        [HttpGet("devices/{deviceId}")]
+        [HttpGet("{deviceId}")]
         [ProducesResponseType(typeof(DeviceBase), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
