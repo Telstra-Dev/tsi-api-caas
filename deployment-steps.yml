@@ -57,38 +57,33 @@ steps:
           "slotSetting": false
         },
         {
-          "name": "WEBSITES_ENABLE_APP_CACHE",
-          "value": false,
-          "slotSetting": false
-        },
-        {
           "name": "WCA_UseAd",
           "value": true,
-          "slotSetting": false
+          "slotSetting": true
         },
         {
           "name": "WCA_AzureMapsAuthCredentials__AuthUri",
-          "value": $(AZURE_MAPS_AUTH_URI),
+          "value": ${{ parameters.azureMapsAuthUri }},
           "slotSetting": false
         },
         {
           "name": "WCA_AzureMapsAuthCredentials__ClientId",
-          "value": $(AZURE_MAPS_AUTH_CREDS_CLIENTID),
+          "value": ${{ parameters.azureMapsAuthCredsClientId }},
           "slotSetting": false
         },
         {
           "name": "WCA_AzureMapsAuthCredentials__ClientSecret",
-          "value": $(AZURE_MAPS_AUTH_CREDS_CLIENT_SECRET),
+          "value": ${{ parameters.azureMapsAuthCredsClientSecret }},
           "slotSetting": false
         },
         {
           "name": "WCA_AzureMapsAuthCredentials__GrantType",
-          "value": $(AZURE_MAPS_AUTH_CREDS_GRANT_TYPE),
+          "value": ${{ parameters.azureMapsAuthCredsGrantType }},
           "slotSetting": false
         },
         {
           "name": "WCA_AzureMapsAuthCredentials__Resource",
-          "value": $(AZURE_MAPS_AUTH_CREDS_RESOURCE),
+          "value": ${{ parameters.azureMapsAuthCredsResource }},
           "slotSetting": false
         }
       ]

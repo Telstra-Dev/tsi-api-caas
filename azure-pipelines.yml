@@ -222,6 +222,11 @@ stages:
                     resourceGroupName: $(APP_RESOURCE_GROUP_NAME_DEVELOPMENT)
                     appName: $(APP_NAME_DEVELOPMENT)
                     appSlotName: $(APP_SLOT_NAME_DEVELOPMENT)
+                    azureMapsAuthUri: $(AZURE_MAPS_AUTH_URI)
+                    azureMapsAuthCredsClientId: $(AZURE_MAPS_AUTH_CREDS_CLIENTID)
+                    azureMapsAuthCredsClientSecret: $(AZURE_MAPS_AUTH_CREDS_CLIENT_SECRET)
+                    azureMapsAuthCredsGrantType: $(AZURE_MAPS_AUTH_CREDS_GRANT_TYPE)
+                    azureMapsAuthCredsResource: $(AZURE_MAPS_AUTH_CREDS_RESOURCE)
 
 #  - stage: deployToProduction
 #    dependsOn: ["build"]
