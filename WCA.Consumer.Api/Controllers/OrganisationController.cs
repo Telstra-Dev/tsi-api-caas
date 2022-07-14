@@ -33,5 +33,20 @@ namespace WCA.Consumer.Api.Controllers
         {
             return Ok(this.service.GetOrganisation(customerId, includeChildren));
         }
+
+        /// <summary>
+        /// Retrieve the search hierarchy for the logged-in user's organisation. Returns an array of nodes that can be turned 
+        /// into a search tree. Used for presentation only.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("organisations/display-search-tree")]
+        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [AllowAnonymous]
+        public IActionResult GetOrganisationSearchTree()
+        {
+            return Ok(this.service.GetOrganisationSearchTree());
+        }
     }
 }
