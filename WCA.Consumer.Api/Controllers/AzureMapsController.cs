@@ -20,7 +20,7 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("oauth2/token")]
+        [HttpGet("/azure-maps/oauth2/token")]
         public async Task<IActionResult> GetAuthToken()
         {
 
