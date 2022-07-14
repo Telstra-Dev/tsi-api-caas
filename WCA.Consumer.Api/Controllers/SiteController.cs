@@ -47,5 +47,45 @@ namespace WCA.Consumer.Api.Controllers
         {
             return Ok(this.service.GetSite(siteId));
         }
+
+        /// <summary>
+        /// Creates a new site
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("sites")]
+        [ProducesResponseType(typeof(Site), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [AllowAnonymous]
+        public IActionResult CreateSite([FromBody] Site site)
+        {
+            return Ok(this.service.CreateSite(site));
+        }
+
+        /// <summary>
+        /// Updates a site
+        /// </summary>
+        /// <param name="siteId"></param>
+        /// <returns></returns>
+        [HttpPut("sites/{siteId}")]
+        [ProducesResponseType(typeof(Site), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult UpdateSite([FromRoute] string siteId,
+                                [FromBody] Site site)
+        {
+            return Ok(this.service.UpdateSite(siteId, site));
+        }
+
+        /// <summary>
+        /// Delete a site
+        /// </summary>
+        /// <param name="siteId"></param>
+        /// <returns></returns>
+        [HttpDelete("sites/{siteId}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult DeleteSite([FromRoute] string siteId)
+        {
+            return Ok(this.service.DeleteSite(siteId));
+        }
     }
 }
