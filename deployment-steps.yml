@@ -20,7 +20,7 @@ steps:
     SlotName: ${{ parameters.appSlotName }}
     packageForLinux: '$(Pipeline.Workspace)/wca-api-consumer/WCA.Consumer.Api.zip'
     RuntimeStack: 'DOTNETCORE|6.0'
-    #StartupCommand: 'test'
+    StartupCommand: 'dotnet WCA.Consumer.Api.dll'
     #AppSettings: 'test1'
     
 - task: AzureAppServiceSettings@1
