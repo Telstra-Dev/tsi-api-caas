@@ -97,7 +97,27 @@ namespace WCA.Consumer.Api.Services
                                 "camera", "/devices/0448659b-eb21-410b-809c-c3b4879c9b48", 
                                 "3917acd9-2185-48a0-a71a-905316e2aae2"); 
             return orgSearchTreeNodes;
-         }
+        }
+
+        public Organisation CreateOrganisation(Organisation org)
+        {
+            return org;   
+        }
+        public Organisation UpdateOrganisation(string id, Organisation org)
+        {
+            return org;
+        }
+        public Organisation DeleteOrganisation(string id)
+        {
+            return new Organisation {
+                        CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
+                        CustomerName = "Grandchild Org 1",
+                        Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+                        Alias = "TS",
+                        CreatedAt = 1649906502253,
+                        Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
+                    };
+        }
 
         private void AddSearchTreeNode(IList<OrgSearchTreeNode> orgSearchTreeNodes, string id, string text, string type, string href, 
                                         string parentId = null, Status status = null)

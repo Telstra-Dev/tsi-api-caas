@@ -48,5 +48,45 @@ namespace WCA.Consumer.Api.Controllers
         {
             return Ok(this.service.GetOrganisationSearchTree());
         }
+
+        /// <summary>
+        /// Creates a new organisation
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("organisations")]
+        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [AllowAnonymous]
+        public IActionResult CreateSite([FromBody] Organisation org)
+        {
+            return Ok(this.service.CreateOrganisation(org));
+        }
+
+        /// <summary>
+        /// Updates an organisation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPut("organisations/{id}")]
+        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult UpdateOrganisation([FromRoute] string id,
+                                [FromBody] Organisation org)
+        {
+            return Ok(this.service.UpdateOrganisation(id, org));
+        }
+
+        /// <summary>
+        /// Deletes an organisation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("organisations/{id}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult DeleteOrganisation([FromRoute] string id)
+        {
+            return Ok(this.service.DeleteOrganisation(id));
+        }
     }
 }
