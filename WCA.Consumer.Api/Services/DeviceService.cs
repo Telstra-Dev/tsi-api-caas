@@ -7,10 +7,8 @@ namespace WCA.Consumer.Api.Services
 {
     public class DeviceService : IDeviceService
     {
-        private MyMultitenantRepository _repo;
-        public DeviceService(MyMultitenantRepository Repo)
+        public DeviceService()
         {
-            this._repo = Repo;
         }
 
         public ArrayList GetDevices(string customerId, string siteId)
