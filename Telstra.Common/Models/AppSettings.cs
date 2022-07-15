@@ -6,12 +6,20 @@ namespace Telstra.Common
 {
     public class StorageAppSettings
     {
-        public string Uri { get; set; }
+        public string BaseUri { get; set; }
     }
     public class StorageSettings
     {
         public DBSetting MyDb { get; set; }
         public DBSetting TenantDb { get; set; }
+    }
+    public class AzureMapsAuthSettings
+    {
+        public string AuthUri { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
+        public string GrantType { get; set; }
+        public string Resource { get; set; }
     }
     public class AppSettings
     {
@@ -20,6 +28,8 @@ namespace Telstra.Common
         public AzureAdConfiguration AzureAd { get; set; }
         public bool UseAd { get; set; }
         public StorageAppSettings StorageAppGrpc { get; set; }
+        public StorageAppSettings StorageAppHttp { get; set; }
+        public AzureMapsAuthSettings AzureMapsAuthCredentials { get; set; }
     }
 
     public class DBSetting

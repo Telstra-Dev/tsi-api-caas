@@ -14,7 +14,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Newtonsoft.Json.Serialization;
 using Telstra.Common;
-
+using Telstra.Core.Contracts;
+using WCA.Consumer.Api.Services;
 
 namespace Telstra.Core.Api
 {
@@ -77,10 +78,12 @@ namespace Telstra.Core.Api
 
             services.AddGrpcClient<WCA.Storage.Api.Proto.Customer.CustomerClient>(o =>
             {
-                o.Address = new Uri(appSettings.StorageAppGrpc.Uri);
+                o.Address = new Uri(appSettings.StorageAppGrpc.BaseUri);
             });
-            services
-                .AddHealthChecks();
+
+            services.AddHttpClient<CustomerService>();
+
+            services.AddHealthChecks();
         }
 
         public virtual void ConfigureContainer(IServiceCollection container)

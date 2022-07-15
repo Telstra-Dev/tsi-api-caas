@@ -1,22 +1,22 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Telstra.Core.Contracts;
-using Telstra.Core.Api.Helpers;
+using Telstra.Common;
 using System.Threading.Tasks;
 
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
     [Route("/api")]
-    [Produces("application/json")]
     public class AzureMapsController : BaseController
     {
-        readonly IAzureMapsAuthService service;
+        readonly IAzureMapsAuthService _service;
+        private readonly AppSettings _appSettings;
 
-        public AzureMapsController(IAzureMapsAuthService service)
+        public AzureMapsController(IAzureMapsAuthService service, AppSettings appSettings)
         {
-            this.service = service;
+            this._service = service;
+            this._appSettings = appSettings;
         }
 
         [AllowAnonymous]
@@ -26,9 +26,14 @@ namespace WCA.Consumer.Api.Controllers
 
             // @TODO : Prior to this we NEED to be doing some authorisation
 
-            WCAHttpClient httpClient = new WCAHttpClient();
-            var responseText = await httpClient.GetAzureMapsAuthToken();
-            return Ok(responseText);
+            return Ok(
+                await _service.GetAuthToken(
+                    _appSettings.AzureMapsAuthCredentials.AuthUri,
+                    _appSettings.AzureMapsAuthCredentials.ClientId,
+                    _appSettings.AzureMapsAuthCredentials.ClientSecret,
+                    _appSettings.AzureMapsAuthCredentials.GrantType,
+                    _appSettings.AzureMapsAuthCredentials.Resource
+                ));
         }
     }
 }
