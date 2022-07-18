@@ -39,14 +39,14 @@ namespace WCA.Consumer.Api.Controllers
         /// into a search tree. Used for presentation only.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("organisations/display-search-tree")]
+        [HttpGet("organisations/overview")]
         [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetOrganisationSearchTree()
+        public IActionResult GetOrganisationOverview()
         {
-            return Ok(this.service.GetOrganisationSearchTree());
+            return Ok(this.service.GetOrganisationOverview());
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult CreateSite([FromBody] Organisation org)
+        public IActionResult CreateOrganisation([FromBody] Organisation org)
         {
             return Ok(this.service.CreateOrganisation(org));
         }

@@ -59,7 +59,7 @@ namespace WCA.Consumer.Api.Services
             return organisation;
         }
 
-         public IList<OrgSearchTreeNode> GetOrganisationSearchTree()
+         public IList<OrgSearchTreeNode> GetOrganisationOverview()
          {
             IList<OrgSearchTreeNode> orgSearchTreeNodes = new List<OrgSearchTreeNode>();
             Status status = new Status {

@@ -52,7 +52,9 @@ namespace Telstra.Core.Api
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver {
+                        NamingStrategy = new CamelCaseNamingStrategy()
+                    };
                 })
                 .AddJsonOptions(options =>
                 {
