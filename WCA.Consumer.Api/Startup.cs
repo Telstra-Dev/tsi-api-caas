@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +14,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Newtonsoft.Json.Serialization;
 using Telstra.Common;
-
+using Telstra.Core.Contracts;
+using WCA.Consumer.Api.Services;
 
 namespace Telstra.Core.Api
 {
@@ -31,6 +33,7 @@ namespace Telstra.Core.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
             services.AddFeatureManagement();
             services.AddSwaggerGenNewtonsoftSupport();
             services.AddCors();
@@ -77,10 +80,12 @@ namespace Telstra.Core.Api
 
             services.AddGrpcClient<WCA.Storage.Api.Proto.Customer.CustomerClient>(o =>
             {
-                o.Address = new Uri(appSettings.StorageAppGrpc.Uri);
+                o.Address = new Uri(appSettings.StorageAppGrpc.BaseUri);
             });
-            services
-                .AddHealthChecks();
+
+            services.AddHttpClient<CustomerService>();
+
+            services.AddHealthChecks();
         }
 
         public virtual void ConfigureContainer(IServiceCollection container)

@@ -1,33 +1,46 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Telstra.Core.Contracts;
-using Telstra.Core.Data.Entities;
-using Telstra.Core.Repo;
-using Grpc.Net.Client;
+using Telstra.Core.Data.Entities.StorageReponse;
 using System.Net;
 using System.Net.Http;
-using Telstra.Core.Api.Helpers;
+using Telstra.Common;
 using WCA.Storage.Api.Proto;
+using Newtonsoft.Json;
 
 namespace WCA.Consumer.Api.Services
 {
     public class CustomerService : ICustomerService
     {
-       private readonly WCA.Storage.Api.Proto.Customer.CustomerClient _client;
-        public CustomerService(WCA.Storage.Api.Proto.Customer.CustomerClient client)
+        private readonly WCA.Storage.Api.Proto.Customer.CustomerClient _grpcClient;
+        private readonly HttpClient _httpClient;
+        private readonly AppSettings _appSettings;
+
+        public CustomerService(WCA.Storage.Api.Proto.Customer.CustomerClient grpcClient, HttpClient httpClient, AppSettings appSettings)
         {
-            this._client = client;
+            this._grpcClient = grpcClient;
+            this._httpClient = httpClient;
+            this._appSettings = appSettings;
         }
         public async Task<Telstra.Core.Data.Entities.Customer> GetCustomerById(int id)
         {
+            // Remove for Development under VPN
             HttpClient.DefaultProxy = new WebProxy();
-            var reply = await _client.GetCustomerById2Async(
+
+            var reply = await _grpcClient.GetCustomerById2Async(
                 new CustomerModelRequest { CustomerId = id });
             Telstra.Core.Data.Entities.Customer _customer = new Telstra.Core.Data.Entities.Customer();
             _customer.CustomerId = reply.CustomerId;
             _customer.Name = reply.Name;
             _customer.Alias = reply.Alias;
             return _customer;
+        }
+
+        public async Task<Telstra.Core.Data.Entities.Customer> GetCustomerById2(int id)
+        {
+            var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/customer/{id}");
+            var reply = await response.Content.ReadAsStringAsync();
+            CustomerResponse customerResponse = JsonConvert.DeserializeObject<CustomerResponse>(reply);
+            return customerResponse.Result[0];
         }
     }
 }

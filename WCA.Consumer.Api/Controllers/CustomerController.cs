@@ -5,7 +5,7 @@ using Telstra.Core.Contracts;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/[controller]s")]
     public class CustomerController : BaseController
     {
         readonly ICustomerService _service;
@@ -16,10 +16,17 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("customers/{id}")]
+        [HttpGet("grpc/{id}")]
         public async System.Threading.Tasks.Task<IActionResult> GetCustomerById(int id)
         {
             return Ok(await _service.GetCustomerById(id));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("http/{id}")]
+        public async System.Threading.Tasks.Task<IActionResult> GetCustomerById2(int id)
+        {
+            return Ok(await _service.GetCustomerById2(id));
         }
     }
 }
