@@ -50,5 +50,60 @@ namespace WCA.Consumer.Api.Controllers
         {
             return Ok(this.service.GetDevice(deviceId));
         }
+
+        /// <summary>
+        /// Creates a new camera device
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("camera")]
+        [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [AllowAnonymous]
+        public IActionResult CreateCameraDevice([FromBody] Camera device)
+        {
+            return Ok(this.service.CreateCameraDevice(device));
+        }
+
+        /// <summary>
+        /// Creates a new gateway device
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("edge-device")]
+        [ProducesResponseType(typeof(Gateway), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [AllowAnonymous]
+        public IActionResult CreateEdgeDevice([FromBody] Gateway device)
+        {
+            return Ok(this.service.CreateEdgeDevice(device));
+        }
+
+        /// <summary>
+        /// Updates a camera device
+        /// </summary>
+        /// <param name="siteId"></param>
+        /// <returns></returns>
+        [HttpPut("camera/{deviceId}")]
+        [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult UpdateCameraDevice([FromRoute] string deviceId,
+                                [FromBody] Camera device)
+        {
+            return Ok(this.service.UpdateCameraDevice(deviceId, device));
+        }
+
+        /// <summary>
+        /// Updates a gateway device
+        /// </summary>
+        /// <param name="siteId"></param>
+        /// <returns></returns>
+        [HttpPut("edge-device/{deviceId}")]
+        [ProducesResponseType(typeof(Gateway), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult UpdateEdgeDevice([FromRoute] string deviceId,
+                                [FromBody] Gateway device)
+        {
+            return Ok(this.service.UpdateEdgeDevice(deviceId, device));
+        }
+
     }
 }

@@ -7,5 +7,9 @@ namespace Telstra.Core.Contracts
     {
         public ArrayList GetDevices(string customerId, string siteId);
         public DeviceBase GetDevice(string deviceId);
+        public Camera UpdateCameraDevice(string id, Camera device);
+        public Gateway UpdateEdgeDevice(string id, Gateway device);
+        public Camera CreateCameraDevice(Camera device);
+        public Gateway CreateEdgeDevice(Gateway device);
     }
 }

@@ -87,5 +87,25 @@ namespace WCA.Consumer.Api.Services
             };
             return gateway;
         }
+
+        public Camera UpdateCameraDevice(string id, Camera camera)
+        {
+            return camera;
+        }
+
+        public Gateway UpdateEdgeDevice(string id, Gateway gateway)
+        {
+            return gateway;
+        }
+
+        public Camera CreateCameraDevice(Camera device)
+        {
+            return device;
+        }
+
+        public Gateway CreateEdgeDevice(Gateway device)
+        {
+            return device;
+        }
     }
 }
