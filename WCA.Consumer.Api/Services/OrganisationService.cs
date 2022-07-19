@@ -51,7 +51,7 @@ namespace WCA.Consumer.Api.Services
             Organisation organisation = new Organisation
             {
                 CustomerId = "manual-test-customer-id",
-                CustomerName = "Postman & Test Account-01",
+                CustomerName = "Test Account-01",
                 Parent = "telstra-root-org",
                 Id = "manual-test-customer-id",
                 Children = children
@@ -68,7 +68,7 @@ namespace WCA.Consumer.Api.Services
                 Index = 3,
                 Timestamp = 1657763038553
             };
-            AddSearchTreeNode(orgSearchTreeNodes, "manual-test-customer-id", "Postman & Test Account-01",
+            AddSearchTreeNode(orgSearchTreeNodes, "manual-test-customer-id", "Test Account-01",
                                 "organisation", "/organisation/customer=manual-test-customer-id", status: status);
 
             AddSearchTreeNode(orgSearchTreeNodes, "5722000a-9552-4972-add4-32ca5f9a0c3b", "Child Org 1",

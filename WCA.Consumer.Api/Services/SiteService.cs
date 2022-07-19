@@ -26,13 +26,13 @@ namespace WCA.Consumer.Api.Services
                     Longitude = 150.95753
                 };
                 SiteLocation location = new SiteLocation {
-                    SiteLocationId = "AU/GEO/p0/12161",
-                    SiteAddress = "Kellyville, Sydney, New South Wales",
+                    Id = "AU/GEO/p0/12161",
+                    Address = "Kellyville, Sydney, New South Wales",
                     GeoLocation = geoLocation
                 };
                 Site site = new Site {
                     SiteId = "187c1bdd-8efe-493d-b9c3-3a4f027e0940",
-                    SiteName = "Kellyville",
+                    Name = "Kellyville",
                     CustomerId = "manual-test-customer-id",
                     Location = location,
                     CreatedAt = 1651710340528
@@ -91,13 +91,13 @@ namespace WCA.Consumer.Api.Services
                 Longitude = longitude
             };
             SiteLocation location = new SiteLocation {
-                SiteLocationId = siteLocationId,
-                SiteAddress = siteAddress,
+                Id = siteLocationId,
+                Address = siteAddress,
                 GeoLocation = geoLocation
             };
             Site site = new Site {
                 SiteId = siteId,
-                SiteName = siteName,
+                Name = siteName,
                 CustomerId = customerId,
                 Location = location,
                 CreatedAt = createdAt
