@@ -8,7 +8,7 @@ using Telstra.Core.Data.Entities;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/api")]
+    [Route("/")]
     public class SiteController : BaseController
     {
         readonly ISiteService service;

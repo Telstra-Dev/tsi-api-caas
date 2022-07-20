@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/api")]
+    [Route("/azure-maps")]
     public class AzureMapsController : BaseController
     {
         readonly IAzureMapsAuthService _service;
@@ -20,7 +20,7 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("azure-maps/oauth2/token")]
+        [HttpGet("/oauth2/token")]
         public async Task<IActionResult> GetAuthToken()
         {
 

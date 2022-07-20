@@ -6,7 +6,7 @@ using Telstra.Core.Contracts;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/[controller]")]
     public class HomeController : BaseController
     {
         readonly IHomeService service;
