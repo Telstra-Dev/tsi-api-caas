@@ -20,7 +20,7 @@ namespace WCA.Consumer.Api.Services
             };
             Auth auth = new Auth {
                 SymmetricKey = symmetricKey,
-                IoTHubConnectionString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo="
+                IotHubConnectionString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo="
             };
             GatewayMetadata gatewayMetadata = new GatewayMetadata {
                 Hub = "tcp-azu0032-ae-iot-sv01-dev.azure-devices.net",
@@ -68,7 +68,7 @@ namespace WCA.Consumer.Api.Services
             };
             Auth auth = new Auth {
                 SymmetricKey = symmetricKey,
-                IoTHubConnectionString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo="
+                IotHubConnectionString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo="
             };
             GatewayMetadata gatewayMetadata = new GatewayMetadata {
                 Hub = "tcp-azu0032-ae-iot-sv01-dev.azure-devices.net",
