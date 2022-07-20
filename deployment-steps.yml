@@ -11,16 +11,6 @@ parameters:
     type: string
   - name: storageAppHttpBaseUri
     type: string
-  - name: azureMapsAuthUri
-    type: string
-  - name: azureMapsAuthCredsClientId
-    type: string
-  - name: azureMapsAuthCredsClientSecret
-    type: string
-  - name: azureMapsAuthCredsGrantType
-    type: string
-  - name: azureMapsAuthCredsResource
-    type: string
 
 steps:
 - task: AzureRmWebAppDeployment@4
