@@ -21,7 +21,7 @@ variables:
   SERVICE_CONNECTION_DEVELOPMENT: Smart Spaces Development 2.0 (bb692fd0-5b3d-4bee-a37a-c2d5bf85a432)
   AGENT_POOL_DEVELOPMENT: ss2devv1pipelineagentspool
   APP_RESOURCE_GROUP_NAME_DEVELOPMENT: wca-dev
-  APP_NAME_DEVELOPMENT: wca-dev-api-consumer
+  APP_NAME_DEVELOPMENT: wca-dev-api-caas
   APP_SLOT_NAME_DEVELOPMENT: production
 
   SERVICE_CONNECTION_STAGING: ""
@@ -224,11 +224,6 @@ stages:
                     appSlotName: $(APP_SLOT_NAME_DEVELOPMENT)
                     storageAppGrpcBaseUri: $(STORAGE_APP_GRPC_BASE_URI)
                     storageAppHttpBaseUri: $(STORAGE_APP_HTTP_BASE_URI)
-                    azureMapsAuthUri: $(AZURE_MAPS_AUTH_URI)
-                    azureMapsAuthCredsClientId: $(AZURE_MAPS_AUTH_CREDS_CLIENTID)
-                    azureMapsAuthCredsClientSecret: $(AZURE_MAPS_AUTH_CREDS_CLIENT_SECRET)
-                    azureMapsAuthCredsGrantType: $(AZURE_MAPS_AUTH_CREDS_GRANT_TYPE)
-                    azureMapsAuthCredsResource: $(AZURE_MAPS_AUTH_CREDS_RESOURCE)
 
 #  - stage: deployToProduction
 #    dependsOn: ["build"]

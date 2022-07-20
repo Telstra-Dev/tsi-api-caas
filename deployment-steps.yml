@@ -11,16 +11,6 @@ parameters:
     type: string
   - name: storageAppHttpBaseUri
     type: string
-  - name: azureMapsAuthUri
-    type: string
-  - name: azureMapsAuthCredsClientId
-    type: string
-  - name: azureMapsAuthCredsClientSecret
-    type: string
-  - name: azureMapsAuthCredsGrantType
-    type: string
-  - name: azureMapsAuthCredsResource
-    type: string
 
 steps:
 - task: AzureRmWebAppDeployment@4
@@ -83,31 +73,6 @@ steps:
         {
           "name": "WCA_StorageAppHttp__BaseUri",
           "value": "${{ parameters.storageAppHttpBaseUri }}",
-          "slotSetting": false
-        },
-        {
-          "name": "WCA_AzureMapsAuthCredentials__AuthUri",
-          "value": "${{ parameters.azureMapsAuthUri }}",
-          "slotSetting": false
-        },
-        {
-          "name": "WCA_AzureMapsAuthCredentials__ClientId",
-          "value": "${{ parameters.azureMapsAuthCredsClientId }}",
-          "slotSetting": false
-        },
-        {
-          "name": "WCA_AzureMapsAuthCredentials__ClientSecret",
-          "value": "${{ parameters.azureMapsAuthCredsClientSecret }}",
-          "slotSetting": false
-        },
-        {
-          "name": "WCA_AzureMapsAuthCredentials__GrantType",
-          "value": "${{ parameters.azureMapsAuthCredsGrantType }}",
-          "slotSetting": false
-        },
-        {
-          "name": "WCA_AzureMapsAuthCredentials__Resource",
-          "value": "${{ parameters.azureMapsAuthCredsResource }}",
           "slotSetting": false
         }
       ]

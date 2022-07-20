@@ -5,7 +5,7 @@ using Telstra.Core.Contracts;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/[controller]s")]
+    [Route("[controller]s")]
     public class CustomerController : BaseController
     {
         readonly ICustomerService _service;

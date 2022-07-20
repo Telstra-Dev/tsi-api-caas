@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Telstra.Core.Contracts;
 using Telstra.Common;
 using System.Threading.Tasks;
-
+using Telstra.Core.Data.Entities.AzureMapsResponse;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/azure-maps")]
+    [Route("azure-maps")]
     public class AzureMapsController : BaseController
     {
         readonly IAzureMapsAuthService _service;
@@ -20,20 +20,21 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("/oauth2/token")]
+        [HttpGet("oauth2/token")]
         public async Task<IActionResult> GetAuthToken()
         {
 
             // @TODO : Prior to this we NEED to be doing some authorisation
 
-            return Ok(
-                await _service.GetAuthToken(
+            AuthToken authToken =  await _service.GetAuthToken(
                     _appSettings.AzureMapsAuthCredentials.AuthUri,
                     _appSettings.AzureMapsAuthCredentials.ClientId,
                     _appSettings.AzureMapsAuthCredentials.ClientSecret,
                     _appSettings.AzureMapsAuthCredentials.GrantType,
                     _appSettings.AzureMapsAuthCredentials.Resource
-                ));
+                );
+                authToken.ms_client_id = _appSettings.AzureMapsAuthCredentials.MsClientId;
+            return Ok(authToken);
         }
     }
 }

@@ -8,7 +8,7 @@ using Telstra.Core.Data.Entities;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("/[controller]s")]
+    [Route("[controller]s")]
     public class DeviceController : BaseController
     {
         readonly IDeviceService service;

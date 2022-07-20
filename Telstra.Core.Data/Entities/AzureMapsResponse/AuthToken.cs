@@ -8,5 +8,6 @@ namespace Telstra.Core.Data.Entities.AzureMapsResponse
         public string not_before { get; set; }
         public string resource { get; set; }
         public string access_token { get; set; }
+        public string ms_client_id { get; set; }
     }
 }
