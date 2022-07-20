@@ -15,6 +15,7 @@ namespace Telstra.Common
     }
     public class AzureMapsAuthSettings
     {
+        public string MsClientId { get; set; }
         public string AuthUri { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
