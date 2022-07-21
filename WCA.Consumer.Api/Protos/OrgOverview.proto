@@ -1,0 +1,22 @@
+syntax = "proto3";  
+
+option csharp_namespace = "WCA.Storage.Api.Proto";  
+
+package WCA;
+
+service OrgOverview{  
+  rpc GetOrgOverview(OrgOverviewModelRequest) returns (OrgOverviewModelResponse);  
+}  
+
+message OrgOverviewModelRequest{  
+}
+message OrgOverviewModelResponse {
+    repeated OrgOverviewItem items = 1;
+}
+message OrgOverviewItem {
+    string Id = 1;  
+    string Text = 2;  
+    string Type = 3;  
+    string Href = 4;
+}
+
