@@ -1,13 +1,40 @@
+using AutoMapper;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Telstra.Core.Contracts;
 using Telstra.Core.Data.Entities;
+using Telstra.Core.Data.Entities.StorageReponse;
+using System.Net;
+using System.Net.Http;
+using Telstra.Common;
+using WCA.Storage.Api.Proto;
+using Newtonsoft.Json;
 
 namespace WCA.Consumer.Api.Services
 {
     public class OrganisationService : IOrganisationService
     {
-        public OrganisationService()
+        private readonly WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient _grpcClient;
+        private readonly HttpClient _httpClient;
+        private readonly AppSettings _appSettings;
+        private readonly IMapper _mapper;
+
+        public OrganisationService(WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient grpcClient, HttpClient httpClient, AppSettings appSettings,
+                                    IMapper mapper)
         {
+            this._grpcClient = grpcClient;
+            this._httpClient = httpClient;
+            this._appSettings = appSettings;
+            this._mapper = mapper;
+        }
+
+        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
+        {
+            var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview");
+            var reply = await response.Content.ReadAsStringAsync();
+            IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
+            IList<OrgSearchTreeNode> orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
+            return orgList;
         }
 
         public Organisation GetOrganisation(int customerId, bool includeChildren)
@@ -59,7 +86,7 @@ namespace WCA.Consumer.Api.Services
             return organisation;
         }
 
-         public IList<OrgSearchTreeNode> GetOrganisationOverview()
+         /*public IList<OrgSearchTreeNode> GetOrganisationOverview()
          {
             IList<OrgSearchTreeNode> orgSearchTreeNodes = new List<OrgSearchTreeNode>();
             Status status = new Status {
@@ -97,7 +124,7 @@ namespace WCA.Consumer.Api.Services
                                 "camera", "/devices/0448659b-eb21-410b-809c-c3b4879c9b48", 
                                 "3917acd9-2185-48a0-a71a-905316e2aae2"); 
             return orgSearchTreeNodes;
-        }
+        } */
 
         public Organisation CreateOrganisation(Organisation org)
         {

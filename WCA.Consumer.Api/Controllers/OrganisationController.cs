@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Telstra.Core.Contracts;
 using Telstra.Core.Data.Entities;
 
@@ -9,11 +11,11 @@ namespace WCA.Consumer.Api.Controllers
     [ApiController]
     public class OrganisationController : BaseController
     {
-        readonly IOrganisationService service;
+        readonly IOrganisationService _service;
 
         public OrganisationController(IOrganisationService service)
         {
-            this.service = service;
+            this._service = service;
         }
 
         /// <summary>
@@ -30,7 +32,7 @@ namespace WCA.Consumer.Api.Controllers
                                               [FromQuery] bool includeChildren = true,
                                               [FromQuery] bool displaySearchTree = true)
         {
-            return Ok(this.service.GetOrganisation(customerId, includeChildren));
+            return Ok(this._service.GetOrganisation(customerId, includeChildren));
         }
 
         /// <summary>
@@ -39,13 +41,13 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("organisations/overview")]
-        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<Organisation>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetOrganisationOverview()
+        public async Task<IActionResult> GetOrganisationOverview()
         {
-            return Ok(this.service.GetOrganisationOverview());
+            return Ok(await _service.GetOrganisationOverview());
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace WCA.Consumer.Api.Controllers
         [AllowAnonymous]
         public IActionResult CreateOrganisation([FromBody] Organisation org)
         {
-            return Ok(this.service.CreateOrganisation(org));
+            return Ok(_service.CreateOrganisation(org));
         }
 
         /// <summary>
@@ -72,7 +74,7 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult UpdateOrganisation([FromRoute] string id,
                                 [FromBody] Organisation org)
         {
-            return Ok(this.service.UpdateOrganisation(id, org));
+            return Ok(_service.UpdateOrganisation(id, org));
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult DeleteOrganisation([FromRoute] string id)
         {
-            return Ok(this.service.DeleteOrganisation(id));
+            return Ok(_service.DeleteOrganisation(id));
         }
     }
 }

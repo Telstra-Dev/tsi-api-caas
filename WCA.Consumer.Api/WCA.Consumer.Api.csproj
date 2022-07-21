@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>083ec556-ef35-432a-aa6b-ee98dfaf093a</UserSecretsId>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="6.0.2" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Google.Protobuf" Version="3.21.2" />
     <PackageReference Include="Grpc.Net.Client" Version="2.47.0" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.47.0" />
@@ -30,7 +29,6 @@
     <PackageReference Include="Microsoft.Identity.Web" Version="1.14.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.7" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Extensions\" />
@@ -40,22 +38,23 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Telstra.Common\Telstra.Common.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      <GlobalPropertiesToRemove />
     </ProjectReference>
     <ProjectReference Include="..\Telstra.Core.Data\Telstra.Core.Data.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      <GlobalPropertiesToRemove />
     </ProjectReference>
     <ProjectReference Include="..\Telstra.Core.Repo\Telstra.Core.Repo.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      <GlobalPropertiesToRemove />
     </ProjectReference>
     <ProjectReference Include="..\Telstra.Core.Contracts\Telstra.Core.Contracts.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      <GlobalPropertiesToRemove />
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Remove="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
   </ItemGroup>
   <ItemGroup>
-  <Protobuf Include="Protos\Customer.proto" GrpcServices="Client" />
-</ItemGroup>
+    <Protobuf Include="Protos\Customer.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\OrgOverview.proto" GrpcServices="Client" />
+  </ItemGroup>
 </Project>

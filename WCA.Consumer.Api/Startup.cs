@@ -1,6 +1,7 @@
 using System;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -58,6 +59,7 @@ namespace Telstra.Core.Api
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver {
                         NamingStrategy = new CamelCaseNamingStrategy()
                     };
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 })
                 .AddJsonOptions(options =>
                 {
@@ -85,7 +87,15 @@ namespace Telstra.Core.Api
 
             services.AddHttpClient<CustomerService>();
 
+            services.AddGrpcClient<WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient>(o =>
+            {
+                o.Address = new Uri(appSettings.StorageAppGrpc.BaseUri);
+            });
+
+            services.AddHttpClient<OrganisationService>();
+
             services.AddHealthChecks();
+            services.AddAutoMapper(typeof(Startup));
         }
 
         public virtual void ConfigureContainer(IServiceCollection container)
