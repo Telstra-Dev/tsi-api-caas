@@ -95,6 +95,19 @@ namespace WCA.Consumer.Api.Services
 
         public Gateway UpdateEdgeDevice(string id, Gateway gateway)
         {
+            SymmetricKey symmetricKey = new SymmetricKey {
+                PrimaryKey = "jyrKqB0ijWdIrnS+Q6seYADTpL0Xreci0ystFFE/nNc=",
+                SecondaryKey = "hdX37zm2Ui8nZKL5brDpZhyeWXyYofhf68WiPzzz8zs="
+            };
+            Auth auth = new Auth {
+                SymmetricKey = symmetricKey,
+                IotHubConnectionString = "mockConnectionString"
+            };
+            GatewayMetadata gatewayMetadata = new GatewayMetadata {
+                Hub = "tcp-azu0032-ae-iot-sv01-dev.azure-devices.net",
+                Auth = auth
+            };
+            gateway.Metadata = gatewayMetadata;
             return gateway;
         }
 
