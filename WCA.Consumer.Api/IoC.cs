@@ -43,7 +43,6 @@ namespace Telstra.Core.Api
             @this.AddScoped<IOrganisationService, OrganisationService>();
             @this.AddScoped<ISiteService, SiteService>();
             @this.AddScoped<IDeviceService, DeviceService>();
-            @this.AddScoped<IAzureMapsAuthService, AzureMapsAuthService>();
         }
     }
 }
