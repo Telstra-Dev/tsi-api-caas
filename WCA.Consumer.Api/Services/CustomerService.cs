@@ -25,8 +25,6 @@ namespace WCA.Consumer.Api.Services
         {
             // Remove for Development under VPN
             //HttpClient.DefaultProxy = new WebProxy();
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
             var reply = await _grpcClient.GetCustomerById2Async(
                 new CustomerModelRequest { CustomerId = id });
             Telstra.Core.Data.Entities.Customer _customer = new Telstra.Core.Data.Entities.Customer();
