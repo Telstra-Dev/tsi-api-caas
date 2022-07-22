@@ -95,6 +95,16 @@ namespace WCA.Consumer.Api.Services
 
         public Gateway UpdateEdgeDevice(string id, Gateway gateway)
         {
+            return gateway;
+        }
+
+        public Camera CreateCameraDevice(Camera device)
+        {
+            return device;
+        }
+
+        public Gateway CreateEdgeDevice(Gateway gateway)
+        {
             SymmetricKey symmetricKey = new SymmetricKey {
                 PrimaryKey = "jyrKqB0ijWdIrnS+Q6seYADTpL0Xreci0ystFFE/nNc=",
                 SecondaryKey = "hdX37zm2Ui8nZKL5brDpZhyeWXyYofhf68WiPzzz8zs="
@@ -109,16 +119,6 @@ namespace WCA.Consumer.Api.Services
             };
             gateway.Metadata = gatewayMetadata;
             return gateway;
-        }
-
-        public Camera CreateCameraDevice(Camera device)
-        {
-            return device;
-        }
-
-        public Gateway CreateEdgeDevice(Gateway device)
-        {
-            return device;
         }
     }
 }
