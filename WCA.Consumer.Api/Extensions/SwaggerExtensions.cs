@@ -39,7 +39,8 @@ namespace Telstra.Core.Api
             {
                 if (!httpRequest.Headers.ContainsKey("X-Forwarded-Host")) return;
 
-                var serverUrl = $"{httpRequest.Headers["X-Forwarded-Proto"]}://" +
+                //var serverUrl = "$"{httpRequest.Headers["X-Forwarded-Proto"]}"://" +
+                var serverUrl = "https://" +
                     $"{httpRequest.Headers["X-Forwarded-Host"]}/" +
                     $"{httpRequest.Headers["X-Forwarded-Prefix"]}";
 
