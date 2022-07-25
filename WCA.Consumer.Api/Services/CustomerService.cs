@@ -24,8 +24,7 @@ namespace WCA.Consumer.Api.Services
         public async Task<Telstra.Core.Data.Entities.Customer> GetCustomerById(int id)
         {
             // Remove for Development under VPN
-            HttpClient.DefaultProxy = new WebProxy();
-
+            //HttpClient.DefaultProxy = new WebProxy();
             var reply = await _grpcClient.GetCustomerById2Async(
                 new CustomerModelRequest { CustomerId = id });
             Telstra.Core.Data.Entities.Customer _customer = new Telstra.Core.Data.Entities.Customer();
