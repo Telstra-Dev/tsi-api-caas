@@ -36,7 +36,7 @@ namespace Telstra.Core.Api
         {
             services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
             services.AddFeatureManagement();
-            services.AddSwaggerGenNewtonsoftSupport();
+            services.AddSwagger(this.appSettings);
             services.AddCors();
             services.AddLogging();
             
@@ -112,8 +112,8 @@ namespace Telstra.Core.Api
                 
             }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.ConfigureSwaggerOptions());
+            app.UseSwagger(c => c.ConfigureSwaggerBehindProxy());
+            app.UseSwaggerUI(c => c.ConfigureSwaggerOptions(this.appSettings));
             app.RegisterGlobalExceptionHandler(loggerFactory, env.IsProduction());
             app.UseResponseCompression();
 
