@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using Telstra.Common;
 using WCA.Storage.Api.Proto;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace WCA.Consumer.Api.Services
@@ -18,18 +19,21 @@ namespace WCA.Consumer.Api.Services
         private readonly HttpClient _httpClient;
         private readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
         public OrganisationService(WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient grpcClient, HttpClient httpClient, AppSettings appSettings,
-                                    IMapper mapper)
+                                    IMapper mapper, ILogger<OrganisationService> logger)
         {
             this._grpcClient = grpcClient;
             this._httpClient = httpClient;
             this._appSettings = appSettings;
             this._mapper = mapper;
+            this._logger = logger;
         }
 
         public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest()
         {
+            _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
             var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview");
             var reply = await response.Content.ReadAsStringAsync();
             IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
