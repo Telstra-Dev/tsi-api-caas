@@ -12,14 +12,14 @@ namespace Telstra.Core.Api
     {
         public static void ConfigureSwaggerOptions(this SwaggerUIOptions options)
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Telstra.Core.Api v1");
+            options.SwaggerEndpoint("https://ss2devv1fd.azurefd.net/wca_api/caas/swagger/v1/swagger.json", "WCA.Consumer.Api v1");
         }
 
         public static void AddSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Telstra.Core.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WCA.Consumer.Api", Version = "v1" });
             });
         }
     }
