@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telstra.Core.Contracts;
 using Telstra.Core.Data.Entities;
-using Telstra.Core.Data.Entities.StorageReponse;
-using System.Net;
+using System;
 using System.Net.Http;
 using Telstra.Common;
-using WCA.Storage.Api.Proto;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -31,13 +29,22 @@ namespace WCA.Consumer.Api.Services
             this._logger = logger;
         }
 
-        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
+        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest()
         {
-            _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
-            var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview");
-            var reply = await response.Content.ReadAsStringAsync();
-            IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
-            IList<OrgSearchTreeNode> orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
+            IList<OrgSearchTreeNode> orgList = new List<OrgSearchTreeNode>();
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview");
+                var reply = await response.Content.ReadAsStringAsync();
+                IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
+                orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("GetOrganisationOverview: " + e.Message);
+                throw e;
+            }
             return orgList;
         }
 
@@ -90,7 +97,7 @@ namespace WCA.Consumer.Api.Services
             return organisation;
         }
 
-         /*public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
+         public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
          {
             IList<OrgSearchTreeNode> orgSearchTreeNodes = new List<OrgSearchTreeNode>();
             Status status = new Status {
@@ -128,7 +135,7 @@ namespace WCA.Consumer.Api.Services
                                 "camera", "/devices/0448659b-eb21-410b-809c-c3b4879c9b48", 
                                 "3917acd9-2185-48a0-a71a-905316e2aae2"); 
             return orgSearchTreeNodes;
-        } */
+        } 
 
         public Organisation CreateOrganisation(Organisation org)
         {

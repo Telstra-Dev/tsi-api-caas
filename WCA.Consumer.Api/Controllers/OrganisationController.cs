@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -47,7 +48,42 @@ namespace WCA.Consumer.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetOrganisationOverview()
         {
-            return Ok(await _service.GetOrganisationOverview());
+            try
+            {
+                return Ok(await _service.GetOrganisationOverview());
+            }
+            catch (Exception e) 
+            {
+                if (e is ArgumentOutOfRangeException) {
+                    return new BadRequestObjectResult(e.Message);
+                }
+                throw e;
+            }
+        }
+
+        /// <summary>
+        /// Retrieve the search hierarchy for the logged-in user's organisation. Returns an array of nodes that can be turned 
+        /// into a search tree. Used for presentation only.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("organisations/overview-test")]
+        [ProducesResponseType(typeof(IList<Organisation>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetOrganisationOverviewTest()
+        {
+            try
+            {
+                return Ok(await _service.GetOrganisationOverviewTest());
+            }
+            catch (Exception e) 
+            {
+                if (e is ArgumentOutOfRangeException) {
+                    return new BadRequestObjectResult(e.Message);
+                }
+                throw e;
+            }
         }
 
         /// <summary>
