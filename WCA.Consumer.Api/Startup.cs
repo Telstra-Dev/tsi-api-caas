@@ -60,6 +60,7 @@ namespace Telstra.Core.Api
                         NamingStrategy = new CamelCaseNamingStrategy()
                     };
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 })
                 .AddJsonOptions(options =>
                 {

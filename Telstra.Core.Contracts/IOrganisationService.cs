@@ -8,7 +8,6 @@ namespace Telstra.Core.Contracts
     {
         public Organisation GetOrganisation(int customerId, bool includeChildren);
         public Task<IList<OrgSearchTreeNode>> GetOrganisationOverview();
-        public Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest();
         public Organisation CreateOrganisation(Organisation org);
         public Organisation UpdateOrganisation(string id, Organisation org);
         public Organisation DeleteOrganisation(string id);

@@ -31,7 +31,7 @@ namespace WCA.Consumer.Api.Services
             this._logger = logger;
         }
 
-        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest()
+        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
         {
             _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
             var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview");
@@ -90,7 +90,7 @@ namespace WCA.Consumer.Api.Services
             return organisation;
         }
 
-         public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
+         /*public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
          {
             IList<OrgSearchTreeNode> orgSearchTreeNodes = new List<OrgSearchTreeNode>();
             Status status = new Status {
@@ -128,7 +128,7 @@ namespace WCA.Consumer.Api.Services
                                 "camera", "/devices/0448659b-eb21-410b-809c-c3b4879c9b48", 
                                 "3917acd9-2185-48a0-a71a-905316e2aae2"); 
             return orgSearchTreeNodes;
-        } 
+        } */
 
         public Organisation CreateOrganisation(Organisation org)
         {
