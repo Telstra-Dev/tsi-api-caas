@@ -5,6 +5,7 @@ using Telstra.Core.Contracts;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("[controller]s")]
     public class CustomerController : BaseController
     {
