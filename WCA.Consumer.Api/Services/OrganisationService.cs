@@ -96,10 +96,10 @@ namespace WCA.Consumer.Api.Services
             
             Organisation organisation = new Organisation
             {
-                CustomerId = "manual-test-customer-id",
-                CustomerName = "Test Account-01",
+                CustomerId = "moreton-bay-customer-id",
+                CustomerName = "Moreton Bay Council",
                 Parent = "telstra-root-org",
-                Id = "manual-test-customer-id",
+                Id = "moreton-bay-customer-id",
                 Children = children
             };
             return organisation;
@@ -114,16 +114,16 @@ namespace WCA.Consumer.Api.Services
                 Index = 3,
                 Timestamp = 1657763038553
             };
-            AddSearchTreeNode(orgSearchTreeNodes, "manual-test-customer-id", "Test Account-01",
-                                "organisation", "/organisation/customer=manual-test-customer-id", status: status);
+            AddSearchTreeNode(orgSearchTreeNodes, "moreton-bay-customer-id", "Moreton Bay Council",
+                                "organisation", "/organisation/customer=moreton-bay-customer-id", status: status);
 
             AddSearchTreeNode(orgSearchTreeNodes, "5722000a-9552-4972-add4-32ca5f9a0c3b", "Child Org 1",
                                 "organisation", "/organisations?customer=5722000a-9552-4972-add4-32ca5f9a0c3b", 
-                                "manual-test-customer-id", status: status);
+                                "moreton-bay-customer-id", status: status);
 
             AddSearchTreeNode(orgSearchTreeNodes, "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe", "Child Org 2",
                                 "organisation", "/organisations?customer=1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe", 
-                                "manual-test-customer-id", status: status);
+                                "moreton-bay-customer-id", status: status);
             AddSearchTreeNode(orgSearchTreeNodes, "939d3cd5-38e7-4fc6-bbb7-802d27278f1e", "Grandchild Org 1",
                                 "organisation", "/organisations?customer=939d3cd5-38e7-4fc6-bbb7-802d27278f1e", 
                                 "5722000a-9552-4972-add4-32ca5f9a0c3b");   
@@ -135,7 +135,7 @@ namespace WCA.Consumer.Api.Services
                                 "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe", status);    
             AddSearchTreeNode(orgSearchTreeNodes, "bceead95-5b9d-47bc-9d93-4740db6c1292", "Blue Mile Area Wollongong",
                                 "site", "/sites?customerId=manual-test-customer-id&siteId=bceead95-5b9d-47bc-9d93-4740db6c1292", 
-                                "manual-test-customer-id", status); 
+                                "moreton-bay-customer-id", status); 
             AddSearchTreeNode(orgSearchTreeNodes, "3917acd9-2185-48a0-a71a-905316e2aae2", "Blue Mile Northern Gateway",
                                 "gateway", "/devices/3917acd9-2185-48a0-a71a-905316e2aae2", 
                                 "bceead95-5b9d-47bc-9d93-4740db6c1292"); 

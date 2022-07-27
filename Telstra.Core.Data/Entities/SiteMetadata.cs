@@ -9,6 +9,6 @@ namespace Telstra.Core.Data.Entities
             public string StoreFormat {get; set;}
             public string GeoClassification {get; set;}
             public string Region {get; set;}
-            public IList<Tag> Tags {get; set;}
+            public Dictionary<string, object> Tags {get; set;}
     }
 }
