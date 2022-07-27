@@ -37,12 +37,16 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview");
                 var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK) {
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
                     IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
                     orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
-                } else
+                }
+                else
+                {
                     _logger.LogError("GetOrganisationOverview failed with error: " + reply);
                     throw new Exception("Error getting org overview. Response code from downstream: " + response.StatusCode); 
+                }
             }
             catch (Exception e)
             {
