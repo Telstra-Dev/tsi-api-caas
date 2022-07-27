@@ -93,7 +93,7 @@ namespace WCA.Consumer.Api.Services
             Organisation organisation = new Organisation
             {
                 CustomerId = "moreton-bay-customer-id",
-                CustomerName = "Moreton Bay Council",
+                CustomerName = "Moreton Bay Regional Council",
                 Parent = "telstra-root-org",
                 Id = "moreton-bay-customer-id",
                 Children = children
@@ -110,7 +110,7 @@ namespace WCA.Consumer.Api.Services
                 Index = 3,
                 Timestamp = 1657763038553
             };
-            AddSearchTreeNode(orgSearchTreeNodes, "moreton-bay-customer-id", "Moreton Bay Council",
+            AddSearchTreeNode(orgSearchTreeNodes, "moreton-bay-customer-id", "Moreton Bay Regional Council",
                                 "organisation", "/organisation/customer=moreton-bay-customer-id", status: status);
 
             AddSearchTreeNode(orgSearchTreeNodes, "5722000a-9552-4972-add4-32ca5f9a0c3b", "Child Org 1",
