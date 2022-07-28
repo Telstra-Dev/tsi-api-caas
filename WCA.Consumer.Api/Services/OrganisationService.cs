@@ -29,7 +29,7 @@ namespace WCA.Consumer.Api.Services
             this._logger = logger;
         }
 
-        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest()
+        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
         {
             IList<OrgSearchTreeNode> orgList = new List<OrgSearchTreeNode>();
             try
@@ -105,7 +105,7 @@ namespace WCA.Consumer.Api.Services
             return organisation;
         }
 
-         public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
+         public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest()
          {
             IList<OrgSearchTreeNode> orgSearchTreeNodes = new List<OrgSearchTreeNode>();
             Status status = new Status {
