@@ -49,8 +49,8 @@ namespace WCA.Consumer.Api.Services
         {
             IList<Site> sites = new List<Site>();
 
-            Site site = CreateSite(-33.71218, 150.95753, "AU/GEO/p0/12161", "Kellyville, Sydney, New South Wales",
-                                "187c1bdd-8efe-493d-b9c3-3a4f027e0940", "Kellyville", "manual-test-customer-id", 1651710340528);
+            Site site = CreateSite(-33.71218, 150.95753, "AU/GEO/p0/12161", "John Scott Park, Samford Village QLD",
+                                "187c1bdd-8efe-493d-b9c3-3a4f027e0940", "John Scott Park", "manual-test-customer-id", 1651710340528);
             
             sites.Add(site);
 
