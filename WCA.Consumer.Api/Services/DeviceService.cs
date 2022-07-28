@@ -28,7 +28,7 @@ namespace WCA.Consumer.Api.Services
             };
             Gateway gateway = new Gateway {
                 DeviceId = "3917acd9-2185-48a0-a71a-905316e2aae2",
-                Name = "Blue Mile Northern Gateway",
+                Name = "tva-sv-chad1",
                 CustomerId = "manual-test-customer-id",
                 SiteId = "bceead95-5b9d-47bc-9d93-4740db6c1292",
                 EdgeDevice = "3917acd9-2185-48a0-a71a-905316e2aae2",
@@ -46,7 +46,7 @@ namespace WCA.Consumer.Api.Services
             };
             Camera camera = new Camera {
                 DeviceId = "0448659b-eb21-410b-809c-c3b4879c9b48",
-                Name = "Blue Mile Northern Entrance",
+                Name = "tva-sv-chad1-camera1",
                 CustomerId = "manual-test-customer-id",
                 SiteId = "bceead95-5b9d-47bc-9d93-4740db6c1292",
                 EdgeDevice = "3917acd9-2185-48a0-a71a-905316e2aae2",
