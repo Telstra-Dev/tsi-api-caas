@@ -41,6 +41,15 @@ namespace WCA.Consumer.Api.Services
                 {
                     IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
                     orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
+                    AddSearchTreeNode(orgList, "bceead95-5b9d-47bc-9d93-4740db6c1292", "John Scott Park",
+                                "site", "/sites?customerId=john-scott-customer-id&siteId=bceead95-5b9d-47bc-9d93-4740db6c1292", 
+                                "john-scott-customer-id"); 
+                    AddSearchTreeNode(orgList, "3917acd9-2185-48a0-a71a-905316e2aae2", "tva-sv-chad1",
+                                        "gateway", "/devices/3917acd9-2185-48a0-a71a-905316e2aae2", 
+                                        "bceead95-5b9d-47bc-9d93-4740db6c1292"); 
+                    AddSearchTreeNode(orgList, "0448659b-eb21-410b-809c-c3b4879c9b48", "tva-sv-chad1-camera1",
+                                        "camera", "/devices/0448659b-eb21-410b-809c-c3b4879c9b48", 
+                                        "3917acd9-2185-48a0-a71a-905316e2aae2"); 
                 }
                 else
                 {
