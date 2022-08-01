@@ -22,19 +22,22 @@ variables:
   AGENT_POOL_DEVELOPMENT: ss2devv1pipelineagentspool
   APP_RESOURCE_GROUP_NAME_DEVELOPMENT: wca-dev
   APP_NAME_DEVELOPMENT: wca-dev-api-caas
+  # TODO: this should be `inactive-slot` in future once we get working with VNETs.
   APP_SLOT_NAME_DEVELOPMENT: production
 
-  SERVICE_CONNECTION_STAGING: ""
+  SERVICE_CONNECTION_STAGING: Smart Spaces Staging 2.0 (9633558f-c9d5-47c8-b54b-21943d24ff57)
   AGENT_POOL_STAGING: ss2stagingv1pipelineagentspool
-  APP_RESOURCE_GROUP_NAME_STAGING: ""
-  APP_NAME_STAGING: ""
-  APP_SLOT_NAME_STAGING: inactive-slot
+  APP_RESOURCE_GROUP_NAME_STAGING: wca-staging
+  APP_NAME_STAGING: wca-staging-api-caas
+  # TODO: this should be `inactive-slot` in future once we get working with VNETs.
+  APP_SLOT_NAME_STAGING: production
 
-  SERVICE_CONNECTION_PRODUCTION: ""
+  SERVICE_CONNECTION_PRODUCTION: Smart Spaces Production 2.0 (e1348aa6-a1a1-45aa-a6ba-4994d00adf28)
   AGENT_POOL_PRODUCTION: ss2prodv1pipelineagentspool
-  APP_RESOURCE_GROUP_NAME_PRODUCTION: ""
-  APP_NAME_PRODUCTION: ""
-  APP_SLOT_NAME_PRODUCTION: inactive-slot
+  APP_RESOURCE_GROUP_NAME_PRODUCTION: wca-prod
+  APP_NAME_PRODUCTION: wca-prod-api-caas
+  # TODO: this should be `inactive-slot` in future once we get working with VNETs.
+  APP_SLOT_NAME_PRODUCTION: production
 
 stages:
   - stage: build
@@ -200,8 +203,8 @@ stages:
         ),
           eq(variables['Build.Reason'], 'Manual')
       )
-    variables:
-    - group: wca-api-business-deploy-development
+    # variables:
+    # - group: wca-api-business-deploy-development
     jobs:
       - deployment: deployToDevelopment
         pool: $(AGENT_POOL_DEVELOPMENT)
@@ -225,36 +228,69 @@ stages:
                     storageAppGrpcBaseUri: $(STORAGE_APP_GRPC_BASE_URI)
                     storageAppHttpBaseUri: $(STORAGE_APP_HTTP_BASE_URI)
 
-#  - stage: deployToProduction
-#    dependsOn: ["build"]
-#    displayName: Deploy to Production
-#    condition:
-#      and(
-#        succeeded(),
-#        eq(variables.isPullRequest, 'false'),
-#        eq(variables.isMainSourceBranch, 'true')
-#      )
-#    variables:
-#    - group: wca-api-business-production
-#    jobs:
-#      - deployment: deployToProduction
-#        displayName: Deploy to Production
-#        environment: wca-api-business-development
-#        pool: $(AGENT_POOL_PRODUCTION)
-#        strategy:
-#          runOnce:
-#            deploy:
-#              steps:
-#                - bash: |
-#                    sudo apt-get update
-#                    sudo apt-get install -y wget apt-transport-https software-properties-common unzip
+  - stage: deployToStaging
+    dependsOn: ["build"]
+    displayName: Deploy to Staging
+    condition:
+      or(
+        and(
+          succeeded(),
+          eq(variables.isPullRequest, 'false'),
+          eq(variables.isDevelopSourceBranch, 'true')
+        ),
+          eq(variables['Build.Reason'], 'Manual')
+      )
+    # variables:
+    # - group: wca-api-business-deploy-staging
+    jobs:
+      - deployment: deployToStaging
+        pool: $(AGENT_POOL_STAGING)
+        displayName: Deploy to Staging
+        environment: wca-api-business-staging
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - bash: |
+                    sudo apt-get update
+                    sudo apt-get install -y wget apt-transport-https software-properties-common unzip
                     
-#                  displayName: Setup Prequisites
-#                - template: deployment-steps.yml
-#                  parameters:
-#                    adosServiceConnectionName: $(SERVICE_CONNECTION_PRODUCTION)
-#                    appName: $(APP_NAME_PRODUCTION)
-#                    keyVaultName: $(KEY_VAULT_NAME_PRODUCTION)
+                  displayName: Setup Prequisites
+                - template: deployment-steps.yml
+                  parameters:
+                    adosServiceConnectionName: $(SERVICE_CONNECTION_STAGING)
+                    resourceGroupName: $(APP_RESOURCE_GROUP_NAME_STAGING)
+                    appName: $(APP_NAME_STAGING)
+                    appSlotName: $(APP_SLOT_NAME_STAGING)
+                    storageAppGrpcBaseUri: $(STORAGE_APP_GRPC_BASE_URI)
+                    storageAppHttpBaseUri: $(STORAGE_APP_HTTP_BASE_URI)
 
- 
-  
+  - stage: deployToProduction
+    dependsOn: ["build"]
+    displayName: Deploy to Production
+    condition:
+      eq(variables['Build.Reason'], 'Manual')
+    # variables:
+    # - group: wca-api-business-deploy-production
+    jobs:
+      - deployment: deployToProduction
+        pool: $(AGENT_POOL_PRODUCTION)
+        displayName: Deploy to Production
+        environment: wca-api-business-production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - bash: |
+                    sudo apt-get update
+                    sudo apt-get install -y wget apt-transport-https software-properties-common unzip
+                    
+                  displayName: Setup Prequisites
+                - template: deployment-steps.yml
+                  parameters:
+                    adosServiceConnectionName: $(SERVICE_CONNECTION_PRODUCTION)
+                    resourceGroupName: $(APP_RESOURCE_GROUP_NAME_PRODUCTION)
+                    appName: $(APP_NAME_PRODUCTION)
+                    appSlotName: $(APP_SLOT_NAME_PRODUCTION)
+                    storageAppGrpcBaseUri: $(STORAGE_APP_GRPC_BASE_URI)
+                    storageAppHttpBaseUri: $(STORAGE_APP_HTTP_BASE_URI)
