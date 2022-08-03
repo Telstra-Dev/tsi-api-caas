@@ -7,10 +7,6 @@ parameters:
     type: string
   - name: appSlotName
     type: string
-  - name: storageAppGrpcBaseUri
-    type: string
-  - name: storageAppHttpBaseUri
-    type: string
 
 steps:
 - task: AzureRmWebAppDeployment@4
@@ -63,16 +59,6 @@ steps:
         {
           "name": "WCA_UseAd",
           "value": true,
-          "slotSetting": false
-        },
-        {
-          "name": "WCA_StorageAppGrpc__BaseUri",
-          "value": "${{ parameters.storageAppGrpcBaseUri }}",
-          "slotSetting": false
-        },
-        {
-          "name": "WCA_StorageAppHttp__BaseUri",
-          "value": "${{ parameters.storageAppHttpBaseUri }}",
           "slotSetting": false
         }
       ]
