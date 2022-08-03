@@ -269,7 +269,14 @@ stages:
     dependsOn: ["build"]
     displayName: Deploy to Production
     condition:
-      eq(variables['Build.Reason'], 'Manual')
+      or(
+        and(
+          succeeded(),
+          eq(variables.isPullRequest, 'false'),
+          eq(variables.isDevelopSourceBranch, 'true')
+        ),
+          eq(variables['Build.Reason'], 'Manual')
+      )
     # variables:
     # - group: wca-api-business-deploy-production
     jobs:
