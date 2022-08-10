@@ -8,7 +8,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
     {
         public OrgOverviewMappingProfile()
         {
-            CreateMap<Organisation, OrgSearchTreeNode>()
+            CreateMap<OrganisationModel, OrgSearchTreeNode>()
                 .ForMember(dest => dest.Text, opts => opts.MapFrom(s => s.CustomerName))
                 .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.Parent))
                 .ForMember(dest => dest.Type, opts => opts.MapFrom(s => "organisation"))
@@ -16,7 +16,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
 
             CreateMap<SiteModel, OrgSearchTreeNode>()
                 .ForMember(dest => dest.Text, opts => opts.MapFrom(s => s.Name))
-                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.CustomerId))
+                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.OrganisationId))
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(s => s.SiteId))
                 //.ForMember(dest => dest.Status, opts => opts.MapFrom(s => s.Active))
                 .ForMember(dest => dest.Type, opts => opts.MapFrom(s => "site"))
@@ -24,7 +24,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
 
             CreateMap<Device, OrgSearchTreeNode>()
                 .ForMember(dest => dest.Text, opts => opts.MapFrom(s => s.Name))
-                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.CustomerId))
+                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.SiteId))
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(s => s.DeviceId))
                 .ForMember(dest => dest.Type, opts => opts.MapFrom(s => s.Type.ToString()))
                 .ForMember(dest => dest.Href, opts => opts.MapFrom(s => "/devices/" + s.DeviceId));

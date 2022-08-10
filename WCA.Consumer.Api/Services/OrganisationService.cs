@@ -97,13 +97,13 @@ namespace WCA.Consumer.Api.Services
             return orgList;
         }
 
-        public Organisation GetOrganisation(int customerId, bool includeChildren)
+        public OrganisationModel GetOrganisation(int customerId, bool includeChildren)
         {
-            Organisation[] grandChild = new Organisation[1];
-            Organisation[] children = new Organisation[2];
+            OrganisationModel[] grandChild = new OrganisationModel[1];
+            OrganisationModel[] children = new OrganisationModel[2];
             if (includeChildren)
             {
-                grandChild[0] = new Organisation {
+                grandChild[0] = new OrganisationModel {
                         CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
                         CustomerName = "Grandchild Org 1",
                         Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
@@ -112,7 +112,7 @@ namespace WCA.Consumer.Api.Services
                         Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
                     };
 
-                children[0] = new Organisation {
+                children[0] = new OrganisationModel {
                         CustomerId = "5722000a-9552-4972-add4-32ca5f9a0c3b",
                         CustomerName = "Child Org 1",
                         Parent = "manual-test-customer-id",
@@ -121,7 +121,7 @@ namespace WCA.Consumer.Api.Services
                         Id = "5722000a-9552-4972-add4-32ca5f9a0c3b",
                         Children = grandChild
                     };
-                children[1] = new Organisation {
+                children[1] = new OrganisationModel {
                         CustomerId = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe",
                         CustomerName = "Child Org 2",
                         Parent = "manual-test-customer-id",
@@ -135,7 +135,7 @@ namespace WCA.Consumer.Api.Services
                 children=null;
             }
             
-            Organisation organisation = new Organisation
+            OrganisationModel organisation = new OrganisationModel
             {
                 CustomerId = "moreton-bay-customer-id",
                 CustomerName = "Moreton Bay Regional Council",
@@ -186,9 +186,9 @@ namespace WCA.Consumer.Api.Services
             return orgSearchTreeNodes;
         } 
 
-        public async Task<Organisation> CreateOrganisation(Organisation newOrg)
+        public async Task<OrganisationModel> CreateOrganisation(OrganisationModel newOrg)
         {
-            Organisation savedOrg = new Organisation();
+            OrganisationModel savedOrg = new OrganisationModel();
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
@@ -198,7 +198,7 @@ namespace WCA.Consumer.Api.Services
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    savedOrg = JsonConvert.DeserializeObject<Organisation>(reply);
+                    savedOrg = JsonConvert.DeserializeObject<OrganisationModel>(reply);
                 }
                 else
                 {
@@ -213,13 +213,13 @@ namespace WCA.Consumer.Api.Services
             }
             return savedOrg;
         }
-        public Organisation UpdateOrganisation(string id, Organisation org)
+        public OrganisationModel UpdateOrganisation(string id, OrganisationModel org)
         {
             return org;
         }
-        public Organisation DeleteOrganisation(string id)
+        public OrganisationModel DeleteOrganisation(string id)
         {
-            return new Organisation {
+            return new OrganisationModel {
                         CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
                         CustomerName = "Grandchild Org 1",
                         Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",

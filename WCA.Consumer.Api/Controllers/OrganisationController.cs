@@ -25,7 +25,7 @@ namespace WCA.Consumer.Api.Controllers
         /// <param name="customerId"></param>
         /// <returns></returns>
         [HttpGet("organisation/{customerId}")]
-        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(OrganisationModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
@@ -42,7 +42,7 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("organisations/overview")]
-        [ProducesResponseType(typeof(IList<Organisation>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<OrganisationModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
@@ -67,7 +67,7 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("organisations/overview-test")]
-        [ProducesResponseType(typeof(IList<Organisation>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<OrganisationModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
@@ -88,10 +88,10 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("organisations")]
-        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(OrganisationModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateOrganisation([FromBody] Organisation org)
+        public async Task<IActionResult> CreateOrganisation([FromBody] OrganisationModel org)
         {
             try
             {
@@ -113,10 +113,10 @@ namespace WCA.Consumer.Api.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut("organisations/{id}")]
-        [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(OrganisationModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult UpdateOrganisation([FromRoute] string id,
-                                [FromBody] Organisation org)
+                                [FromBody] OrganisationModel org)
         {
             return Ok(_service.UpdateOrganisation(id, org));
         }

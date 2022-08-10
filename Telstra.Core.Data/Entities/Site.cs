@@ -23,7 +23,7 @@ namespace Telstra.Core.Data.Entities
 
         [Column("location_id")]
         public string SiteLocationId { get; set; }
-        
+
         [Column("site_location")]
         public SiteLocation Location {get; set;}
 
@@ -48,6 +48,11 @@ namespace Telstra.Core.Data.Entities
         [Column("region")]
         public string Region {get; set;}
 
+        [Column("organisation_id")]
+        public string OrganisationId {get; set;}
+
         public IList<SiteTag> Tags {get; set;}
+
+        public Organisation Organisation {get; set;}
     }
 }
