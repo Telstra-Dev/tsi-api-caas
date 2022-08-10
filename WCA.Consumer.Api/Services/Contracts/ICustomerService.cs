@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
 
-namespace Telstra.Core.Contracts
+namespace WCA.Consumer.Api.Services.Contracts
 {
     public interface ICustomerService
     {

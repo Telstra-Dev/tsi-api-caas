@@ -1,13 +1,15 @@
 using AutoMapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Telstra.Core.Contracts;
-using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
+using WCA.Consumer.Api.Services.Contracts;
 using System;
+using System.Text;
 using System.Net.Http;
 using Telstra.Common;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Telstra.Core.Data.Entities;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -19,8 +21,11 @@ namespace WCA.Consumer.Api.Services
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
-        public OrganisationService(WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient grpcClient, HttpClient httpClient, AppSettings appSettings,
-                                    IMapper mapper, ILogger<OrganisationService> logger)
+        public OrganisationService(WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient grpcClient,
+                                    HttpClient httpClient,
+                                    AppSettings appSettings,
+                                    IMapper mapper,
+                                    ILogger<OrganisationService> logger)
         {
             this._grpcClient = grpcClient;
             this._httpClient = httpClient;
@@ -45,17 +50,43 @@ namespace WCA.Consumer.Api.Services
                     AddSearchTreeNode(orgList, "bceead95-5b9d-47bc-9d93-4740db6c1292", "John Scott Park",
                                 "site", "/sites?customerId=john-scott-customer-id&siteId=bceead95-5b9d-47bc-9d93-4740db6c1292", 
                                 "moreton-bay-customer-id"); 
-                    AddSearchTreeNode(orgList, "3917acd9-2185-48a0-a71a-905316e2aae2", "tva-sv-chad1",
-                                        "gateway", "/devices/3917acd9-2185-48a0-a71a-905316e2aae2", 
-                                        "bceead95-5b9d-47bc-9d93-4740db6c1292"); 
-                    AddSearchTreeNode(orgList, "0448659b-eb21-410b-809c-c3b4879c9b48", "tva-sv-chad1-camera1",
-                                        "camera", "/devices/0448659b-eb21-410b-809c-c3b4879c9b48", 
-                                        "3917acd9-2185-48a0-a71a-905316e2aae2"); 
+                    // AddSearchTreeNode(orgList, "3917acd9-2185-48a0-a71a-905316e2aae2", "tva-sv-chad1",
+                    //                     "gateway", "/devices/3917acd9-2185-48a0-a71a-905316e2aae2", 
+                    //                     "bceead95-5b9d-47bc-9d93-4740db6c1292"); 
+                    // AddSearchTreeNode(orgList, "0448659b-eb21-410b-809c-c3b4879c9b48", "tva-sv-chad1-camera1",
+                    //                     "camera", "/devices/0448659b-eb21-410b-809c-c3b4879c9b48", 
+                    //                     "3917acd9-2185-48a0-a71a-905316e2aae2"); 
                 }
                 else
                 {
                     _logger.LogError("GetOrganisationOverview failed with error: " + reply);
                     throw new Exception("Error getting org overview. Response code from downstream: " + response.StatusCode); 
+                }
+
+                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId=moreton-bay-customer-id");
+                reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    IList<SiteModel> siteResponse = JsonConvert.DeserializeObject<IList<SiteModel>>(reply);
+                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
+                }
+                else
+                {
+                    _logger.LogError("GetSites failed with error: " + reply);
+                    throw new Exception("Error getting sites for overview. Response code from downstream: " + response.StatusCode); 
+                }
+
+                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId=moreton-bay-customer-id");
+                reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply);
+                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
+                }
+                else
+                {
+                    _logger.LogError("GetDevices failed with error: " + reply);
+                    throw new Exception("Error getting devices for overview. Response code from downstream: " + response.StatusCode); 
                 }
             }
             catch (Exception e)
@@ -155,9 +186,32 @@ namespace WCA.Consumer.Api.Services
             return orgSearchTreeNodes;
         } 
 
-        public Organisation CreateOrganisation(Organisation org)
+        public async Task<Organisation> CreateOrganisation(Organisation newOrg)
         {
-            return org;   
+            Organisation savedOrg = new Organisation();
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var payload =JsonConvert.SerializeObject(newOrg);
+                HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations", httpContent);
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    savedOrg = JsonConvert.DeserializeObject<Organisation>(reply);
+                }
+                else
+                {
+                    _logger.LogError("CreateOrganisation failed with error: " + reply);
+                    throw new Exception("Error creating an organisation. Response code from downstream: " + response.StatusCode); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("CreateOrganisation: " + e.Message);
+                throw e;
+            }
+            return savedOrg;
         }
         public Organisation UpdateOrganisation(string id, Organisation org)
         {

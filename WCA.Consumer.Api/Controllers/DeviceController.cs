@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Telstra.Core.Contracts;
-using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
+using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Controllers
 {
@@ -42,7 +43,7 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         [HttpGet("{deviceId}")]
-        [ProducesResponseType(typeof(DeviceBase), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
@@ -61,7 +62,15 @@ namespace WCA.Consumer.Api.Controllers
         [AllowAnonymous]
         public IActionResult CreateCameraDevice([FromBody] Camera device)
         {
-            return Ok(this.service.CreateCameraDevice(device));
+            try {
+                var newDevice = this.service.CreateCameraDevice(device).Result;
+
+                return Ok(newDevice);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         /// <summary>
@@ -74,7 +83,15 @@ namespace WCA.Consumer.Api.Controllers
         [AllowAnonymous]
         public IActionResult CreateEdgeDevice([FromBody] Gateway device)
         {
-            return Ok(this.service.CreateEdgeDevice(device));
+            try {
+                var newDevice = this.service.CreateEdgeDevice(device).Result;
+
+                return Ok(newDevice);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json;
-using Telstra.Core.Contracts;
+using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Controllers;
 using Xunit;
 

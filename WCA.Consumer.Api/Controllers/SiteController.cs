@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Telstra.Core.Contracts;
-using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
+using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Controllers
 {
@@ -25,13 +26,13 @@ namespace WCA.Consumer.Api.Controllers
         /// <param name="customerId"></param>
         /// <returns></returns>
         [HttpGet("sites")]
-        [ProducesResponseType(typeof(IList<Site>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<SiteModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetSites([FromQuery] string? customerId)
+        public IActionResult GetSites([FromQuery] string customerId)
         {
-            return Ok(this.service.GetSitesForCustomer(customerId));
+            return Ok(this.service.GetSitesForCustomer(customerId).Result);
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("sites/{siteId}")]
-        [ProducesResponseType(typeof(IList<Site>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IList<SiteModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
@@ -53,12 +54,20 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("sites")]
-        [ProducesResponseType(typeof(Site), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult CreateSite([FromBody] Site site)
+        public IActionResult CreateSite([FromBody] SiteModel site)
         {
-            return Ok(this.service.CreateSite(site));
+            try {
+                var newSite = this.service.CreateSite(site).Result;
+
+                return Ok(newSite);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         /// <summary>
@@ -67,10 +76,10 @@ namespace WCA.Consumer.Api.Controllers
         /// <param name="siteId"></param>
         /// <returns></returns>
         [HttpPut("sites/{siteId}")]
-        [ProducesResponseType(typeof(Site), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult UpdateSite([FromRoute] string siteId,
-                                [FromBody] Site site)
+                                [FromBody] SiteModel site)
         {
             return Ok(this.service.UpdateSite(siteId, site));
         }

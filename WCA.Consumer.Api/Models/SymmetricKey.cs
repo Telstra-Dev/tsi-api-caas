@@ -1,4 +1,4 @@
-namespace Telstra.Core.Data.Entities
+namespace WCA.Consumer.Api.Models
 {
     public class SymmetricKey
     {

@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Newtonsoft.Json.Serialization;
 using Telstra.Common;
-using Telstra.Core.Contracts;
+using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Services;
 
 namespace Telstra.Core.Api

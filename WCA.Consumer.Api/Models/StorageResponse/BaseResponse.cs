@@ -1,4 +1,4 @@
-namespace Telstra.Core.Data.Entities.StorageReponse
+namespace WCA.Consumer.Api.Models.StorageReponse
 {
     public class BaseResponse
     {

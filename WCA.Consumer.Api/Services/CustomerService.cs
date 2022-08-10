@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Telstra.Core.Contracts;
-using Telstra.Core.Data.Entities.StorageReponse;
+using WCA.Consumer.Api.Models.StorageReponse;
+using WCA.Consumer.Api.Services.Contracts;
 using System.Net;
 using System.Net.Http;
 using Telstra.Common;
@@ -21,20 +21,20 @@ namespace WCA.Consumer.Api.Services
             this._httpClient = httpClient;
             this._appSettings = appSettings;
         }
-        public async Task<Telstra.Core.Data.Entities.Customer> GetCustomerById(int id)
+        public async Task<WCA.Consumer.Api.Models.Customer> GetCustomerById(int id)
         {
             // Remove for Development under VPN
             //HttpClient.DefaultProxy = new WebProxy();
             var reply = await _grpcClient.GetCustomerById2Async(
                 new CustomerModelRequest { CustomerId = id });
-            Telstra.Core.Data.Entities.Customer _customer = new Telstra.Core.Data.Entities.Customer();
+            WCA.Consumer.Api.Models.Customer _customer = new WCA.Consumer.Api.Models.Customer();
             _customer.CustomerId = reply.CustomerId;
             _customer.Name = reply.Name;
             _customer.Alias = reply.Alias;
             return _customer;
         }
 
-        public async Task<Telstra.Core.Data.Entities.Customer> GetCustomerById2(int id)
+        public async Task<WCA.Consumer.Api.Models.Customer> GetCustomerById2(int id)
         {
             var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/customer/{id}");
             var reply = await response.Content.ReadAsStringAsync();

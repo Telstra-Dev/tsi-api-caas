@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Telstra.Core.Contracts;
-using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
+using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Controllers
 {
@@ -79,10 +79,7 @@ namespace WCA.Consumer.Api.Controllers
             }
             catch (Exception e) 
             {
-                if (e is ArgumentOutOfRangeException) {
-                    return new BadRequestObjectResult(e.Message);
-                }
-                throw e;
+                return new BadRequestObjectResult(e.Message);
             }
         }
 
@@ -94,9 +91,20 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(Organisation), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult CreateOrganisation([FromBody] Organisation org)
+        public async Task<IActionResult> CreateOrganisation([FromBody] Organisation org)
         {
-            return Ok(_service.CreateOrganisation(org));
+            try
+            {
+                return Ok(await _service.CreateOrganisation(org));
+            }
+            catch (Exception e) 
+            {
+                if (e is ArgumentOutOfRangeException) {
+                    return new BadRequestObjectResult(e.Message);
+                }
+                throw e;
+            }
+            //return Ok(_service.CreateOrganisation(org));
         }
 
         /// <summary>

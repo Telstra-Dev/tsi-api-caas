@@ -1,14 +1,33 @@
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections;
-using Telstra.Core.Repo;
-using Telstra.Core.Contracts;
+using System.Threading.Tasks;
+using System;
+using System.Text;
+using System.Net.Http;
+using Telstra.Common;
 using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
+using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Services
 {
     public class DeviceService : IDeviceService
     {
-        public DeviceService()
+        private readonly HttpClient _httpClient;
+        private readonly AppSettings _appSettings;
+        private readonly IMapper _mapper;
+        private readonly ILogger _logger;
+        public DeviceService(HttpClient httpClient,
+                        AppSettings appSettings, 
+                        IMapper mapper, 
+                        ILogger<OrganisationService> logger)
         {
+            this._httpClient = httpClient;
+            this._appSettings = appSettings;
+            this._mapper = mapper;
+            this._logger = logger;
         }
 
         public ArrayList GetDevices(string customerId, string siteId)
@@ -60,7 +79,7 @@ namespace WCA.Consumer.Api.Services
             return devices;
         }
 
-        public DeviceBase GetDevice(string deviceId)
+        public DeviceModel GetDevice(string deviceId)
         {
             SymmetricKey symmetricKey = new SymmetricKey {
                 PrimaryKey = "Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=",
@@ -98,27 +117,64 @@ namespace WCA.Consumer.Api.Services
             return gateway;
         }
 
-        public Camera CreateCameraDevice(Camera device)
+        public async Task<Camera> CreateCameraDevice(Camera newCamera)
         {
-            return device;
+            Camera returnedMappedDevice= null;
+            Device mappedDevice = _mapper.Map<Device>(newCamera);
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var payload =JsonConvert.SerializeObject(mappedDevice);
+                HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices", httpContent);
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnedDevice = JsonConvert.DeserializeObject<Device>(reply);
+                    returnedMappedDevice = _mapper.Map<Camera>(returnedDevice);
+                }
+                else
+                {
+                    _logger.LogError("CreateEdgeDevice failed with error: " + reply);
+                    throw new Exception("Error creating an edge device. Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("CreateEdgeDevice: " + e.Message);
+                throw e;
+            }
+            return returnedMappedDevice;
         }
 
-        public Gateway CreateEdgeDevice(Gateway gateway)
+        public async Task<Gateway> CreateEdgeDevice(Gateway newGateway)
         {
-            SymmetricKey symmetricKey = new SymmetricKey {
-                PrimaryKey = "jyrKqB0ijWdIrnS+Q6seYADTpL0Xreci0ystFFE/nNc=",
-                SecondaryKey = "hdX37zm2Ui8nZKL5brDpZhyeWXyYofhf68WiPzzz8zs="
-            };
-            Auth auth = new Auth {
-                SymmetricKey = symmetricKey,
-                IotHubConnectionString = "mockConnectionString"
-            };
-            GatewayMetadata gatewayMetadata = new GatewayMetadata {
-                Hub = "tcp-azu0032-ae-iot-sv01-dev.azure-devices.net",
-                Auth = auth
-            };
-            gateway.Metadata = gatewayMetadata;
-            return gateway;
+            Gateway returnedMappedDevice= null;
+            Device mappedDevice = _mapper.Map<Device>(newGateway);
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var payload =JsonConvert.SerializeObject(mappedDevice);
+                HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices", httpContent);
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnedDevice = JsonConvert.DeserializeObject<Device>(reply);
+                    returnedMappedDevice = _mapper.Map<Gateway>(returnedDevice);
+                }
+                else
+                {
+                    _logger.LogError("CreateEdgeDevice failed with error: " + reply);
+                    throw new Exception("Error creating an edge device. Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("CreateEdgeDevice: " + e.Message);
+                throw e;
+            }
+            return returnedMappedDevice;
         }
     }
 }

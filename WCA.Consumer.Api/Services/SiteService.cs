@@ -1,23 +1,67 @@
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using Telstra.Core.Repo;
-using Telstra.Core.Contracts;
+using System.Threading.Tasks;
+using System;
+using System.Text;
+using System.Net.Http;
+using Telstra.Common;
 using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
+using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Services
 {
     public class SiteService : ISiteService
     {
-        public SiteService()
+        private readonly HttpClient _httpClient;
+        private readonly AppSettings _appSettings;
+        private readonly IMapper _mapper;
+        private readonly ILogger _logger;
+
+        public SiteService(HttpClient httpClient,
+                        AppSettings appSettings, 
+                        IMapper mapper, 
+                        ILogger<OrganisationService> logger)
         {
+            this._httpClient = httpClient;
+            this._appSettings = appSettings;
+            this._mapper = mapper;
+            this._logger = logger;
         }
 
-        public IList<Site> GetSitesForCustomer(string? customerId)
+        public async Task<IList<SiteModel>> GetSitesForCustomer(string? customerId)
         {
             IList<Site> sites = new List<Site>();
-            return GetAllSites();
+            IList<SiteModel> returnedMappedSites = null;
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId={customerId}");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnedSites = JsonConvert.DeserializeObject<IList<Site>>(reply);
+                    returnedMappedSites = _mapper.Map<IList<SiteModel>>(returnedSites);
+                }
+                else
+                {
+                    _logger.LogError("GetOrganisationOverview failed with error: " + reply);
+                    throw new Exception("Error getting org overview. Response code from downstream: " + response.StatusCode); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("GetOrganisationOverview: " + e.Message);
+                throw e;
+            }
+            return returnedMappedSites;
+            // IList<Site> sites = new List<Site>();
+            // return GetAllSites();
         }
 
-        public Site GetSite(string? siteId)
+        public SiteModel GetSite(string? siteId)
         {
             if (siteId != null)
             {
@@ -25,12 +69,12 @@ namespace WCA.Consumer.Api.Services
                     Latitude = -33.71218,
                     Longitude = 150.95753
                 };
-                SiteLocation location = new SiteLocation {
+                SiteLocationModel location = new SiteLocationModel {
                     Id = "AU/GEO/p0/12161",
                     Address = "Kellyville, Sydney, New South Wales",
                     GeoLocation = geoLocation
                 };
-                Site site = new Site {
+                SiteModel site = new SiteModel {
                     SiteId = "187c1bdd-8efe-493d-b9c3-3a4f027e0940",
                     Name = "Kellyville",
                     CustomerId = "manual-test-customer-id",
@@ -45,11 +89,11 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        private IList<Site> GetAllSites()
+        private IList<SiteModel> GetAllSites()
         {
-            IList<Site> sites = new List<Site>();
+            IList<SiteModel> sites = new List<SiteModel>();
 
-            Site site = CreateSite(-33.71218, 150.95753, "AU/GEO/p0/12161", "John Scott Park, Samford Village QLD",
+            SiteModel site = CreateSite(-33.71218, 150.95753, "AU/GEO/p0/12161", "John Scott Park, Samford Village QLD",
                                 "187c1bdd-8efe-493d-b9c3-3a4f027e0940", "John Scott Park", "manual-test-customer-id", 1651710340528);
             
             sites.Add(site);
@@ -66,36 +110,61 @@ namespace WCA.Consumer.Api.Services
             return sites;
         }
 
-        public Site CreateSite(Site site)
+        public async Task<SiteModel> CreateSite(SiteModel newSite)
+        {
+            SiteModel returnedMappedSite = null;
+            Site mappedSite = _mapper.Map<Site>(newSite);
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var payload =JsonConvert.SerializeObject(mappedSite);
+                HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites", httpContent);
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnedSite = JsonConvert.DeserializeObject<Site>(reply);
+                    returnedMappedSite = _mapper.Map<SiteModel>(returnedSite);
+                }
+                else
+                {
+                    _logger.LogError("CreateSite failed with error: " + reply);
+                    throw new Exception("Error creating a site. Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("CreateSite: " + e.Message);
+                throw e;
+            }
+            return returnedMappedSite;
+        }
+
+        public SiteModel UpdateSite(string siteId, SiteModel site)
         {
             return site;
         }
 
-        public Site UpdateSite(string siteId, Site site)
+        public SiteModel DeleteSite(string siteId)
         {
-            return site;
-        }
-
-        public Site DeleteSite(string siteId)
-        {
-            Site site = CreateSite(-33.71218, 150.95753, "AU/GEO/p0/12161", "Kellyville, Sydney, New South Wales",
+            SiteModel site = CreateSite(-33.71218, 150.95753, "AU/GEO/p0/12161", "Kellyville, Sydney, New South Wales",
                                 "187c1bdd-8efe-493d-b9c3-3a4f027e0940", "Kellyville", "manual-test-customer-id", 1651710340528);
             return site;
         }
 
-        private Site CreateSite(double latitude, double longitude, string siteLocationId, string siteAddress,
+        private SiteModel CreateSite(double latitude, double longitude, string siteLocationId, string siteAddress,
                                 string siteId, string siteName, string customerId, long createdAt)
         {
             GeoLocation geoLocation = new GeoLocation {
                 Latitude = latitude,
                 Longitude = longitude
             };
-            SiteLocation location = new SiteLocation {
+            SiteLocationModel location = new SiteLocationModel {
                 Id = siteLocationId,
                 Address = siteAddress,
                 GeoLocation = geoLocation
             };
-            Site site = new Site {
+            SiteModel site = new SiteModel {
                 SiteId = siteId,
                 Name = siteName,
                 CustomerId = customerId,

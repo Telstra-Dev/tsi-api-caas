@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Telstra.Core.Contracts;
+using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Controllers
 {

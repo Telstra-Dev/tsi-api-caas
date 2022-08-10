@@ -1,6 +1,6 @@
 using AutoMapper;
+using WCA.Consumer.Api.Models;
 using Telstra.Core.Data.Entities;
-using WCA.Storage.Api.Proto;
 
 namespace WCA.Consumer.Api.AutomapperProfiles
 {
@@ -10,9 +10,24 @@ namespace WCA.Consumer.Api.AutomapperProfiles
         {
             CreateMap<Organisation, OrgSearchTreeNode>()
                 .ForMember(dest => dest.Text, opts => opts.MapFrom(s => s.CustomerName))
+                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.Parent))
                 .ForMember(dest => dest.Type, opts => opts.MapFrom(s => "organisation"))
-                .ForMember(dest => dest.Href, opts => opts.MapFrom(s => "/organisations?customer=" + s.CustomerId));
+                .ForMember(dest => dest.Href, opts => opts.MapFrom(s => "/organisations?customerId=" + s.CustomerId));
 
+            CreateMap<SiteModel, OrgSearchTreeNode>()
+                .ForMember(dest => dest.Text, opts => opts.MapFrom(s => s.Name))
+                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.CustomerId))
+                .ForMember(dest => dest.Id, opts => opts.MapFrom(s => s.SiteId))
+                //.ForMember(dest => dest.Status, opts => opts.MapFrom(s => s.Active))
+                .ForMember(dest => dest.Type, opts => opts.MapFrom(s => "site"))
+                .ForMember(dest => dest.Href, opts => opts.MapFrom(s => "/sites?customerId=" + s.CustomerId));
+
+            CreateMap<Device, OrgSearchTreeNode>()
+                .ForMember(dest => dest.Text, opts => opts.MapFrom(s => s.Name))
+                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.CustomerId))
+                .ForMember(dest => dest.Id, opts => opts.MapFrom(s => s.DeviceId))
+                .ForMember(dest => dest.Type, opts => opts.MapFrom(s => s.Type.ToString()))
+                .ForMember(dest => dest.Href, opts => opts.MapFrom(s => "/devices/" + s.DeviceId));
         }
     }
 }

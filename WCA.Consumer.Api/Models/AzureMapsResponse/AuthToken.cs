@@ -1,4 +1,4 @@
-namespace Telstra.Core.Data.Entities.AzureMapsResponse
+namespace WCA.Consumer.Api.Models.AzureMapsResponse
 {
     public class AuthToken
     {

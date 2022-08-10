@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.Identity.Web;
 using Telstra.Common;
-using Telstra.Core.Api.Models;
+using Telstra.Core.Data.Entities;
 
 namespace Telstra.Core.Api.Extensions
 {
