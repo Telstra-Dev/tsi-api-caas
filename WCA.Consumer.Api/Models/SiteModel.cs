@@ -9,6 +9,5 @@ namespace WCA.Consumer.Api.Models
         public SiteMetadata Metadata {get;set;}
         public SiteLocationModel Location {get; set;}
         public long CreatedAt {get; set;}
-        public string OrganisationId {get; set;}
     }
 }

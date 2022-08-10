@@ -67,7 +67,7 @@ namespace WCA.Consumer.Api.Services
                 reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<SiteModel> siteResponse = JsonConvert.DeserializeObject<IList<SiteModel>>(reply);
+                    IList<Site> siteResponse = JsonConvert.DeserializeObject<IList<Site>>(reply);
                     orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
                 }
                 else
