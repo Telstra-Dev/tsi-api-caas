@@ -35,7 +35,7 @@ namespace Telstra.Core.Api.Tests.Builders
             Console.WriteLine($"Environment - {Environment.GetEnvironmentVariable("WCA_ENVIRONMENT")}");
 
             var configs = new ConfigurationBuilder().SetBasePath(rootPath);
-            configs.AddJsonFile("appsettings.json", false, true);
+            configs.AddJsonFile("appsettings.json", true, true);
             configs.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("WCA_ENVIRONMENT")}.json", true);
             configs.AddEnvironmentVariables("WCA");
             configs.AddUserSecrets(typeof(Startup).Assembly);
