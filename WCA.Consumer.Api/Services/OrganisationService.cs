@@ -47,9 +47,9 @@ namespace WCA.Consumer.Api.Services
                     IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
                     orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
                     // Add site, gateway and camera data to the org info returned from the db for the demo.
-                    AddSearchTreeNode(orgList, "bceead95-5b9d-47bc-9d93-4740db6c1292", "John Scott Park",
-                                "site", "/sites?customerId=john-scott-customer-id&siteId=bceead95-5b9d-47bc-9d93-4740db6c1292", 
-                                "moreton-bay-customer-id"); 
+                    // AddSearchTreeNode(orgList, "bceead95-5b9d-47bc-9d93-4740db6c1292", "John Scott Park",
+                    //             "site", "/sites?customerId=john-scott-customer-id&siteId=bceead95-5b9d-47bc-9d93-4740db6c1292", 
+                    //             "moreton-bay-customer-id"); 
                     // AddSearchTreeNode(orgList, "3917acd9-2185-48a0-a71a-905316e2aae2", "tva-sv-chad1",
                     //                     "gateway", "/devices/3917acd9-2185-48a0-a71a-905316e2aae2", 
                     //                     "bceead95-5b9d-47bc-9d93-4740db6c1292"); 
