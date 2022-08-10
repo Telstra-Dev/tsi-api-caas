@@ -14,7 +14,7 @@ namespace Telstra.Core.Api
             // Development, Production, MyEnvironment
         public static IConfiguration ConfigurationBuilder => new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                    .AddJsonFile("appsettings.json", false, true)
+                    .AddJsonFile("appsettings.json", true, true)
                     .AddJsonFile($"appsettings.{ENV_PREFIX}.json", true)
                     .AddEnvironmentVariables("WCA_")
                     .AddUserSecrets(typeof(Startup).GetTypeInfo().Assembly)
