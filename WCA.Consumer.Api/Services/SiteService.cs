@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -113,7 +115,24 @@ namespace WCA.Consumer.Api.Services
         public async Task<SiteModel> CreateSite(SiteModel newSite)
         {
             SiteModel returnedMappedSite = null;
-            Site mappedSite = _mapper.Map<Site>(newSite);
+            Site mappedSite = _mapper.Map<Site>(newSite);            
+
+            if (newSite.Metadata.Tags.Count > 0)
+            {         
+                mappedSite.Tags = new List<SiteTag>();
+                foreach(var tagItem in newSite.Metadata.Tags)
+                {
+                    SiteTag siteTag = new SiteTag {
+                        SiteId = mappedSite.SiteId,
+                        Tag = new Tag {
+                            Name = tagItem.Key,
+                            Value = tagItem.Value[0]
+                        }
+                    };
+                    mappedSite.Tags.Add(siteTag);
+                }
+            }
+
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
@@ -125,6 +144,17 @@ namespace WCA.Consumer.Api.Services
                 {
                     var returnedSite = JsonConvert.DeserializeObject<Site>(reply);
                     returnedMappedSite = _mapper.Map<SiteModel>(returnedSite);
+                    
+                    // re-map the tags
+                    if (returnedSite.Tags.Count > 0)
+                    {         
+                        Dictionary<string, string[]> tags = new Dictionary<string, string[]>();
+                        foreach(var tagItem in returnedSite.Tags)
+                        {
+                            tags.Add(tagItem.Tag.Name, new []{ tagItem.Tag.Value });
+                        }
+                        returnedMappedSite.Metadata.Tags = tags; 
+                    }
                 }
                 else
                 {

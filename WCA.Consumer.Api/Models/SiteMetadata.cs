@@ -9,6 +9,6 @@ namespace WCA.Consumer.Api.Models
             public string StoreFormat {get; set;}
             public string GeoClassification {get; set;}
             public string Region {get; set;}
-            public Dictionary<string, object> Tags {get; set;}
+            public Dictionary<string, string[]> Tags {get; set;}
     }
 }
