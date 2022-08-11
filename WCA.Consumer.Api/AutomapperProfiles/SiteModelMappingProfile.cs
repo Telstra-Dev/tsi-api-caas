@@ -15,6 +15,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForMember(dest => dest.StoreFormat, opts => opts.MapFrom(s => s.Metadata.StoreFormat))
                 .ForMember(dest => dest.GeoClassification, opts => opts.MapFrom(s => s.Metadata.GeoClassification))
                 .ForMember(dest => dest.Region, opts => opts.MapFrom(s => s.Metadata.Region))
+                .ForMember(dest => dest.OrganisationId, opts => opts.MapFrom(s => s.CustomerId))
                 .ForPath(dest => dest.Location.Id, opts => opts.MapFrom(s => s.Location.Id))
                 .ForPath(dest => dest.Location.Address, opts => opts.MapFrom(s => s.Location.Address))
                 .ForPath(dest => dest.Location.Latitude, opts => opts.MapFrom(s => s.Location.GeoLocation.Latitude))

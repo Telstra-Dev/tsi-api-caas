@@ -129,7 +129,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("CreateSite failed with error: " + reply);
-                    throw new Exception("Error creating a site. Response code from downstream: " + reply); 
+                    throw new Exception($"Error creating a site. {response.StatusCode} Response code from downstream: " + reply); 
                 }
             }
             catch (Exception e)
@@ -151,7 +151,7 @@ namespace WCA.Consumer.Api.Services
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
-                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites");
+                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -161,7 +161,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("DeleteSite failed with error: " + reply);
-                    throw new Exception("Error deleting a site. Response code from downstream: " + reply); 
+                    throw new Exception($"Error deleting a site. {response.StatusCode} Response code from downstream: " + reply); 
                 }
             }
             catch (Exception e)

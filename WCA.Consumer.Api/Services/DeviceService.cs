@@ -136,7 +136,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("CreateEdgeDevice failed with error: " + reply);
-                    throw new Exception("Error creating an edge device. Response code from downstream: " + reply); 
+                    throw new Exception($"Error creating an edge device. {response.StatusCode} Response code from downstream: " + reply); 
                 }
             }
             catch (Exception e)
@@ -166,7 +166,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("CreateEdgeDevice failed with error: " + reply);
-                    throw new Exception("Error creating an edge device. Response code from downstream: " + reply); 
+                    throw new Exception($"Error creating an edge device. {response.StatusCode} Response code from downstream: " + reply); 
                 }
             }
             catch (Exception e)

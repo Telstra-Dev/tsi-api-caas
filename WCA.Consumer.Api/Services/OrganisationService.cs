@@ -60,7 +60,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("GetOrganisationOverview failed with error: " + reply);
-                    throw new Exception("Error getting org overview. Response code from downstream: " + response.StatusCode); 
+                    throw new Exception($"Error getting org overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
                 }
 
                 response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId=moreton-bay-customer-id");
@@ -73,7 +73,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("GetSites failed with error: " + reply);
-                    throw new Exception("Error getting sites for overview. Response code from downstream: " + response.StatusCode); 
+                    throw new Exception("$Error getting sites for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
                 }
 
                 response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId=moreton-bay-customer-id");
@@ -86,7 +86,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("GetDevices failed with error: " + reply);
-                    throw new Exception("Error getting devices for overview. Response code from downstream: " + response.StatusCode); 
+                    throw new Exception($"Error getting devices for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
                 }
             }
             catch (Exception e)
@@ -203,7 +203,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("CreateOrganisation failed with error: " + reply);
-                    throw new Exception("Error creating an organisation. Response code from downstream: " + response.StatusCode); 
+                    throw new Exception($"Error creating an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
                 }
             }
             catch (Exception e)

@@ -94,7 +94,7 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult DeleteSite([FromRoute] string siteId)
         {
-            return Ok(this.service.DeleteSite(siteId));
+            return Ok(this.service.DeleteSite(siteId).Result);
         }
     }
 }
