@@ -52,6 +52,15 @@ namespace WCA.Consumer.Api.Controllers
             return Ok(this.service.GetDevice(deviceId));
         }
 
+        [HttpDelete("")]
+        [ProducesResponseType(typeof(DeviceModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [AllowAnonymous]
+        public IActionResult DeleteDevice([FromQuery] string customerId, [FromQuery] string deviceId)
+        {
+            return Ok(this.service.DeleteDevice(customerId, deviceId).Result);
+        }
+
         /// <summary>
         /// Creates a new camera device
         /// </summary>

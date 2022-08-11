@@ -48,7 +48,6 @@ namespace WCA.Consumer.Api.Services
                             devices.Add(_mapper.Map<Gateway>(returnedDevice));
                         else // camera
                             devices.Add(_mapper.Map<Camera>(returnedDevice));
-
                     }
                 }
                 else
@@ -136,6 +135,39 @@ namespace WCA.Consumer.Api.Services
                 Active = true
             };
             return gateway;
+        }
+
+        public async Task<DeviceModel> DeleteDevice(string customerId, string deviceId)
+        {
+            DeviceModel deletedMappedDevice = null;
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&deviceId={deviceId}");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    var deletedDevice = JsonConvert.DeserializeObject<Device>(reply);
+                    if (deletedDevice != null)
+                    {
+                        if (deletedDevice.Type == DeviceType.gateway.ToString())
+                            deletedMappedDevice = _mapper.Map<Gateway>(deletedDevice);
+                        else // camera
+                            deletedMappedDevice = _mapper.Map<Camera>(deletedDevice);
+                    }
+                }
+                else
+                {
+                    _logger.LogError("DeleteDevice failed with error: " + reply);
+                    throw new Exception($"Error deleting a device. {response.StatusCode} Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("DeleteDevice: " + e.Message);
+                throw new Exception(e.Message);;
+            }
+            return deletedMappedDevice;
         }
 
         public Camera UpdateCameraDevice(string id, Camera camera)
