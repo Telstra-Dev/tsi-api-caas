@@ -39,7 +39,7 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult GetDevices([FromQuery] string customerId = null,
                                         [FromQuery] string siteId = null)
         {
-            return Ok(this.service.GetDevices(customerId, siteId));
+            return Ok(this.service.GetDevices(customerId, siteId).Result);
         }
 
         [HttpGet("{deviceId}")]

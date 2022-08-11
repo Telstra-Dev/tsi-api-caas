@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Text;
@@ -30,53 +31,83 @@ namespace WCA.Consumer.Api.Services
             this._logger = logger;
         }
 
-        public ArrayList GetDevices(string customerId, string siteId)
+        public async Task<ArrayList> GetDevices(string customerId, string siteId)
         {
             ArrayList devices = new ArrayList();
-            SymmetricKey symmetricKey = new SymmetricKey {
-                PrimaryKey = "Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=",
-                SecondaryKey = "8zbjhgT0VvVGMgGiAe9D9oyt+ECACvCGtYxvXlJIOY8="
-            };
-            Auth auth = new Auth {
-                SymmetricKey = symmetricKey,
-                IotHubConnectionString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo="
-            };
-            GatewayMetadata gatewayMetadata = new GatewayMetadata {
-                Hub = "tcp-azu0032-ae-iot-sv01-dev.azure-devices.net",
-                Auth = auth
-            };
-            Gateway gateway = new Gateway {
-                DeviceId = "3917acd9-2185-48a0-a71a-905316e2aae2",
-                Name = "tva-sv-chad1",
-                CustomerId = "manual-test-customer-id",
-                SiteId = "bceead95-5b9d-47bc-9d93-4740db6c1292",
-                EdgeDevice = "3917acd9-2185-48a0-a71a-905316e2aae2",
-                EdgeCapable = true,
-                Metadata = gatewayMetadata,
-                CreatedAt = 1655347987378,
-                Active = true
-            };
-            devices.Add(gateway);
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&siteId={siteId}");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnedDevices = JsonConvert.DeserializeObject<IList<Device>>(reply);
+                    foreach (var returnedDevice in returnedDevices)
+                    {
+                        if (returnedDevice.Type == DeviceType.gateway.ToString())
+                            devices.Add(_mapper.Map<Gateway>(returnedDevice));
+                        else // camera
+                            devices.Add(_mapper.Map<Camera>(returnedDevice));
 
-            CameraMetadata cameraMetadata = new CameraMetadata {
-                Url = "hello.com",
-                Username = "fred120",
-                Password = "sdfsdfsd"
-            };
-            Camera camera = new Camera {
-                DeviceId = "0448659b-eb21-410b-809c-c3b4879c9b48",
-                Name = "tva-sv-chad1-camera1",
-                CustomerId = "manual-test-customer-id",
-                SiteId = "bceead95-5b9d-47bc-9d93-4740db6c1292",
-                EdgeDevice = "3917acd9-2185-48a0-a71a-905316e2aae2",
-                EdgeCapable = false,
-                Metadata = cameraMetadata,
-                CreatedAt = 1655348052855,
-                Active = true
-            };
-            devices.Add(camera);
-
+                    }
+                }
+                else
+                {
+                    _logger.LogError("CreateEdgeDevice failed with error: " + reply);
+                    throw new Exception($"Error creating an edge device. {response.StatusCode} Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("CreateEdgeDevice: " + e.Message);
+                throw new Exception(e.Message);;
+            }
             return devices;
+            // ArrayList devices = new ArrayList();
+            // SymmetricKey symmetricKey = new SymmetricKey {
+            //     PrimaryKey = "Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=",
+            //     SecondaryKey = "8zbjhgT0VvVGMgGiAe9D9oyt+ECACvCGtYxvXlJIOY8="
+            // };
+            // Auth auth = new Auth {
+            //     SymmetricKey = symmetricKey,
+            //     IotHubConnectionString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo="
+            // };
+            // GatewayMetadata gatewayMetadata = new GatewayMetadata {
+            //     Hub = "tcp-azu0032-ae-iot-sv01-dev.azure-devices.net",
+            //     Auth = auth
+            // };
+            // Gateway gateway = new Gateway {
+            //     DeviceId = "3917acd9-2185-48a0-a71a-905316e2aae2",
+            //     Name = "tva-sv-chad1",
+            //     CustomerId = "manual-test-customer-id",
+            //     SiteId = "bceead95-5b9d-47bc-9d93-4740db6c1292",
+            //     EdgeDevice = "3917acd9-2185-48a0-a71a-905316e2aae2",
+            //     EdgeCapable = true,
+            //     Metadata = gatewayMetadata,
+            //     CreatedAt = 1655347987378,
+            //     Active = true
+            // };
+            // devices.Add(gateway);
+
+            // CameraMetadata cameraMetadata = new CameraMetadata {
+            //     Url = "hello.com",
+            //     Username = "fred120",
+            //     Password = "sdfsdfsd"
+            // };
+            // Camera camera = new Camera {
+            //     DeviceId = "0448659b-eb21-410b-809c-c3b4879c9b48",
+            //     Name = "tva-sv-chad1-camera1",
+            //     CustomerId = "manual-test-customer-id",
+            //     SiteId = "bceead95-5b9d-47bc-9d93-4740db6c1292",
+            //     EdgeDevice = "3917acd9-2185-48a0-a71a-905316e2aae2",
+            //     EdgeCapable = false,
+            //     Metadata = cameraMetadata,
+            //     CreatedAt = 1655348052855,
+            //     Active = true
+            // };
+            // devices.Add(camera);
+
+            // return devices;
         }
 
         public DeviceModel GetDevice(string deviceId)

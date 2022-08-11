@@ -14,7 +14,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForMember(dest => dest.IsEdgeCapable, opts => opts.MapFrom(s => s.EdgeCapable))
                 .ForMember(dest => dest.MetadataHub, opts => opts.MapFrom(s => s.Metadata.Hub))
                 .ForMember(dest => dest.MetadataAuthConnString, opts => opts.MapFrom(s => s.Metadata.Auth.IotHubConnectionString))
-                .ForMember(dest => dest.MetadataAuthSymmetricKey, opts => opts.MapFrom(s => s.Metadata.Auth.SymmetricKey));
+                .ForMember(dest => dest.MetadataAuthSymmetricKey, opts => opts.MapFrom(s => s.Metadata.Auth.SymmetricKey.PrimaryKey));
             
             CreateMap<Device, Gateway>()
                 .ForMember(dest => dest.EdgeDevice, opts => opts.MapFrom(s => s.EdgeDeviceId))
@@ -22,7 +22,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForMember(dest => dest.EdgeCapable, opts => opts.MapFrom(s => s.IsEdgeCapable))
                 .ForPath(dest => dest.Metadata.Hub, opts => opts.MapFrom(s => s.MetadataHub))
                 .ForPath(dest => dest.Metadata.Auth.IotHubConnectionString, opts => opts.MapFrom(s => s.MetadataAuthConnString))
-                .ForPath(dest => dest.Metadata.Auth.SymmetricKey, opts => opts.MapFrom(s => s.MetadataAuthSymmetricKey));
+                .ForPath(dest => dest.Metadata.Auth.SymmetricKey.PrimaryKey, opts => opts.MapFrom(s => s.MetadataAuthSymmetricKey));
 
             CreateMap<Camera, Device>()
                 .ForMember(dest => dest.EdgeDeviceId, opts => opts.MapFrom(s => s.EdgeDevice))
@@ -33,8 +33,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForMember(dest => dest.MetadataPassword, opts => opts.MapFrom(s => s.Metadata.Password))
                 .ForMember(dest => dest.MetadataHub, opts => opts.MapFrom(s => s.Metadata.Hub))
                 .ForMember(dest => dest.MetadataAuthConnString, opts => opts.MapFrom(s => s.Metadata.Auth.IotHubConnectionString))
-                .ForMember(dest => dest.MetadataAuthSymmetricKey, opts => opts.MapFrom(s => s.Metadata.Auth.SymmetricKey));
-
+                .ForMember(dest => dest.MetadataAuthSymmetricKey, opts => opts.MapFrom(s => s.Metadata.Auth.SymmetricKey.PrimaryKey));
             
             CreateMap<Device, Camera>()
                 .ForMember(dest => dest.EdgeDevice, opts => opts.MapFrom(s => s.EdgeDeviceId))
@@ -45,7 +44,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForPath(dest => dest.Metadata.Password, opts => opts.MapFrom(s => s.MetadataPassword))
                 .ForPath(dest => dest.Metadata.Hub, opts => opts.MapFrom(s => s.MetadataHub))
                 .ForPath(dest => dest.Metadata.Auth.IotHubConnectionString, opts => opts.MapFrom(s => s.MetadataAuthConnString))
-                .ForPath(dest => dest.Metadata.Auth.SymmetricKey, opts => opts.MapFrom(s => s.MetadataAuthSymmetricKey));
+                .ForPath(dest => dest.Metadata.Auth.SymmetricKey.PrimaryKey, opts => opts.MapFrom(s => s.MetadataAuthSymmetricKey));
         }
     }
 }
