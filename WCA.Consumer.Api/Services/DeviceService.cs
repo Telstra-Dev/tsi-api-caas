@@ -142,7 +142,7 @@ namespace WCA.Consumer.Api.Services
             catch (Exception e)
             {
                 _logger.LogError("CreateEdgeDevice: " + e.Message);
-                throw e;
+                throw new Exception(e.Message);;
             }
             return returnedMappedDevice;
         }
@@ -172,7 +172,7 @@ namespace WCA.Consumer.Api.Services
             catch (Exception e)
             {
                 _logger.LogError("CreateEdgeDevice: " + e.Message);
-                throw e;
+                throw new Exception(e.Message);;
             }
             return returnedMappedDevice;
         }

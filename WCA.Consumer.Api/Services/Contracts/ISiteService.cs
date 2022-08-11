@@ -6,10 +6,14 @@ namespace WCA.Consumer.Api.Services.Contracts
 {
     public interface ISiteService
     {
-        public Task<IList<SiteModel>> GetSitesForCustomer(string? customerId);
-        public SiteModel GetSite(string? siteId);
+        public Task<IList<SiteModel>> GetSitesForCustomer(string customerId);
+
+        public SiteModel GetSite(string siteId);
+
         public Task<SiteModel> CreateSite(SiteModel site);
+
         public SiteModel UpdateSite(string siteId, SiteModel site);
-        public SiteModel DeleteSite(string siteId);
+        
+        public Task<SiteModel> DeleteSite(string siteId);
     }
 }

@@ -31,7 +31,7 @@ namespace WCA.Consumer.Api.Services
             this._logger = logger;
         }
 
-        public async Task<IList<SiteModel>> GetSitesForCustomer(string? customerId)
+        public async Task<IList<SiteModel>> GetSitesForCustomer(string customerId)
         {
             IList<Site> sites = new List<Site>();
             IList<SiteModel> returnedMappedSites = null;
@@ -54,14 +54,14 @@ namespace WCA.Consumer.Api.Services
             catch (Exception e)
             {
                 _logger.LogError("GetOrganisationOverview: " + e.Message);
-                throw e;
+                throw new Exception(e.Message);;
             }
             return returnedMappedSites;
             // IList<Site> sites = new List<Site>();
             // return GetAllSites();
         }
 
-        public SiteModel GetSite(string? siteId)
+        public SiteModel GetSite(string siteId)
         {
             if (siteId != null)
             {
@@ -135,7 +135,7 @@ namespace WCA.Consumer.Api.Services
             catch (Exception e)
             {
                 _logger.LogError("CreateSite: " + e.Message);
-                throw e;
+                throw new Exception(e.Message);;
             }
             return returnedMappedSite;
         }
@@ -145,11 +145,31 @@ namespace WCA.Consumer.Api.Services
             return site;
         }
 
-        public SiteModel DeleteSite(string siteId)
+        public async Task<SiteModel> DeleteSite(string siteId)
         {
-            SiteModel site = CreateSite(-33.71218, 150.95753, "AU/GEO/p0/12161", "Kellyville, Sydney, New South Wales",
-                                "187c1bdd-8efe-493d-b9c3-3a4f027e0940", "Kellyville", "manual-test-customer-id", 1651710340528);
-            return site;
+            SiteModel mappedDeletedSite = null;
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var deletedSite = JsonConvert.DeserializeObject<Site>(reply);
+                    mappedDeletedSite = _mapper.Map<SiteModel>(deletedSite);
+                }
+                else
+                {
+                    _logger.LogError("DeleteSite failed with error: " + reply);
+                    throw new Exception("Error deleting a site. Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("DeleteSite: " + e.Message);
+                throw new Exception(e.Message);;
+            }
+            return mappedDeletedSite;
         }
 
         private SiteModel CreateSite(double latitude, double longitude, string siteLocationId, string siteAddress,

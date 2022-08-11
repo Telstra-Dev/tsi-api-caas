@@ -53,7 +53,7 @@ namespace Telstra.Core.Api.Extensions
         /// </summary>
         /// <param name="principal">The <see cref="ClaimsPrincipal"/> from which to retrieve the identity provider.</param>
         /// <returns>Identity provider of the identity, or <c>null</c> if it cannot be found.</returns>
-        public static string? GetIdpValue(this ClaimsPrincipal principal)
+        public static string GetIdpValue(this ClaimsPrincipal principal)
         {
             Guard.NotNull(principal, nameof(principal));
 

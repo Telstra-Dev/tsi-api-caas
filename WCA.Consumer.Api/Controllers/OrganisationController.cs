@@ -57,7 +57,7 @@ namespace WCA.Consumer.Api.Controllers
                 if (e is ArgumentOutOfRangeException) {
                     return new BadRequestObjectResult(e.Message);
                 }
-                throw e;
+                throw new Exception(e.Message);;
             }
         }
 
@@ -66,22 +66,22 @@ namespace WCA.Consumer.Api.Controllers
         /// into a search tree. Used for presentation only.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("organisations/overview-test")]
-        [ProducesResponseType(typeof(IList<OrganisationModel>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetOrganisationOverviewTest()
-        {
-            try
-            {
-                return Ok(await _service.GetOrganisationOverviewTest());
-            }
-            catch (Exception e) 
-            {
-                return new BadRequestObjectResult(e.Message);
-            }
-        }
+        // [HttpGet("organisations/overview-test")]
+        // [ProducesResponseType(typeof(IList<OrganisationModel>), (int)HttpStatusCode.OK)]
+        // [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        // [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        // [AllowAnonymous]
+        // public async Task<IActionResult> GetOrganisationOverviewTest()
+        // {
+        //     try
+        //     {
+        //         return Ok(await _service.GetOrganisationOverviewTest());
+        //     }
+        //     catch (Exception e) 
+        //     {
+        //         return new BadRequestObjectResult(e.Message);
+        //     }
+        // }
 
         /// <summary>
         /// Creates a new organisation
@@ -102,7 +102,7 @@ namespace WCA.Consumer.Api.Controllers
                 if (e is ArgumentOutOfRangeException) {
                     return new BadRequestObjectResult(e.Message);
                 }
-                throw e;
+                throw new Exception(e.Message);
             }
             //return Ok(_service.CreateOrganisation(org));
         }
