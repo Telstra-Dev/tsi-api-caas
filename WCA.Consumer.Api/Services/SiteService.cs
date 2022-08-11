@@ -117,7 +117,7 @@ namespace WCA.Consumer.Api.Services
             SiteModel returnedMappedSite = null;
             Site mappedSite = _mapper.Map<Site>(newSite);            
 
-            if (newSite.Metadata.Tags.Count > 0)
+            if (newSite.Metadata != null && newSite.Metadata.Tags != null && newSite.Metadata.Tags.Count > 0)
             {         
                 mappedSite.Tags = new List<SiteTag>();
                 foreach(var tagItem in newSite.Metadata.Tags)
