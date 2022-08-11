@@ -146,7 +146,7 @@ namespace WCA.Consumer.Api.Services
                     returnedMappedSite = _mapper.Map<SiteModel>(returnedSite);
                     
                     // re-map the tags
-                    if (returnedSite.Tags.Count > 0)
+                    if (returnedSite.Tags != null && returnedSite.Tags.Count > 0)
                     {         
                         Dictionary<string, string[]> tags = new Dictionary<string, string[]>();
                         foreach(var tagItem in returnedSite.Tags)
