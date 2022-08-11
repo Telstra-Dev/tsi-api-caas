@@ -184,6 +184,7 @@ namespace WCA.Consumer.Api.Services
         {
             Camera returnedMappedDevice= null;
             Device mappedDevice = _mapper.Map<Device>(newCamera);
+            mappedDevice.IsActive = true;
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
@@ -214,6 +215,7 @@ namespace WCA.Consumer.Api.Services
         {
             Gateway returnedMappedDevice= null;
             Device mappedDevice = _mapper.Map<Device>(newGateway);
+            mappedDevice.IsActive = true;
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);

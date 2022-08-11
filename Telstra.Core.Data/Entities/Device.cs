@@ -28,6 +28,9 @@ namespace Telstra.Core.Data.Entities
         [Column("edge_capable")]
         public bool IsEdgeCapable { get; set; }
 
+        [Column("is_active")]
+        public bool IsActive { get; set; }
+
         [Column("metadata_url")]
         public string MetadataUrl { get; set; }
 
