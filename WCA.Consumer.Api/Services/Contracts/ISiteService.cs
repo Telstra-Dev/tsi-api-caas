@@ -8,7 +8,7 @@ namespace WCA.Consumer.Api.Services.Contracts
     {
         public Task<IList<SiteModel>> GetSitesForCustomer(string customerId);
 
-        public Task<SiteModel> GetSite(string siteId);
+        public Task<SiteModel> GetSite(string siteId, string customerId);
 
         public Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false);
 

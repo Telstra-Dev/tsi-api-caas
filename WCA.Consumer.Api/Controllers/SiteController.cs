@@ -44,9 +44,9 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetSite([FromRoute] string siteId)
+        public IActionResult GetSite([FromRoute] string siteId, [FromQuery] string customerId)
         {
-            return Ok(this.service.GetSite(siteId));
+            return Ok(this.service.GetSite(siteId, customerId).Result);
         }
 
         /// <summary>

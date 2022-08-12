@@ -59,21 +59,22 @@ namespace WCA.Consumer.Api.Services
             return returnedMappedSites;
         }
 
-        public async Task<SiteModel> GetSite(string siteId)
+        public async Task<SiteModel> GetSite(string siteId, string customerId)
         {
             IList<Site> sites = new List<Site>();
             SiteModel returnedMappedSite = null;
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?siteId={siteId}");
+                var includeCustomerId = "";
+                if (customerId != null) includeCustomerId = $"?customerId={customerId}";
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}{includeCustomerId}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     IList<Site> returnedSites = JsonConvert.DeserializeObject<IList<Site>>(reply);
-                    if (returnedSites.Count > 0) {
+                    if (returnedSites.Count > 0)
                         returnedMappedSite = _mapper.Map<SiteModel>(returnedSites[0]);
-                    }
                 }
                 else
                 {
@@ -94,22 +95,6 @@ namespace WCA.Consumer.Api.Services
             SiteModel returnedMappedSite = null;
             Site mappedSite = _mapper.Map<Site>(newSite);            
 
-            if (newSite.Metadata != null && newSite.Metadata.Tags != null && newSite.Metadata.Tags.Count > 0)
-            {         
-                mappedSite.Tags = new List<SiteTag>();
-                foreach(var tagItem in newSite.Metadata.Tags)
-                {
-                    SiteTag siteTag = new SiteTag {
-                        SiteId = mappedSite.SiteId,
-                        Tag = new Tag {
-                            Name = tagItem.Key,
-                            Value = tagItem.Value[0]
-                        }
-                    };
-                    mappedSite.Tags.Add(siteTag);
-                }
-            }
-
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
@@ -126,17 +111,6 @@ namespace WCA.Consumer.Api.Services
                 {
                     var returnedSite = JsonConvert.DeserializeObject<Site>(reply);
                     returnedMappedSite = _mapper.Map<SiteModel>(returnedSite);
-                    
-                    // re-map the tags
-                    if (returnedSite.Tags != null && returnedSite.Tags.Count > 0)
-                    {         
-                        Dictionary<string, string[]> tags = new Dictionary<string, string[]>();
-                        foreach(var tagItem in returnedSite.Tags)
-                        {
-                            tags.Add(tagItem.Tag.Name, new []{ tagItem.Tag.Value });
-                        }
-                        returnedMappedSite.Metadata.Tags = tags; 
-                    }
                 }
                 else
                 {
