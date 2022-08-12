@@ -60,9 +60,9 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult CreateSite([FromBody] SiteModel site)
         {
             try {
-                var newSite = this.service.CreateSite(site).Result;
+                var newSite = this.service.SaveSite(site);
 
-                return Ok(newSite);
+                return Ok(newSite.Result);
             }
             catch (Exception e)
             {
@@ -81,7 +81,16 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult UpdateSite([FromRoute] string siteId,
                                 [FromBody] SiteModel site)
         {
-            return Ok(this.service.UpdateSite(siteId, site));
+            try {
+                if (site.SiteId == null) site.SiteId = siteId;
+                var updatedSite = this.service.UpdateSite(siteId, site);
+
+                return Ok(updatedSite.Result);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         /// <summary>

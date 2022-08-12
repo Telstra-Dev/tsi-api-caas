@@ -8,11 +8,11 @@ namespace WCA.Consumer.Api.Services.Contracts
     {
         public Task<IList<SiteModel>> GetSitesForCustomer(string customerId);
 
-        public SiteModel GetSite(string siteId);
+        public Task<SiteModel> GetSite(string siteId);
 
-        public Task<SiteModel> CreateSite(SiteModel site);
+        public Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false);
 
-        public SiteModel UpdateSite(string siteId, SiteModel site);
+        public Task<SiteModel> UpdateSite(string siteId, SiteModel site);
         
         public Task<SiteModel> DeleteSite(string siteId);
     }
