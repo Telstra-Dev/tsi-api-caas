@@ -90,7 +90,44 @@ namespace WCA.Consumer.Api.Services
             return returnedMappedSite;
         }
 
-        public async Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false)
+        public async Task<SiteModel> CreateSite(SiteModel newSite)
+        {
+            return await SaveSite(newSite);
+        }
+
+        public async Task<SiteModel> UpdateSite(string siteId, SiteModel updateSite)
+        {
+            return await SaveSite(updateSite, true);
+        }
+
+        public async Task<SiteModel> DeleteSite(string siteId)
+        {
+            SiteModel mappedDeletedSite = null;
+            try
+            {
+                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
+                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var deletedSite = JsonConvert.DeserializeObject<Site>(reply);
+                    mappedDeletedSite = _mapper.Map<SiteModel>(deletedSite);
+                }
+                else
+                {
+                    _logger.LogError("DeleteSite failed with error: " + reply);
+                    throw new Exception($"Error deleting a site. {response.StatusCode} Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("DeleteSite: " + e.Message);
+                throw new Exception(e.Message);;
+            }
+            return mappedDeletedSite;
+        }
+
+        private async Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false)
         {
             SiteModel returnedMappedSite = null;
             Site mappedSite = _mapper.Map<Site>(newSite);            
@@ -124,38 +161,6 @@ namespace WCA.Consumer.Api.Services
                 throw new Exception(e.Message);;
             }
             return returnedMappedSite;
-        }
-
-        public async Task<SiteModel> UpdateSite(string siteId, SiteModel updateSite)
-        {
-            return await SaveSite(updateSite, true);
-        }
-
-        public async Task<SiteModel> DeleteSite(string siteId)
-        {
-            SiteModel mappedDeletedSite = null;
-            try
-            {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
-                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var deletedSite = JsonConvert.DeserializeObject<Site>(reply);
-                    mappedDeletedSite = _mapper.Map<SiteModel>(deletedSite);
-                }
-                else
-                {
-                    _logger.LogError("DeleteSite failed with error: " + reply);
-                    throw new Exception($"Error deleting a site. {response.StatusCode} Response code from downstream: " + reply); 
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("DeleteSite: " + e.Message);
-                throw new Exception(e.Message);;
-            }
-            return mappedDeletedSite;
         }
     }
 }

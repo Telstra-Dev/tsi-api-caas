@@ -60,7 +60,7 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult CreateSite([FromBody] SiteModel site)
         {
             try {
-                var newSite = this.service.SaveSite(site);
+                var newSite = this.service.CreateSite(site);
 
                 return Ok(newSite.Result);
             }
@@ -103,7 +103,15 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult DeleteSite([FromRoute] string siteId)
         {
-            return Ok(this.service.DeleteSite(siteId).Result);
+           try {
+                var updatedSite = this.service.DeleteSite(siteId);
+                
+                return Ok(updatedSite.Result);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
     }
 }

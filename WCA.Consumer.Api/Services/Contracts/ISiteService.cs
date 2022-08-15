@@ -10,7 +10,7 @@ namespace WCA.Consumer.Api.Services.Contracts
 
         public Task<SiteModel> GetSite(string siteId, string customerId);
 
-        public Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false);
+        public Task<SiteModel> CreateSite(SiteModel newSite);
 
         public Task<SiteModel> UpdateSite(string siteId, SiteModel site);
         

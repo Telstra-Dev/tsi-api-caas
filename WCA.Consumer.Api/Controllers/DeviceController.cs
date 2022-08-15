@@ -83,6 +83,28 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         /// <summary>
+        /// Updates a camera device
+        /// </summary>
+        /// <param name="siteId"></param>
+        /// <returns></returns>
+        [HttpPut("camera/{deviceId}")]
+        [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public IActionResult UpdateCameraDevice([FromRoute] string deviceId,
+                                [FromBody] Camera device)
+        {
+            try {
+                var updatedDevice = this.service.UpdateCameraDevice(deviceId, device);
+
+                return Ok(updatedDevice);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+        /// <summary>
         /// Creates a new gateway device
         /// </summary>
         /// <returns></returns>
@@ -104,20 +126,6 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         /// <summary>
-        /// Updates a camera device
-        /// </summary>
-        /// <param name="siteId"></param>
-        /// <returns></returns>
-        [HttpPut("camera/{deviceId}")]
-        [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult UpdateCameraDevice([FromRoute] string deviceId,
-                                [FromBody] Camera device)
-        {
-            return Ok(this.service.UpdateCameraDevice(deviceId, device));
-        }
-
-        /// <summary>
         /// Updates a gateway device
         /// </summary>
         /// <param name="siteId"></param>
@@ -128,7 +136,15 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult UpdateEdgeDevice([FromRoute] string deviceId,
                                 [FromBody] Gateway device)
         {
-            return Ok(this.service.UpdateEdgeDevice(deviceId, device));
+            try {
+                var updatedDevice = this.service.UpdateEdgeDevice(deviceId, device);
+
+                return Ok(updatedDevice);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
     }
