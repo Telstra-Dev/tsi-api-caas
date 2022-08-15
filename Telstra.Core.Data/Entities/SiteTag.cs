@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Telstra.Core.Data.Entities
 {
     [Table("site_tag")]
-    public class Tag
+    public class SiteTag
     {
         [Key]
         [Required]

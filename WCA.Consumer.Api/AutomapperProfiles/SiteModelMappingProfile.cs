@@ -37,7 +37,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForPath(dest => dest.Location.GeoLocation.Longitude, opts => opts.MapFrom(s => s.Location.Longitude));
         }
 
-       private Dictionary<string, string[]> remapToEntityTags(ICollection<Tag> origTags) {
+       private Dictionary<string, string[]> remapToEntityTags(ICollection<SiteTag> origTags) {
             Dictionary<string, string[]> remappedTags = null;
             if (origTags != null && origTags.Count > 0)
             {         
@@ -51,13 +51,14 @@ namespace WCA.Consumer.Api.AutomapperProfiles
             return remappedTags;
         }
 
-        private IList<Tag> remapToTagModel (Dictionary<string, string[]> origTags, string siteId)
+        private IList<SiteTag> remapToTagModel (Dictionary<string, string[]> origTags, string siteId)
         {
-            var mappedTags = new List<Tag>();
+            var mappedTags = new List<SiteTag>();
             foreach(var tagItem in origTags)
             {
                 mappedTags.Add(
-                    new Tag {
+                    new SiteTag {
+                        SiteId = siteId,
                         TagName = tagItem.Key,
                         TagValue = tagItem.Value[0]
                     });
