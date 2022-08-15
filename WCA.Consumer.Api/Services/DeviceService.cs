@@ -185,6 +185,12 @@ namespace WCA.Consumer.Api.Services
         {
             Gateway returnedMappedDevice= null;
             Device mappedDevice = _mapper.Map<Device>(saveGateway);
+
+            // @TODO Hacks for now (hard-code)
+            mappedDevice.IsActive = true;
+            mappedDevice.MetadataAuthConnString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=";
+            mappedDevice.MetadataAuthSymmetricKey = "Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=";
+            
             try
             {
                 var payload =JsonConvert.SerializeObject(mappedDevice);
