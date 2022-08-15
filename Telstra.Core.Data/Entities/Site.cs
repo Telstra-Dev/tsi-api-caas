@@ -51,7 +51,7 @@ namespace Telstra.Core.Data.Entities
         [Column("organisation_id")]
         public string OrganisationId {get; set;}
 
-        public IList<SiteTag> Tags {get; set;}
+        public ICollection<Tag> Tags {get; set;}
 
         public Organisation Organisation {get; set;}
     }

@@ -4,20 +4,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Telstra.Core.Data.Entities
 {
-    [Table("tag")]
+    [Table("site_tag")]
     public class Tag
     {
         [Key]
         [Required]
-        [Column("tag_id")]
-        public int TagId {get; set;}
+        [Column("site_tag_id")]
+        public string SiteTagId {get; set;}
 
-        [Column("name")]
-        public string Name { get; set; }
+        [Required]
+        [Column("site_id")]
+        public string SiteId {get; set;}
 
+        [Required]
+        [Column("tag_name")]
+        public string TagName { get; set; }
+
+        [Required]
         [Column("value")]
-        public string Value { get; set; }
+        public string TagValue { get; set; }
         
-        public ICollection<SiteTag> SiteTags { get; set; } = new List<SiteTag>();
+        public Site Site { get; set; }
     }
 }
