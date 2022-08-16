@@ -72,9 +72,8 @@ namespace WCA.Consumer.Api.Services
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<Site> returnedSites = JsonConvert.DeserializeObject<IList<Site>>(reply);
-                    if (returnedSites.Count > 0)
-                        returnedMappedSite = _mapper.Map<SiteModel>(returnedSites[0]);
+                    Site returnedSites = JsonConvert.DeserializeObject<Site>(reply);
+                    returnedMappedSite = _mapper.Map<SiteModel>(returnedSites);
                 }
                 else
                 {

@@ -62,28 +62,6 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         /// <summary>
-        /// Retrieve the search hierarchy for the logged-in user's organisation. Returns an array of nodes that can be turned 
-        /// into a search tree. Used for presentation only.
-        /// </summary>
-        /// <returns></returns>
-        // [HttpGet("organisations/overview-test")]
-        // [ProducesResponseType(typeof(IList<OrganisationModel>), (int)HttpStatusCode.OK)]
-        // [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        // [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        // [AllowAnonymous]
-        // public async Task<IActionResult> GetOrganisationOverviewTest()
-        // {
-        //     try
-        //     {
-        //         return Ok(await _service.GetOrganisationOverviewTest());
-        //     }
-        //     catch (Exception e) 
-        //     {
-        //         return new BadRequestObjectResult(e.Message);
-        //     }
-        // }
-
-        /// <summary>
         /// Creates a new organisation
         /// </summary>
         /// <returns></returns>

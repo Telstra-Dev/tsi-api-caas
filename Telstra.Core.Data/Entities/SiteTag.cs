@@ -9,7 +9,7 @@ namespace Telstra.Core.Data.Entities
         [Key]
         [Required]
         [Column("site_tag_id")]
-        public int SiteTagId {get; set;}
+        public string SiteTagId {get; set;}
 
         [Required]
         [Column("site_id")]

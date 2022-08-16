@@ -16,7 +16,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForMember(dest => dest.StoreFormat, opts => opts.MapFrom(s => s.Metadata.StoreFormat))
                 .ForMember(dest => dest.GeoClassification, opts => opts.MapFrom(s => s.Metadata.GeoClassification))
                 .ForMember(dest => dest.Region, opts => opts.MapFrom(s => s.Metadata.Region))
-                .ForMember(dest => dest.Tags, opts => opts.MapFrom(s => remapToTagModel(s.Metadata.Tags, s.SiteId)))
+                .ForMember(dest => dest.Tags, opts => opts.MapFrom(s => remapToEntityTags(s.Metadata.Tags, s.SiteId)))
                 .ForMember(dest => dest.OrganisationId, opts => opts.MapFrom(s => s.CustomerId))
                 .ForPath(dest => dest.Location.Id, opts => opts.MapFrom(s => s.Location.Id))
                 .ForPath(dest => dest.Location.Address, opts => opts.MapFrom(s => s.Location.Address))
@@ -30,14 +30,14 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForPath(dest => dest.Metadata.StoreFormat, opts => opts.MapFrom(s => s.StoreFormat))
                 .ForPath(dest => dest.Metadata.GeoClassification, opts => opts.MapFrom(s => s.GeoClassification))
                 .ForPath(dest => dest.Metadata.Region, opts => opts.MapFrom(s => s.Region))
-                .ForPath(dest => dest.Metadata.Tags, opts => opts.MapFrom(s => remapToEntityTags(s.Tags)))
+                .ForPath(dest => dest.Metadata.Tags, opts => opts.MapFrom(s => remapToTagModel(s.Tags)))
                 .ForPath(dest => dest.Location.Id, opts => opts.MapFrom(s => s.Location.Id))
                 .ForPath(dest => dest.Location.Address, opts => opts.MapFrom(s => s.Location.Address))
                 .ForPath(dest => dest.Location.GeoLocation.Latitude, opts => opts.MapFrom(s => s.Location.Latitude))
                 .ForPath(dest => dest.Location.GeoLocation.Longitude, opts => opts.MapFrom(s => s.Location.Longitude));
         }
 
-       private Dictionary<string, string[]> remapToEntityTags(ICollection<SiteTag> origTags) {
+       private Dictionary<string, string[]> remapToTagModel(ICollection<SiteTag> origTags) {
             Dictionary<string, string[]> remappedTags = null;
             if (origTags != null && origTags.Count > 0)
             {         
@@ -51,7 +51,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
             return remappedTags;
         }
 
-        private IList<SiteTag> remapToTagModel (Dictionary<string, string[]> origTags, string siteId)
+        private IList<SiteTag> remapToEntityTags(Dictionary<string, string[]> origTags, string siteId)
         {
             var mappedTags = new List<SiteTag>();
             foreach(var tagItem in origTags)

@@ -81,6 +81,17 @@ namespace WCA.Consumer.Api.Services
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply);
+                    // foreach (var dev in deviceResponse) {
+                    //     if (dev.Type == DeviceType.gateway.ToString()) {
+                    //         Gateway gateway = new Gateway {
+
+                    //         };
+                    //         orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
+                    //     }
+                    //     else {
+                    //         orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
+                    //     }
+                    // }
                     orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
                 }
                 else

@@ -24,10 +24,20 @@ namespace WCA.Consumer.Api.AutomapperProfiles
 
             CreateMap<Device, OrgSearchTreeNode>()
                 .ForMember(dest => dest.Text, opts => opts.MapFrom(s => s.Name))
-                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => s.SiteId))
+                .ForMember(dest => dest.ParentId, opts => opts.MapFrom(s => getParentFromDevice(s)))
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(s => s.DeviceId))
                 .ForMember(dest => dest.Type, opts => opts.MapFrom(s => s.Type.ToString()))
                 .ForMember(dest => dest.Href, opts => opts.MapFrom(s => "/devices/" + s.DeviceId));
+        }
+
+        private string getParentFromDevice(Device device) {
+            var parentId = device.SiteId;;
+            if (device != null)
+            {
+                if (device.Type == DeviceType.camera.ToString())
+                    parentId = device.EdgeDeviceId;
+            }
+            return parentId;
         }
     }
 }
