@@ -72,13 +72,21 @@ namespace WCA.Consumer.Api.Controllers
             }
         }
 
-        [HttpDelete("")]
+        [HttpDelete("{deviceId}")]
         [ProducesResponseType(typeof(DeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult DeleteDevice([FromQuery] string customerId, [FromQuery] string deviceId)
+        public IActionResult DeleteDevice([FromQuery] string customerId, [FromRoute] string deviceId)
         {
-            return Ok(this.service.DeleteDevice(customerId, deviceId).Result);
+            try {
+                var deletedDevice = this.service.DeleteDevice(customerId, deviceId).Result;
+
+                return Ok(deletedDevice);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         /// <summary>
