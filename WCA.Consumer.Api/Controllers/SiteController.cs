@@ -32,7 +32,17 @@ namespace WCA.Consumer.Api.Controllers
         [AllowAnonymous]
         public IActionResult GetSites([FromQuery] string customerId)
         {
-            return Ok(this.service.GetSitesForCustomer(customerId).Result);
+            try {
+                var newSite = this.service.GetSitesForCustomer(customerId).Result;
+                if (newSite != null && newSite.Count > 1)
+                    return Ok(newSite);
+                else 
+                    return NotFound(new { message = "No sites exist with this customer" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         /// <summary>
@@ -46,7 +56,17 @@ namespace WCA.Consumer.Api.Controllers
         [AllowAnonymous]
         public IActionResult GetSite([FromRoute] string siteId, [FromQuery] string customerId)
         {
-            return Ok(this.service.GetSite(siteId, customerId).Result);
+            try {
+                var newSite = this.service.GetSite(siteId, customerId).Result;
+                if (newSite != null)
+                    return Ok(newSite);
+                else 
+                    return NotFound(new { message = "Site doesn't exist with this customer" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         /// <summary>

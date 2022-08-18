@@ -70,10 +70,10 @@ namespace WCA.Consumer.Api.Services
                 if (customerId != null) includeCustomerId = $"?customerId={customerId}";
                 var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}{includeCustomerId}");
                 var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    Site returnedSites = JsonConvert.DeserializeObject<Site>(reply);
-                    returnedMappedSite = _mapper.Map<SiteModel>(returnedSites);
+                    Site returnedSite = JsonConvert.DeserializeObject<Site>(reply);
+                    returnedMappedSite = _mapper.Map<SiteModel>(returnedSite);
                 }
                 else
                 {

@@ -2,6 +2,7 @@ using AutoMapper;
 using WCA.Consumer.Api.Models;
 using Telstra.Core.Data.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WCA.Consumer.Api.AutomapperProfiles
 {
@@ -55,14 +56,16 @@ namespace WCA.Consumer.Api.AutomapperProfiles
         private IList<SiteTag> remapToEntityTags(Dictionary<string, string[]> origTags, string siteId)
         {
             var mappedTags = new List<SiteTag>();
+
             foreach(var tagItem in origTags)
             {
-                mappedTags.Add(
-                    new SiteTag {
-                        SiteId = siteId,
-                        TagName = tagItem.Key,
-                        TagValue = tagItem.Value[0]
-                    });
+                if (mappedTags.Where(t => t.TagName == tagItem.Key).Count() == 0)
+                    mappedTags.Add(
+                        new SiteTag {
+                            SiteId = siteId,
+                            TagName = tagItem.Key,
+                            TagValue = tagItem.Value[0]
+                        });
             }
             return mappedTags;
         }
