@@ -41,7 +41,7 @@ namespace WCA.Consumer.Api.Controllers
         {
             try {
                 var newDevice = this.service.GetDevices(customerId, siteId).Result;
-                if (newDevice != null && newDevice.Count > 1)
+                if (newDevice != null && newDevice.Count > 0)
                     return Ok(newDevice);
                 else 
                     return NotFound(new { message = "No devices could be found with the given criteria" });

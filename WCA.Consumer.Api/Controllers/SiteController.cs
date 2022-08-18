@@ -34,7 +34,7 @@ namespace WCA.Consumer.Api.Controllers
         {
             try {
                 var newSite = this.service.GetSitesForCustomer(customerId).Result;
-                if (newSite != null && newSite.Count > 1)
+                if (newSite != null && newSite.Count > 0)
                     return Ok(newSite);
                 else 
                     return NotFound(new { message = "No sites exist with this customer" });
