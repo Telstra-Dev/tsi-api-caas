@@ -114,7 +114,7 @@ namespace WCA.Consumer.Api.Controllers
                                 [FromBody] Camera device)
         {
             try {
-                var updatedDevice = this.service.UpdateCameraDevice(deviceId, device);
+                var updatedDevice = this.service.UpdateCameraDevice(deviceId, device).Result;
 
                 return Ok(updatedDevice);
             }
@@ -157,7 +157,7 @@ namespace WCA.Consumer.Api.Controllers
                                 [FromBody] Gateway device)
         {
             try {
-                var updatedDevice = this.service.UpdateEdgeDevice(deviceId, device);
+                var updatedDevice = this.service.UpdateEdgeDevice(deviceId, device).Result;
 
                 return Ok(updatedDevice);
             }
