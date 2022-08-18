@@ -39,7 +39,17 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult GetDevices([FromQuery] string customerId = null,
                                         [FromQuery] string siteId = null)
         {
-            return Ok(this.service.GetDevices(customerId, siteId).Result);
+            try {
+                var newDevice = this.service.GetDevices(customerId, siteId).Result;
+                if (newDevice != null && newDevice.Count > 1)
+                    return Ok(newDevice);
+                else 
+                    return NotFound(new { message = "No devices could be found with the given criteria" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         [HttpGet("{deviceId}")]
@@ -49,7 +59,17 @@ namespace WCA.Consumer.Api.Controllers
         [AllowAnonymous]
         public IActionResult GetDevice([FromRoute] string deviceId)
         {
-            return Ok(this.service.GetDevice(deviceId));
+            try {
+                var newDevice = this.service.GetDevice(deviceId).Result;
+                if (newDevice != null)
+                    return Ok(newDevice);
+                else 
+                    return NotFound(new { message = "Device doesn't exist" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         [HttpDelete("")]

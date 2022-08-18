@@ -36,7 +36,6 @@ namespace WCA.Consumer.Api.Services
             ArrayList devices = new ArrayList();
             try
             {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&siteId={siteId}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -52,44 +51,48 @@ namespace WCA.Consumer.Api.Services
                 }
                 else
                 {
-                    _logger.LogError("CreateEdgeDevice failed with error: " + reply);
-                    throw new Exception($"Error creating an edge device. {response.StatusCode} Response code from downstream: " + reply); 
+                    _logger.LogError("GetDevices failed with error: " + reply);
+                    throw new Exception($"Error getting devices. {response.StatusCode} Response code from downstream: " + reply); 
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError("CreateEdgeDevice: " + e.Message);
+                _logger.LogError("GetDevices: " + e.Message);
                 throw new Exception(e.Message);;
             }
             return devices;
         }
 
-        public DeviceModel GetDevice(string deviceId)
+        public async Task<DeviceModel> GetDevice(string deviceId)
         {
-            SymmetricKey symmetricKey = new SymmetricKey {
-                PrimaryKey = "Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=",
-                SecondaryKey = "8zbjhgT0VvVGMgGiAe9D9oyt+ECACvCGtYxvXlJIOY8="
-            };
-            Auth auth = new Auth {
-                SymmetricKey = symmetricKey,
-                IotHubConnectionString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo="
-            };
-            GatewayMetadata gatewayMetadata = new GatewayMetadata {
-                Hub = "tcp-azu0032-ae-iot-sv01-dev.azure-devices.net",
-                Auth = auth
-            };
-            Gateway gateway = new Gateway {
-                DeviceId = "3917acd9-2185-48a0-a71a-905316e2aae2",
-                Name = "Blue Mile Northern Gateway",
-                CustomerId = "manual-test-customer-id",
-                SiteId = "bceead95-5b9d-47bc-9d93-4740db6c1292",
-                EdgeDevice = "3917acd9-2185-48a0-a71a-905316e2aae2",
-                EdgeCapable = true,
-                Metadata = gatewayMetadata,
-                CreatedAt = 1655347987378,
-                Active = true
-            };
-            return gateway;
+            DeviceModel foundMappedDevice = null;
+            try
+            {
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    var foundDevice = JsonConvert.DeserializeObject<Device>(reply);
+                    if (foundDevice != null)
+                    {
+                        if (foundDevice.Type == DeviceType.gateway.ToString())
+                            foundMappedDevice = _mapper.Map<Gateway>(foundDevice);
+                        else // camera
+                            foundMappedDevice = _mapper.Map<Camera>(foundDevice);
+                    }
+                }
+                else
+                {
+                    _logger.LogError("GetDevice failed with error: " + reply);
+                    throw new Exception($"Error getting device. {response.StatusCode} Response code from downstream: " + reply); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("GetDevice: " + e.Message);
+                throw new Exception(e.Message);;
+            }
+            return foundMappedDevice;
         }
 
         public async Task<DeviceModel> DeleteDevice(string customerId, string deviceId)
@@ -97,7 +100,6 @@ namespace WCA.Consumer.Api.Services
             DeviceModel deletedMappedDevice = null;
             try
             {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&deviceId={deviceId}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
@@ -152,7 +154,6 @@ namespace WCA.Consumer.Api.Services
             mappedDevice.IsActive = true;
             try
             {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var payload =JsonConvert.SerializeObject(mappedDevice);
                 HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = null;
