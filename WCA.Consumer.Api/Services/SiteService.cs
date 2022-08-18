@@ -34,16 +34,17 @@ namespace WCA.Consumer.Api.Services
         public async Task<IList<SiteModel>> GetSitesForCustomer(string customerId)
         {
             IList<Site> sites = new List<Site>();
-            IList<SiteModel> returnedMappedSites = null;
+            IList<SiteModel> foundMappedSites = null;
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId={customerId}");
                 var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    IList<Site> returnedSites = JsonConvert.DeserializeObject<IList<Site>>(reply);
-                    returnedMappedSites = _mapper.Map<IList<SiteModel>>(returnedSites);
+                    IList<Site> foundSites = JsonConvert.DeserializeObject<IList<Site>>(reply);
+                    if (foundSites != null && foundSites.Count > 0)
+                        foundMappedSites = _mapper.Map<IList<SiteModel>>(foundSites);
                 }
                 else
                 {
@@ -56,13 +57,13 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogError("GetSitesForCustomer: " + e.Message);
                 throw new Exception(e.Message);;
             }
-            return returnedMappedSites;
+            return foundMappedSites;
         }
 
         public async Task<SiteModel> GetSite(string siteId, string customerId)
         {
             IList<Site> sites = new List<Site>();
-            SiteModel returnedMappedSite = null;
+            SiteModel foundMappedSite = null;
             try
             {
                 _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
@@ -72,8 +73,9 @@ namespace WCA.Consumer.Api.Services
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    Site returnedSite = JsonConvert.DeserializeObject<Site>(reply);
-                    returnedMappedSite = _mapper.Map<SiteModel>(returnedSite);
+                    Site foundSite = JsonConvert.DeserializeObject<Site>(reply);
+                    if (foundSite != null)
+                        foundMappedSite = _mapper.Map<SiteModel>(foundSite);
                 }
                 else
                 {
@@ -86,7 +88,7 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogError("GetSite: " + e.Message);
                 throw new Exception(e.Message);;
             }
-            return returnedMappedSite;
+            return foundMappedSite;
         }
 
         public async Task<SiteModel> CreateSite(SiteModel newSite)

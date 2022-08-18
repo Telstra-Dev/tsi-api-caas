@@ -38,15 +38,18 @@ namespace WCA.Consumer.Api.Services
             {
                 var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&siteId={siteId}");
                 var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     var returnedDevices = JsonConvert.DeserializeObject<IList<Device>>(reply);
-                    foreach (var returnedDevice in returnedDevices)
+                    if (returnedDevices != null && returnedDevices.Count > 0)
                     {
-                        if (returnedDevice.Type == DeviceType.gateway.ToString())
-                            devices.Add(_mapper.Map<Gateway>(returnedDevice));
-                        else // camera
-                            devices.Add(_mapper.Map<Camera>(returnedDevice));
+                        foreach (var returnedDevice in returnedDevices)
+                        {
+                            if (returnedDevice.Type == DeviceType.gateway.ToString())
+                                devices.Add(_mapper.Map<Gateway>(returnedDevice));
+                            else // camera
+                                devices.Add(_mapper.Map<Camera>(returnedDevice));
+                        }
                     }
                 }
                 else
