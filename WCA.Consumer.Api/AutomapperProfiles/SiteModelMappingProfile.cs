@@ -44,7 +44,8 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 Dictionary<string, string[]> tags = new Dictionary<string, string[]>();
                 foreach(var tagItem in origTags)
                 {
-                    tags.Add(tagItem.TagName, new []{ tagItem.TagValue });
+                    if (!tags.ContainsKey(tagItem.TagName))
+                        tags.Add(tagItem.TagName, new []{ tagItem.TagValue });
                 }
                 remappedTags = tags; 
             }
