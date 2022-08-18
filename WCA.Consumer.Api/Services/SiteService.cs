@@ -37,7 +37,6 @@ namespace WCA.Consumer.Api.Services
             IList<SiteModel> foundMappedSites = null;
             try
             {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId={customerId}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
@@ -66,7 +65,6 @@ namespace WCA.Consumer.Api.Services
             SiteModel foundMappedSite = null;
             try
             {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var includeCustomerId = "";
                 if (customerId != null) includeCustomerId = $"?customerId={customerId}";
                 var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}{includeCustomerId}");
@@ -106,7 +104,6 @@ namespace WCA.Consumer.Api.Services
             SiteModel mappedDeletedSite = null;
             try
             {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -135,7 +132,6 @@ namespace WCA.Consumer.Api.Services
 
             try
             {
-                _logger.LogTrace("Storage app base uri:" + _appSettings.StorageAppHttp.BaseUri);
                 var payload =JsonConvert.SerializeObject(mappedSite);
                 HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = null;
