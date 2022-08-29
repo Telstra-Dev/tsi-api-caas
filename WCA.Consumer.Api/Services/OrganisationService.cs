@@ -52,7 +52,7 @@ namespace WCA.Consumer.Api.Services
                     throw new Exception($"Error getting org overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
                 }
 
-                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId=moreton-bay-customer-id");
+                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites");
                 reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -65,7 +65,7 @@ namespace WCA.Consumer.Api.Services
                     throw new Exception("$Error getting sites for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
                 }
 
-                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId=moreton-bay-customer-id");
+                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices");
                 reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
