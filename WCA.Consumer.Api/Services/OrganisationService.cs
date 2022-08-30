@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System;
+using System.Linq;
 using System.Text;
 using System.Net.Http;
 using Telstra.Common;
@@ -86,53 +87,77 @@ namespace WCA.Consumer.Api.Services
             return orgList;
         }
 
-        public OrganisationModel GetOrganisation(int customerId, bool includeChildren)
+        public async Task<OrganisationModel> GetOrganisation(string customerId, bool includeChildren)
         {
-            OrganisationModel[] grandChild = new OrganisationModel[1];
-            OrganisationModel[] children = new OrganisationModel[2];
-            if (includeChildren)
+            OrganisationModel foundMappedOrg = null;
+            try
             {
-                grandChild[0] = new OrganisationModel {
-                        CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
-                        CustomerName = "Grandchild Org 1",
-                        Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-                        Alias = "TS",
-                        CreatedAt = 1649906502253,
-                        Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
-                    };
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations?customerId={customerId}");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    IList<Organisation> foundOrgs = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
+                    if (foundOrgs != null && foundOrgs.Count > 0)
+                        foundMappedOrg = _mapper.Map<OrganisationModel>(foundOrgs.FirstOrDefault());
+                }
+                else
+                {
+                    _logger.LogError("GetOrganisation failed with error: " + reply);
+                    throw new Exception($"Error getting an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("GetOrganisation: " + e.Message);
+                throw new Exception(e.Message);
+            }
+            return foundMappedOrg;
 
-                children[0] = new OrganisationModel {
-                        CustomerId = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-                        CustomerName = "Child Org 1",
-                        Parent = "manual-test-customer-id",
-                        Alias = "TS",
-                        CreatedAt = 1649906487737,
-                        Id = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-                        Children = grandChild
-                    };
-                children[1] = new OrganisationModel {
-                        CustomerId = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe",
-                        CustomerName = "Child Org 2",
-                        Parent = "manual-test-customer-id",
-                        Alias = "TS",
-                        CreatedAt = 1649907827892,
-                        Id = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe"
-                    };
-            }
-            else
-            {
-                children=null;
-            }
+            // OrganisationModel[] grandChild = new OrganisationModel[1];
+            // OrganisationModel[] children = new OrganisationModel[2];
+            // if (includeChildren)
+            // {
+            //     grandChild[0] = new OrganisationModel {
+            //             CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
+            //             CustomerName = "Grandchild Org 1",
+            //             Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+            //             Alias = "TS",
+            //             CreatedAt = 1649906502253,
+            //             Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
+            //         };
+
+            //     children[0] = new OrganisationModel {
+            //             CustomerId = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+            //             CustomerName = "Child Org 1",
+            //             Parent = "manual-test-customer-id",
+            //             Alias = "TS",
+            //             CreatedAt = 1649906487737,
+            //             Id = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+            //             Children = grandChild
+            //         };
+            //     children[1] = new OrganisationModel {
+            //             CustomerId = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe",
+            //             CustomerName = "Child Org 2",
+            //             Parent = "manual-test-customer-id",
+            //             Alias = "TS",
+            //             CreatedAt = 1649907827892,
+            //             Id = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe"
+            //         };
+            // }
+            // else
+            // {
+            //     children=null;
+            // }
             
-            OrganisationModel organisation = new OrganisationModel
-            {
-                CustomerId = "moreton-bay-customer-id",
-                CustomerName = "Moreton Bay Regional Council",
-                Parent = "telstra-root-org",
-                Id = "moreton-bay-customer-id",
-                Children = children
-            };
-            return organisation;
+            // OrganisationModel organisation = new OrganisationModel
+            // {
+            //     CustomerId = "moreton-bay-customer-id",
+            //     CustomerName = "Moreton Bay Regional Council",
+            //     Parent = "telstra-root-org",
+            //     Id = "moreton-bay-customer-id",
+            //     Children = children
+            // };
+            // return organisation;
         }
 
         public async Task<OrganisationModel> CreateOrganisation(OrganisationModel newOrg)
