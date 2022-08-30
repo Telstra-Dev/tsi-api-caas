@@ -57,10 +57,10 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetDevice([FromRoute] string deviceId)
+        public IActionResult GetDevice([FromRoute] string deviceId, [FromQuery] string customerId)
         {
             try {
-                var newDevice = this.service.GetDevice(deviceId).Result;
+                var newDevice = this.service.GetDevice(deviceId, customerId).Result;
                 if (newDevice != null)
                     return Ok(newDevice);
                 else 

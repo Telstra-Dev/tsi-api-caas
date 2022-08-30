@@ -66,12 +66,12 @@ namespace WCA.Consumer.Api.Services
             return devices;
         }
 
-        public async Task<DeviceModel> GetDevice(string deviceId)
+        public async Task<DeviceModel> GetDevice(string deviceId, string customerId)
         {
             DeviceModel foundMappedDevice = null;
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}");
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}?customerId={customerId}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
