@@ -23,5 +23,7 @@ namespace WCA.Consumer.Api.Models
         public long CreatedAt {get; set;}
 
         public bool Active {get; set;}
+
+        public string ModuleName {get; set;}
     }
 }

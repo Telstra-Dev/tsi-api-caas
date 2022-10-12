@@ -48,5 +48,8 @@ namespace Telstra.Core.Data.Entities
 
         [Column("metadata_auth_symmetric_key")]
         public string MetadataAuthSymmetricKey { get; set; }
+
+        [Column("module_name")]
+        public string ModuleName { get; set; }
     }
 }
