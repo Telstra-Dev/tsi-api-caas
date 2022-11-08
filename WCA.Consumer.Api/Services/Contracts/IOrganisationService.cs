@@ -9,7 +9,7 @@ namespace WCA.Consumer.Api.Services.Contracts
     public interface IOrganisationService
     {
         public Task<OrganisationModel> GetOrganisation(string customerId, bool includeChildren);
-        public Task<IList<OrgSearchTreeNode>> GetOrganisationOverview();
+        public Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token);
         // public Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest();
         public Task<OrganisationModel> CreateOrganisation(OrganisationModel org);
         public OrganisationModel UpdateOrganisation(string id, OrganisationModel org);

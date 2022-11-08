@@ -1,5 +1,6 @@
 using AutoMapper;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
@@ -35,8 +36,17 @@ namespace WCA.Consumer.Api.Services
             this._logger = logger;
         }
 
-        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview()
+        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token)
         {
+            // Authorisation
+            //  - Currently, very basic pre-MVP tactical to allow WCC to have acces
+            //  - Strategic is to move to CAIMAN + authorisation uplift in the database (TBD).
+            var email = JwtExtractor.ExtractField(token, "email").ToLower();
+            Regex regex = new Regex(@"^(wcc-.*)@(telstrasmartspacesdemo\.onmicrosoft\.com)$"); // WCC users will have the email format: `wcc-*@telstrasmartspacesdemo.onmicrosoft.com`.
+            var userTenancy = regex.Match(email).Success
+                ? "WCC"
+                : "DEFAULT";
+
             IList<OrgSearchTreeNode> orgList = new List<OrgSearchTreeNode>();
             try
             {
@@ -44,7 +54,12 @@ namespace WCA.Consumer.Api.Services
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
+                    IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply)
+                        .Where(e =>
+                                (userTenancy == "WCC" && e.CustomerId == "wcc-id")
+                            ||  (userTenancy != "WCC" && e.CustomerId != "wcc-id")
+                        )
+                        .ToList();
                     orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
                 }
                 else
@@ -57,7 +72,12 @@ namespace WCA.Consumer.Api.Services
                 reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<Site> siteResponse = JsonConvert.DeserializeObject<IList<Site>>(reply);
+                    IList<Site> siteResponse = JsonConvert.DeserializeObject<IList<Site>>(reply)
+                        .Where(e =>
+                                (userTenancy == "WCC" && e.CustomerId == "wcc-id")
+                            ||  (userTenancy != "WCC" && e.CustomerId != "wcc-id")
+                        )
+                        .ToList();
                     orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
                 }
                 else
@@ -70,14 +90,19 @@ namespace WCA.Consumer.Api.Services
                 reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply);
+                    IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply)
+                        .Where(e =>
+                                (userTenancy == "WCC" && e.CustomerId == "wcc-id")
+                            ||  (userTenancy != "WCC" && e.CustomerId != "wcc-id")
+                        )
+                        .ToList();
                     orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
                 }
                 else
                 {
                     _logger.LogError("GetDevices failed with error: " + reply);
                     throw new Exception($"Error getting devices for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
-                }
+                }   
             }
             catch (Exception e)
             {

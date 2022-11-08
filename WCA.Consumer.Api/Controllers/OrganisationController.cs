@@ -50,7 +50,8 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                return Ok(await _service.GetOrganisationOverview());
+                var token = this.HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+                return Ok(await _service.GetOrganisationOverview(token));
             }
             catch (Exception e) 
             {
