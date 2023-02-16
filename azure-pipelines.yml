@@ -74,125 +74,48 @@ stages:
               pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
               artifactName: 'wca-api-consumer'
 
-#  - stage: test
-##    dependsOn: ["build"]
-#    displayName: Test
-#    jobs:
-#      - job: api
-#        pool: $(AGENT_POOL_TEST)
-#        variables:
-#          - group: mwp-api-employee-test-integration
-#          - group: mwp-api-employee-deploy-dev
-#        displayName: test api
-#        steps:
-#          - task: AzureKeyVault@1
-#            inputs:
-#              azureSubscription: $(SERVICE_CONNECTION_DEV)
-#              KeyVaultName: "myworkplacewebapi"
-#            displayName: "Download Azure Key Vault secrets"
-          
-#          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-#            inputs:
-#              tokenPrefix: "{{"
-#              tokenSuffix: "}}"
-#              targetFiles: "**/Telstra.MyWorkplace.Data.Test/appsettings.json"
-#            displayName: "Replace Tokens"
+  - stage: test
+    dependsOn: ["build"]
+    displayName: Test
+    condition:
+      succeeded()
+    jobs:
+      - job: api
+        displayName: Test Apis
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Install .NET Core SDK 6.0'
+            inputs:
+              packageType: sdk
+              version: 6.x
+              performMultiLevelLookup: true
+              includePreviewVersions: false # Required for preview versions
+          - task: DotNetCoreCLI@2
+            displayName: 'Run Tests'
+            inputs:
+              command: 'test'
+              arguments : '-v normal --logger trx'
+              configuration: release
+              projects: 'WCA.Consumer.Api.Tests'
 
-#          - task: UseDotNet@2
-#            displayName: Install .NET 5 SDK
-#            inputs:
-#              packageType: 'sdk'
-#              version: '5.x'
+          - script: |
+              if ! command -v coverlet &> /dev/null
+              then
+                dotnet tool install --global coverlet.console
+              fi
+              dotnet build WCA.Consumer.Api.Tests -c Release
+              coverlet ./WCA.Consumer.Api.Tests/bin/Release/net6.0/WCA.Consumer.Api.Tests.dll --target "dotnet" --targetargs "test ./WCA.Consumer.Api.Tests -c Release --no-build -v normal" --format cobertura --exclude "[Telstra.Core.*]*" --exclude "[Telstra.Common]*" --exclude "[*]Telstra.Core.*" --exclude "[*]WCA.Storage.*"
+            displayName: Test Coverage
+            workingDirectory: $(Build.SourcesDirectory)
 
-#          - script: |
-#              echo "##vso[task.setvariable variable=TaskRan;isOutput=true]Yes"
-
-#              if [ "$(docker ps -q -f name=postgres-localhost)" ]; then
-#                docker stop postgres-localhost || true && docker rm -f postgres-localhost || true
-#              fi
-#              docker run --name postgres-localhost -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin -p 5432:5432 -d postgres
-#            displayName: Run Local Postgres Instance
-#            name: PgRunTask
-
-#          - script: |
-#              echo ">>>1. Setting up postgres-client"
-#              sudo apt update && sudo apt -y install gnupg2
-#              wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-#              echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
-#              sudo apt-get update && sudo apt-get -y install postgresql-client-12
-              
-#              echo ">>>2. Dumping the integration DB from Smart Spaces Dev"
-#              PGPASSWORD=$(IntegrationTestDatabasePass) pg_dump \
-#                        -h $(IntegrationTestDatabaseHost) \
-#                        -p $(IntegrationTestDatabasePort) \
-#                        -U $(IntegrationTestDatabaseUser) \
-#                        -s \
-#                        -C \
-#                        -x \
-#                        -O \
-#                        -f createIntegrationDB.sql \
-#                        mw-dev-smartspaces 1>/dev/null
-
-              # Change windows specific locale over to linux recognised ones
-#              sed -i 's/English_United States.1252/en_US.UTF-8/g' createIntegrationDB.sql
-
-#              # These are required to be set up - should be done in the integration test suite!
-#              echo "insert into connected_buildings.customer (customer_id,customer_name, cidn) values (1001,'TELSTRA','CIDN 1');" >> createIntegrationDB.sql
-#              echo "insert into connected_buildings.customer_tenant (customer_id,tenant_id,tenant_identifier,tenant_name,connection_string) values (1001,'tenant-telstra-d043a056','TELSTRA','Telstra','unused');" >> createIntegrationDB.sql
-
-#              echo ">>>3. Restoring the integration DB to a local postgres"
-#              PGPASSWORD=admin psql \
-#                     -h localhost \
-#                     -p 5432 \
-#                     -U postgres \
-#                     -f createIntegrationDB.sql 1>/dev/null
-              
-#              echo ">>>4. Dump/Restore completed!"
-#            displayName: Dump/Restore Integration DB
-
-#          - script: |
-#              echo "##vso[task.setvariable variable=TaskRan;isOutput=true]Yes"
-#              dotnet test ./Telstra.MyWorkplace.sln --configuration $(buildConfiguration) --logger trx
-#            displayName: Test
-#            name: TestTask
-#            workingDirectory: $(workingDirectory)
-
-#          - task: PublishTestResults@2
-#            displayName: Publish Test Results
-#            condition: and(succeededOrFailed(), eq(variables['TestTask.TaskRan'], 'Yes'))
-#            inputs:
-#              failTaskOnFailedTests: false
-#              testResultsFormat: 'VSTest'
-#              testResultsFiles: '**/*.trx'
-
-#          - script: |
-#              if ! command -v coverlet &> /dev/null
-#              then
-#                dotnet tool install --global coverlet.console
-#              fi
-
-#              coverlet ./Telstra.Data.Test/bin/Release/net5.0/Telstra.Data.Test.dll --target "dotnet" --targetargs "test ./Telstra.Data.Test/Telstra.Data.Test.csproj --configuration Release --no-build"
-#              coverlet ./Telstra.Bookings.Tests/bin/Release/net5.0/Telstra.Bookings.Tests.dll --target "dotnet" --targetargs "test ./Telstra.Bookings.Tests/Telstra.Bookings.Tests.csproj --configuration Release --no-build" --merge-with "coverage.json"
-#              coverlet ./Telstra.MyWorkplace.Api.Test/bin/Release/net5.0/Telstra.MyWorkplace.Api.Test.dll --target "dotnet" --targetargs "test ./Telstra.MyWorkplace.Api.Test/Telstra.MyWorkplace.Api.Test.csproj --configuration Release --no-build" --merge-with "coverage.json"
-#              coverlet ./Telstra.MyWorkplace.Data.Test/bin/Release/net5.0/Telstra.MyWorkplace.Data.Test.dll --target "dotnet" --targetargs "test ./Telstra.MyWorkplace.Data.Test/Telstra.MyWorkplace.Data.Test.csproj --configuration Release --no-build" --merge-with "coverage.json" --format cobertura
-#            displayName: Test Coverage
-#            workingDirectory: $(workingDirectory)
-
-#          - task: PublishCodeCoverageResults@1
- #           displayName: Publish Test Coverage Results
-#            inputs:
-#              codeCoverageTool: 'Cobertura'
-#              summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
-
-#          - script: |
-#              if [ "$(docker ps -q -f name=postgres-localhost)" ]; then
-#                docker stop postgres-localhost || true && docker rm -f postgres-localhost || true
-#              fi
-#            displayName: Postgres Clean Up
-#            condition: and(succeededOrFailed(), eq(variables['PgRunTask.TaskRan'], 'Yes'))
+          - task: PublishCodeCoverageResults@1
+            displayName: Publish Test Coverage Results
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
 
   - stage: deployToDevelopment
-    dependsOn: ["build"]
+    dependsOn: ["test"]
     displayName: Deploy to Development
     condition:
       or(
@@ -227,7 +150,7 @@ stages:
                     appSlotName: $(APP_SLOT_NAME_DEVELOPMENT)
 
   - stage: deployToStaging
-    dependsOn: ["build"]
+    dependsOn: ["test"]
     displayName: Deploy to Staging
     condition:
       or(
@@ -262,7 +185,7 @@ stages:
                     appSlotName: $(APP_SLOT_NAME_STAGING)
 
   - stage: deployToProduction
-    dependsOn: ["build"]
+    dependsOn: ["test"]
     displayName: Deploy to Production
     condition:
       or(

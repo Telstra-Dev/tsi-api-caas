@@ -22,7 +22,9 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForPath(dest => dest.Location.Id, opts => opts.MapFrom(s => s.Location.Id))
                 .ForPath(dest => dest.Location.Address, opts => opts.MapFrom(s => s.Location.Address))
                 .ForPath(dest => dest.Location.Latitude, opts => opts.MapFrom(s => s.Location.GeoLocation.Latitude))
-                .ForPath(dest => dest.Location.Longitude, opts => opts.MapFrom(s => s.Location.GeoLocation.Longitude));
+                .ForPath(dest => dest.Location.Longitude, opts => opts.MapFrom(s => s.Location.GeoLocation.Longitude))
+                .ForMember(dest => dest.SiteLocationId, opts => opts.Ignore())
+                .ForMember(dest => dest.Organisation, opts => opts.Ignore());
 
             CreateMap<Site, SiteModel>()
                 .ForPath(dest => dest.Metadata.StoreCode, opts => opts.MapFrom(s => s.StoreCode))
