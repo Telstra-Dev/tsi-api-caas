@@ -48,7 +48,7 @@ namespace Telstra.Common
         public string ConnectionString => this.ConnectionStringTemplate
             .Replace("{{host}}", this.Host)
             .Replace("{{port}}", this.Port.ToString())
-            .Replace("{{username}}",this.Username)
+            .Replace("{{username}}", this.Username)
             .Replace("{{password}}", this.Password)
             .Replace("{{database}}", this.DatabaseName);
     }

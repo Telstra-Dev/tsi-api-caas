@@ -1,6 +1,5 @@
 using AutoMapper;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
@@ -12,6 +11,7 @@ using Telstra.Common;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Helpers;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -41,73 +41,84 @@ namespace WCA.Consumer.Api.Services
             // Authorisation
             //  - Currently, very basic pre-MVP tactical to allow WCC to have acces
             //  - Strategic is to move to CAIMAN + authorisation uplift in the database (TBD).
-            var email = JwtExtractor.ExtractField(token, "email").ToLower();
-            Regex regex = new Regex(@"^(wcc-.*)@(telstrasmartspacesdemo\.onmicrosoft\.com)$"); // WCC users will have the email format: `wcc-*@telstrasmartspacesdemo.onmicrosoft.com`.
-            var userTenancy = regex.Match(email).Success
-                ? "WCC"
-                : "DEFAULT";
+            var orgRequestSuffix = "";
+            var siteRequestSuffix = "";
+            var deviceRequestSuffix = "";
+
+            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
+            if (string.IsNullOrEmpty(emailFromToken))
+                throw new NullReferenceException("Unrecognized email domain from JWT token.");
+
+            if (emailFromToken.Contains("wcc-") && emailFromToken.Contains("telstrasmartspacesdemo.onmicrosoft.com"))
+            {
+                //legacy logic for wcc login users
+                orgRequestSuffix = $"?customerId=wcc-id";
+                siteRequestSuffix = $"?customerId=wcc-id";
+                deviceRequestSuffix = $"?customerId=wcc-id";
+            }
+            else
+            {
+                //use email claim identifier
+                if (emailFromToken.Contains("@team.telstra.com"))
+                {
+                    //engineer access to all orgs, sites and devices
+                    orgRequestSuffix = "/overview";
+                }
+                else
+                {
+                    orgRequestSuffix = $"?email={emailFromToken}";
+                    siteRequestSuffix = $"?email={emailFromToken}";
+                    deviceRequestSuffix = $"?email={emailFromToken}";
+                }
+            }
 
             IList<OrgSearchTreeNode> orgList = new List<OrgSearchTreeNode>();
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview");
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations{orgRequestSuffix}");
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply)
-                        .Where(e =>
-                                (userTenancy == "WCC" && e.CustomerId == "wcc-id")
-                            ||  (userTenancy != "WCC" && e.CustomerId != "wcc-id")
-                        )
-                        .ToList();
+
+                    IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
                     orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
                 }
                 else
                 {
                     _logger.LogError("GetOrganisationOverview failed with error: " + reply);
-                    throw new Exception($"Error getting org overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
+                    throw new Exception($"Error getting org overview. {response.StatusCode} Response code from downstream: " + response.StatusCode);
                 }
 
-                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites");
+                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites{siteRequestSuffix}");
                 reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<Site> siteResponse = JsonConvert.DeserializeObject<IList<Site>>(reply)
-                        .Where(e =>
-                                (userTenancy == "WCC" && e.CustomerId == "wcc-id")
-                            ||  (userTenancy != "WCC" && e.CustomerId != "wcc-id")
-                        )
-                        .ToList();
+                    IList<Site> siteResponse = JsonConvert.DeserializeObject<IList<Site>>(reply);
                     orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
                 }
                 else
                 {
                     _logger.LogError("GetSites failed with error: " + reply);
-                    throw new Exception("$Error getting sites for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
+                    throw new Exception("$Error getting sites for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode);
                 }
 
-                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices");
+                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices{deviceRequestSuffix}");
                 reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply)
-                        .Where(e =>
-                                (userTenancy == "WCC" && e.CustomerId == "wcc-id")
-                            ||  (userTenancy != "WCC" && e.CustomerId != "wcc-id")
-                        )
-                        .ToList();
+                    IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply);
                     orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
                 }
                 else
                 {
                     _logger.LogError("GetDevices failed with error: " + reply);
-                    throw new Exception($"Error getting devices for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
-                }   
+                    throw new Exception($"Error getting devices for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode);
+                }
             }
             catch (Exception e)
             {
-                _logger.LogError("GetOrganisationOverview: " + e.Message);
-                throw new Exception(e.Message);;
+                _logger.LogError("Fail to Get Organisation Overview: " + e.Message);
+                throw new Exception(e.Message); ;
             }
             return orgList;
         }
@@ -128,7 +139,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("GetOrganisation failed with error: " + reply);
-                    throw new Exception($"Error getting an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
+                    throw new Exception($"Error getting an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode);
                 }
             }
             catch (Exception e)
@@ -137,52 +148,6 @@ namespace WCA.Consumer.Api.Services
                 throw new Exception(e.Message);
             }
             return foundMappedOrg;
-
-            // OrganisationModel[] grandChild = new OrganisationModel[1];
-            // OrganisationModel[] children = new OrganisationModel[2];
-            // if (includeChildren)
-            // {
-            //     grandChild[0] = new OrganisationModel {
-            //             CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
-            //             CustomerName = "Grandchild Org 1",
-            //             Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-            //             Alias = "TS",
-            //             CreatedAt = 1649906502253,
-            //             Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
-            //         };
-
-            //     children[0] = new OrganisationModel {
-            //             CustomerId = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-            //             CustomerName = "Child Org 1",
-            //             Parent = "manual-test-customer-id",
-            //             Alias = "TS",
-            //             CreatedAt = 1649906487737,
-            //             Id = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-            //             Children = grandChild
-            //         };
-            //     children[1] = new OrganisationModel {
-            //             CustomerId = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe",
-            //             CustomerName = "Child Org 2",
-            //             Parent = "manual-test-customer-id",
-            //             Alias = "TS",
-            //             CreatedAt = 1649907827892,
-            //             Id = "1a6972f5-5be3-4d55-ab1f-c9c3182a2bbe"
-            //         };
-            // }
-            // else
-            // {
-            //     children=null;
-            // }
-            
-            // OrganisationModel organisation = new OrganisationModel
-            // {
-            //     CustomerId = "moreton-bay-customer-id",
-            //     CustomerName = "Moreton Bay Regional Council",
-            //     Parent = "telstra-root-org",
-            //     Id = "moreton-bay-customer-id",
-            //     Children = children
-            // };
-            // return organisation;
         }
 
         public async Task<OrganisationModel> CreateOrganisation(OrganisationModel newOrg)
@@ -190,7 +155,7 @@ namespace WCA.Consumer.Api.Services
             OrganisationModel savedOrg = new OrganisationModel();
             try
             {
-                var payload =JsonConvert.SerializeObject(newOrg);
+                var payload = JsonConvert.SerializeObject(newOrg);
                 HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations", httpContent);
                 var reply = await response.Content.ReadAsStringAsync();
@@ -201,7 +166,7 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("CreateOrganisation failed with error: " + reply);
-                    throw new Exception($"Error creating an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode); 
+                    throw new Exception($"Error creating an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode);
                 }
             }
             catch (Exception e)
@@ -217,20 +182,22 @@ namespace WCA.Consumer.Api.Services
         }
         public OrganisationModel DeleteOrganisation(string id)
         {
-            return new OrganisationModel {
-                        CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
-                        CustomerName = "Grandchild Org 1",
-                        Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
-                        Alias = "TS",
-                        CreatedAt = 1649906502253,
-                        Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
-                    };
+            return new OrganisationModel
+            {
+                CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",
+                CustomerName = "Grandchild Org 1",
+                Parent = "5722000a-9552-4972-add4-32ca5f9a0c3b",
+                Alias = "TS",
+                CreatedAt = 1649906502253,
+                Id = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e"
+            };
         }
 
-        private void AddSearchTreeNode(IList<OrgSearchTreeNode> orgSearchTreeNodes, string id, string text, string type, string href, 
+        private void AddSearchTreeNode(IList<OrgSearchTreeNode> orgSearchTreeNodes, string id, string text, string type, string href,
                                         string parentId = null, Status status = null)
         {
-            OrgSearchTreeNode orgSearchTreeNode = new OrgSearchTreeNode {
+            OrgSearchTreeNode orgSearchTreeNode = new OrgSearchTreeNode
+            {
                 Id = id,
                 Text = text,
                 Type = type,

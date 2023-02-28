@@ -7,31 +7,27 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
-using Telstra.Common;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
-using WCA.Consumer.Api.Models.StorageReponse;
 using WCA.Consumer.Api.Services;
-using WCA.Consumer.Api.Services.Contracts;
 using Xunit;
 
 namespace WCA.Customer.Api.Tests
-{ 
+{
     public class OrganisationServiceTests
     {
         [Fact]
-        public void GetOrganisationOverview_Success()
+        public async Task GetOrganisationOverview_Success()
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             var issuer = Guid.NewGuid().ToString();
             var claims = new List<Claim>
             {
-                new Claim("email", "user@example.com")
+                new Claim("email", "someone@team.telstra.com")
             };
             var jwt = new JwtSecurityToken(issuer, null, claims, null, DateTime.UtcNow.AddMinutes(60), null);
             var jwtString = jwtHandler.WriteToken(jwt);
@@ -58,7 +54,7 @@ namespace WCA.Customer.Api.Tests
 
             OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = organisationService.GetOrganisationOverview(jwtString).Result;
+            var result = await organisationService.GetOrganisationOverview(jwtString);
 
             Assert.Equal(typeof(List<OrgSearchTreeNode>), result.GetType());
             Assert.Equal(result[0].Id, myOrganisations.First().CustomerId);
@@ -67,13 +63,13 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact]
-        public void GetOrganisationOverview_Success_WCC()
+        public async Task GetOrganisationOverview_Success_WCC()
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             var issuer = Guid.NewGuid().ToString();
             var claims = new List<Claim>
             {
-                new Claim("email", "wcc-user@telstrasmartspacesdemo.onmicrosoft.com")
+                new Claim("email", "wcc-admin@telstrasmartspacesdemo.onmicrosoft.com")
             };
             var jwt = new JwtSecurityToken(issuer, null, claims, null, DateTime.UtcNow.AddMinutes(60), null);
             var jwtString = jwtHandler.WriteToken(jwt);
@@ -95,7 +91,6 @@ namespace WCA.Customer.Api.Tests
                 Id = customerIdWcc,
                 CustomerId = customerIdWcc,
             };
-            myOrganisations.Add(myOrganisationNonWcc);
             myOrganisations.Add(myOrganisationWcc);
             var mySites = new List<Site>();
             var mySiteNonWcc = new Site
@@ -108,7 +103,6 @@ namespace WCA.Customer.Api.Tests
                 SiteId = siteIdWcc,
                 CustomerId = customerIdWcc,
             };
-            mySites.Add(mySiteNonWcc);
             mySites.Add(mySiteWcc);
             var myDevices = new List<Device>();
             var myDeviceNonWcc = new Device
@@ -123,20 +117,19 @@ namespace WCA.Customer.Api.Tests
                 SiteId = siteIdWcc,
                 CustomerId = customerIdWcc,
             };
-            myDevices.Add(myDeviceNonWcc);
             myDevices.Add(myDeviceWcc);
 
             var appSettings = TestDataHelper.CreateAppSettings();
 
             var mockHttp = new MockHttpMessageHandler();
             var responseJsonOrgs = JsonConvert.SerializeObject(myOrganisations);
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/organisations/overview")
+            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/organisations?customerId=wcc-id")
                     .Respond("application/json", responseJsonOrgs.ToString());
             var responseJsonSites = JsonConvert.SerializeObject(mySites);
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/sites")
+            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/sites?customerId=wcc-id")
                     .Respond("application/json", responseJsonSites.ToString());
             var responseJsonDevices = JsonConvert.SerializeObject(myDevices);
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/devices")
+            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/devices?customerId=wcc-id")
                     .Respond("application/json", responseJsonDevices.ToString());
             var httpClientMock = mockHttp.ToHttpClient();
 
@@ -145,7 +138,7 @@ namespace WCA.Customer.Api.Tests
 
             OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = organisationService.GetOrganisationOverview(jwtString).Result;
+            var result = await organisationService.GetOrganisationOverview(jwtString);
 
             Assert.Equal(typeof(List<OrgSearchTreeNode>), result.GetType());
             Assert.Equal(result[0].Id, customerIdWcc);
