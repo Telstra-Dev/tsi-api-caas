@@ -470,8 +470,78 @@ namespace WCA.Customer.Api.Tests
                         CustomerId = s.CustomerId,
                     };
                 });
+            mapperMock.Setup(a => a.Map<IList<SerialNumberModel>>(It.IsAny<IList<SerialNumber>>()))
+                      .Returns((IList<SerialNumber> serialNumbers) =>
+                {
+                    var list = new List<SerialNumberModel>();
+                    foreach (var e in serialNumbers)
+                    {
+                        list.Add(
+                            new SerialNumberModel
+                            {
+                                SerialNumberId = e.SerialNumberId,
+                                Value = e.Value,
+                                DeviceId = e.DeviceId,
+                            });
+                    }
+                    return list;
+                });
+            mapperMock.Setup(a => a.Map<SerialNumberModel>(It.IsAny<SerialNumber>()))
+                      .Returns((SerialNumber s) =>
+                {
+                    return new SerialNumberModel
+                    {
+                        SerialNumberId = s.SerialNumberId,
+                        Value = s.Value,
+                        DeviceId = s.DeviceId,
+                    };
+                });
 
             return mapperMock;
+        }
+
+        public static IList<SerialNumber> CreateSerialNumbers(int count)
+        {
+            var list = new List<SerialNumber>();
+
+            for (int i = 1; i <= count; i++)
+            {
+                list.Add(new SerialNumber
+                {
+                    SerialNumberId = i,
+                    Value = $"serial-number-value-{i}",
+                    DeviceId = $"device-id-{i}",
+                });
+            }
+
+            return list;
+        }
+
+        public static SerialNumber CreateSerialNumber()
+        {
+            return CreateSerialNumbers(1)[0];
+        }
+
+        public static IList<SerialNumberModel> CreateSerialNumberModels(int count)
+        {
+            var list = new List<SerialNumberModel>();
+
+            for (int i = 1; i <= count; i++)
+            {
+                list.Add(new SerialNumberModel
+                {
+                    SerialNumberId = i,
+                    Value = $"serial-number-value-{i}",
+                    DeviceId = $"device-id-{i}",
+                });
+            }
+
+            return list;
+        }
+
+        public static SerialNumberModel CreateSerialNumberModel()
+        {
+            return CreateSerialNumberModels(1)[0];
         }
     }
 }
