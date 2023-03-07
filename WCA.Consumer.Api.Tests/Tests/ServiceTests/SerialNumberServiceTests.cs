@@ -66,9 +66,9 @@ namespace WCA.Customer.Api.Tests
 
             SerialNumberService service = new SerialNumberService(httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var exception = await Assert.ThrowsAsync<Exception>(() =>
-                service.GetSerialNumberByValue(serialNumber.Value));
-            Assert.Equal("Error getting serial number. NotFound Response code from downstream: ", exception.Message);
+            var result = service.GetSerialNumberByValue(serialNumber.Value).Result;
+
+            Assert.Null(result);
         }
 
         [Fact]

@@ -46,6 +46,10 @@ namespace WCA.Consumer.Api.Services
                         serialNumberModel = _mapper.Map<SerialNumberModel>(foundSerialNumber);
                     }
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
                 else
                 {
                     _logger.LogError("GetSerialNumberByValue failed with error: " + reply);
