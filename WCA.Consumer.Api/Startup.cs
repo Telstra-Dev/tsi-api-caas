@@ -80,6 +80,7 @@ namespace Telstra.Core.Api
             services.AddLoggingAndTelemetry(Configuration);
             services.AddSwaggerGen();
             //services.AddAuth(Configuration, this.appSettings);
+            services.AddMemoryCache();
 
             services.AddGrpcClient<WCA.Storage.Api.Proto.Customer.CustomerClient>(o =>
             {

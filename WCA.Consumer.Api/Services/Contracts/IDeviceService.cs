@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 
 namespace WCA.Consumer.Api.Services.Contracts
@@ -18,6 +20,8 @@ namespace WCA.Consumer.Api.Services.Contracts
 
         public Task<Gateway> CreateEdgeDevice(Gateway device);
 
-        public Task<Gateway> UpdateEdgeDevice(string id, Gateway device);        
+        public Task<Gateway> UpdateEdgeDevice(string id, Gateway device);
+
+        public Task<IList<Device>> GetLeafDevicesForGateway(string deviceId);
     }
 }

@@ -117,7 +117,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact]
-        public async void GetDevice_Fail()
+        public void GetDevice_NotFound()
         {
             var customerId = "customer-id";
             var deviceIdGateway = "device-id-gateway";
@@ -134,9 +134,9 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var exception = await Assert.ThrowsAsync<Exception>(() =>
-                deviceService.GetDevice(deviceIdGateway, customerId));
-            Assert.Equal("Error getting device. NotFound Response code from downstream: ", exception.Message);
+            var result = deviceService.GetDevice(deviceIdGateway, customerId).Result;
+
+            Assert.Null(result);
         }
 
         [Fact]

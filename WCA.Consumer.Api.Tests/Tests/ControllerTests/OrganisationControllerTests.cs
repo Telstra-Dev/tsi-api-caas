@@ -39,7 +39,7 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrgSearchTree = TestDataHelper.CreateOrgSearchTreeNodes(1);
-            serviceMock.Setup(m => m.GetOrganisationOverview(It.IsAny<string>())).Returns(Task.FromResult(myOrgSearchTree));
+            serviceMock.Setup(m => m.GetOrganisationOverview(It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(myOrgSearchTree));
 
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";

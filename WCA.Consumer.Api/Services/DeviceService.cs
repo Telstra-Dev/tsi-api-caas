@@ -84,6 +84,10 @@ namespace WCA.Consumer.Api.Services
                             foundMappedDevice = _mapper.Map<Camera>(foundDevice);
                     }
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return foundMappedDevice;
+                }
                 else
                 {
                     _logger.LogError("GetDevice failed with error: " + reply);
@@ -223,6 +227,42 @@ namespace WCA.Consumer.Api.Services
                 throw new Exception(e.Message);;
             }
             return returnedMappedDevice;
+        }
+
+        public async Task<IList<Device>> GetLeafDevicesForGateway(string deviceId)
+        {
+            var devices = new List<Device>();
+            try
+            {
+                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}/leafDevices");
+                var reply = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    var returnedDevices = JsonConvert.DeserializeObject<IList<Device>>(reply);
+                    if (returnedDevices != null && returnedDevices.Count > 0)
+                    {
+                        foreach (var returnedDevice in returnedDevices)
+                        {
+                            devices.Add(returnedDevice);
+                        }
+                    }
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return devices;
+                }
+                else
+                {
+                    _logger.LogError("GetLeafDevicesForGateway failed with error: " + reply);
+                    throw new Exception($"Error getting leaf devices. {response.StatusCode} Response code from downstream: " + reply);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("GetLeafDevicesForGateway: " + e.Message);
+                throw new Exception(e.Message); ;
+            }
+            return devices;
         }
 
     }

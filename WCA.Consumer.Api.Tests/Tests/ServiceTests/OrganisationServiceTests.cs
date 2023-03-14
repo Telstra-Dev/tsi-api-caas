@@ -14,6 +14,7 @@ using RichardSzalay.MockHttp;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services;
+using WCA.Consumer.Api.Services.Contracts;
 using Xunit;
 
 namespace WCA.Customer.Api.Tests
@@ -51,8 +52,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = await organisationService.GetOrganisationOverview(jwtString);
 
@@ -135,8 +137,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = await organisationService.GetOrganisationOverview(jwtString);
 
@@ -171,8 +174,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
                 organisationService.GetOrganisationOverview(jwtString));
@@ -193,8 +197,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = organisationService.GetOrganisation(myOrganisations.First().CustomerId, false).Result;
 
@@ -215,8 +220,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
                 organisationService.GetOrganisation(customerId, false));
@@ -237,8 +243,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = organisationService.CreateOrganisation(myOrganisationModel).Result;
 
@@ -259,8 +266,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
                 organisationService.CreateOrganisation(myOrganisationModel));
@@ -281,8 +289,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = organisationService.UpdateOrganisation(myOrganisationModel.CustomerId, myOrganisationModel);
 
@@ -304,8 +313,9 @@ namespace WCA.Customer.Api.Tests
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            OrganisationService organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            var organisationService = new OrganisationService(null, httpClientMock, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = organisationService.DeleteOrganisation(myOrganisationModel.Id);
 

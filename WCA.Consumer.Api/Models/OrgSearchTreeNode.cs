@@ -7,6 +7,6 @@ namespace WCA.Consumer.Api.Models
             public string Text {get; set;}
             public string ParentId {get;set;}
             public string Href {get; set;}
-            public Status Status {get; set;}
+            public HealthStatusModel Status {get; set;}
     }
 }

@@ -22,21 +22,24 @@ namespace WCA.Consumer.Api.Services
         private readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
+        private readonly IHealthStatusService _healthStatusService;
 
         public OrganisationService(WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient grpcClient,
                                     HttpClient httpClient,
                                     AppSettings appSettings,
                                     IMapper mapper,
-                                    ILogger<OrganisationService> logger)
+                                    ILogger<OrganisationService> logger,
+                                    IHealthStatusService healthStatusService)
         {
             this._grpcClient = grpcClient;
             this._httpClient = httpClient;
             this._appSettings = appSettings;
             this._mapper = mapper;
             this._logger = logger;
+            this._healthStatusService = healthStatusService;
         }
 
-        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token)
+        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token, bool includeHealthStatus = false)
         {
             // Authorisation
             //  - Currently, very basic pre-MVP tactical to allow WCC to have acces
@@ -94,7 +97,20 @@ namespace WCA.Consumer.Api.Services
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     IList<Site> siteResponse = JsonConvert.DeserializeObject<IList<Site>>(reply);
-                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
+
+                    if (includeHealthStatus)
+                    {
+                        foreach (var site in siteResponse)
+                        {
+                            var node = _mapper.Map<OrgSearchTreeNode>(site);
+                            node.Status = await _healthStatusService.GetSiteHealthStatus(site);
+                            orgList.Add(node);
+                        }
+                    }
+                    else
+                    {
+                        orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
+                    }
                 }
                 else
                 {
@@ -107,7 +123,20 @@ namespace WCA.Consumer.Api.Services
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply);
-                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
+
+                    if (includeHealthStatus)
+                    {
+                        foreach (var device in deviceResponse)
+                        {
+                            var node = _mapper.Map<OrgSearchTreeNode>(device);
+                            node.Status = await _healthStatusService.GetDeviceHealthStatus(device);
+                            orgList.Add(node);
+                        }
+                    }
+                    else
+                    {
+                        orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
+                    }
                 }
                 else
                 {
@@ -120,6 +149,7 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogError("Fail to Get Organisation Overview: " + e.Message);
                 throw new Exception(e.Message); ;
             }
+
             return orgList;
         }
 
@@ -194,7 +224,7 @@ namespace WCA.Consumer.Api.Services
         }
 
         private void AddSearchTreeNode(IList<OrgSearchTreeNode> orgSearchTreeNodes, string id, string text, string type, string href,
-                                        string parentId = null, Status status = null)
+                                        string parentId = null, HealthStatusModel status = null)
         {
             OrgSearchTreeNode orgSearchTreeNode = new OrgSearchTreeNode
             {
