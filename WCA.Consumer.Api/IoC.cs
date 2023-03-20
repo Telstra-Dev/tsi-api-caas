@@ -15,13 +15,13 @@ namespace Telstra.Core.Api
 {
     public static class IoC
     {
-        public static void RegisterDependencies(this IServiceCollection @this, IConfiguration configuration)
+        public static void RegisterDependencies(this IServiceCollection collection, IConfiguration configuration)
         {
             // REGISTER ALL THE DEPENDANCIES HERE
             var appSettings = configuration.Bind<AppSettings>();
-            @this.AddSingleton(f => appSettings);
-            @this.AddHttpContextAccessor();
-            
+            collection.AddSingleton(f => appSettings);
+            collection.AddHttpContextAccessor();
+
             // @this.RegisterMultiTenantStore<TenantStoreDbContext>(appSettings.Storage.MyDb, "tenant");
             // @this.RegisterContextBuilderOptions<MyMultiTenantContext>(appSettings.Storage.MyDb);
 
@@ -37,14 +37,14 @@ namespace Telstra.Core.Api
             // @this.AddScoped<BookingRepository>();
             // @this.AddScoped<MyMultitenantRepository>(m => new MyMultitenantRepository(
             //     m.GetService<MyMultiTenantContext>(), m.GetService<ILogger<MyMultiTenantContext>>()));
-
-            @this.AddScoped<ICustomerService, CustomerService>();
-            @this.AddScoped<IHomeService, HomeService>();
-            @this.AddScoped<IOrganisationService, OrganisationService>();
-            @this.AddScoped<ISiteService, SiteService>();
-            @this.AddScoped<IDeviceService, DeviceService>();
-            @this.AddScoped<ISerialNumberService, SerialNumberService>();
-            @this.AddScoped<IHealthStatusService, HealthStatusService>();
+            collection.AddSingleton<IRestClient, RestClient>();
+            collection.AddScoped<ICustomerService, CustomerService>();
+            collection.AddScoped<IHomeService, HomeService>();
+            collection.AddScoped<IOrganisationService, OrganisationService>();
+            collection.AddScoped<ISiteService, SiteService>();
+            collection.AddScoped<IDeviceService, DeviceService>();
+            collection.AddScoped<ISerialNumberService, SerialNumberService>();
+            collection.AddScoped<IHealthStatusService, HealthStatusService>();
         }
     }
 }

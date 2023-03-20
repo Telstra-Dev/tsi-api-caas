@@ -13,17 +13,18 @@ using WCA.Consumer.Api.Controllers;
 using Xunit;
 
 namespace WCA.Customer.Api.Tests
-{ 
+{
     public class SerialNumberControllerTests
     {
-        public void GetSerialNumbers_Value_Success()
+        [Fact]
+        public async Task GetSerialNumbers_Value_Success()
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             var serialNumber = TestDataHelper.CreateSerialNumberModel();
-            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>())).Returns(Task.FromResult(serialNumber));
+            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>())).ReturnsAsync(serialNumber);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = controller.GetSerialNumbers(serialNumber.Value, null);
+            var result = await controller.GetSerialNumbers(serialNumber.Value, null);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -31,55 +32,57 @@ namespace WCA.Customer.Api.Tests
             Assert.Equal(expectedSerialNumber.SerialNumberId, serialNumber.SerialNumberId);
         }
 
-        public void GetSerialNumbers_Value_NonExistent()
+        [Fact]
+        public async Task GetSerialNumbers_Value_NonExistent()
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             SerialNumberModel serialNumber = null;
-            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>())).Returns(Task.FromResult(serialNumber));
+            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>())).ReturnsAsync(serialNumber);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = controller.GetSerialNumbers("non-existent", null);
+            var result = await controller.GetSerialNumbers("non-existent", null);
 
-            Assert.Equal(typeof(NotFoundResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundResult).StatusCode);
+            Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
+            Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
         }
 
-        public void GetSerialNumbers_Filter_SingleMatch()
+        [Fact]
+        public async Task GetSerialNumbers_Filter_SingleMatch()
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             var serialNumbers = TestDataHelper.CreateSerialNumberModels(1);
             var serialNumber = serialNumbers.First();
             serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
-                .Returns(Task.FromResult(serialNumbers));
+                .ReturnsAsync(serialNumbers);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = controller.GetSerialNumbers(null, serialNumber.Value);
+            var result = await controller.GetSerialNumbers(null, serialNumber.Value);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
             var expectedSerialNumbers = (result as OkObjectResult).Value as List<SerialNumberModel>;
-            Assert.Equal(expectedSerialNumbers.Count, 1);
+            Assert.Single(expectedSerialNumbers);
             Assert.Equal(expectedSerialNumbers[0].SerialNumberId, serialNumber.SerialNumberId);
             Assert.Equal(expectedSerialNumbers[0].Value, serialNumber.Value);
             Assert.Equal(expectedSerialNumbers[0].DeviceId, serialNumber.DeviceId);
         }
 
-        public void GetSerialNumbers_Filter_MultipleMatches()
+        [Fact]
+        public async Task GetSerialNumbers_Filter_MultipleMatches()
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
-            var count = 5;
             var serialNumbers = TestDataHelper.CreateSerialNumberModels(1);
             var serialNumber = serialNumbers.First();
             serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
-                .Returns(Task.FromResult(serialNumbers));
+                .ReturnsAsync(serialNumbers);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = controller.GetSerialNumbers(null, serialNumber.Value.Substring(0, 10));
+            var result = await controller.GetSerialNumbers(null, serialNumber.Value.Substring(0, 10));
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
             var expectedSerialNumbers = (result as OkObjectResult).Value as List<SerialNumberModel>;
-            Assert.Equal(expectedSerialNumbers.Count, count);
+            Assert.Single(expectedSerialNumbers);
             for (int i = 0; i < serialNumbers.Count; i++)
             {
                 Assert.Equal(expectedSerialNumbers[i].SerialNumberId, serialNumbers[i].SerialNumberId);
@@ -88,19 +91,17 @@ namespace WCA.Customer.Api.Tests
             }
         }
 
-        public void GetSerialNumbers_Filter_NonExistent()
+        [Fact]
+        public async Task GetSerialNumbers_Filter_NonExistent()
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
-                .Returns(Task.FromResult<IList<SerialNumberModel>>(null));
+                .ReturnsAsync(new List<SerialNumberModel>());
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = controller.GetSerialNumbers(null, "non-existent");
+            var result = await controller.GetSerialNumbers(null, "non-existent");
 
-            Assert.Equal(typeof(OkObjectResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
-            var expectedSerialNumbers = (result as OkObjectResult).Value as List<SerialNumberModel>;
-            Assert.Equal(expectedSerialNumbers.Count, 0);
+            Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
         }
     }
 }

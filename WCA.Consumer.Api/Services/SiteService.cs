@@ -21,8 +21,8 @@ namespace WCA.Consumer.Api.Services
         private readonly ILogger _logger;
 
         public SiteService(HttpClient httpClient,
-                        AppSettings appSettings, 
-                        IMapper mapper, 
+                        AppSettings appSettings,
+                        IMapper mapper,
                         ILogger<OrganisationService> logger)
         {
             this._httpClient = httpClient;
@@ -48,13 +48,13 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("GetSitesForCustomer failed with error: " + reply);
-                    throw new Exception("Error getting sites for customerId. Response code from downstream: " + response.StatusCode); 
+                    throw new Exception("Error getting sites for customerId. Response code from downstream: " + response.StatusCode);
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError("GetSitesForCustomer: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message);
             }
             return foundMappedSites;
         }
@@ -78,13 +78,13 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("GetSite failed with error: " + reply);
-                    throw new Exception("Error getting site. Response code from downstream: " + response.StatusCode); 
+                    throw new Exception("Error getting site. Response code from downstream: " + response.StatusCode);
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError("GetSite: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message);
             }
             return foundMappedSite;
         }
@@ -114,13 +114,13 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("DeleteSite failed with error: " + reply);
-                    throw new Exception($"Error deleting a site. {response.StatusCode} Response code from downstream: " + reply); 
+                    throw new Exception($"Error deleting a site. {response.StatusCode} Response code from downstream: " + reply);
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError("DeleteSite: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message);
             }
             return mappedDeletedSite;
         }
@@ -128,11 +128,11 @@ namespace WCA.Consumer.Api.Services
         private async Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false)
         {
             SiteModel returnedMappedSite = null;
-            Site mappedSite = _mapper.Map<Site>(newSite);            
+            Site mappedSite = _mapper.Map<Site>(newSite);
 
             try
             {
-                var payload =JsonConvert.SerializeObject(mappedSite);
+                var payload = JsonConvert.SerializeObject(mappedSite);
                 HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = null;
                 if (!isUpdate)
@@ -149,13 +149,13 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("SaveSite failed with error: " + reply);
-                    throw new Exception($"Error saving a site. {response.StatusCode} Response code from downstream: " + reply); 
+                    throw new Exception($"Error saving a site. {response.StatusCode} Response code from downstream: " + reply);
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError("SaveSite: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message);
             }
             return returnedMappedSite;
         }

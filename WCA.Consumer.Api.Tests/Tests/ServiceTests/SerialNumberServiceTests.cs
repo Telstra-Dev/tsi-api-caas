@@ -5,7 +5,9 @@ using System.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,7 +23,7 @@ using WCA.Consumer.Api.Services.Contracts;
 using Xunit;
 
 namespace WCA.Customer.Api.Tests
-{ 
+{
     public class SerialNumberServiceTests
     {
         [Fact]
@@ -30,16 +32,13 @@ namespace WCA.Customer.Api.Tests
             var serialNumber = TestDataHelper.CreateSerialNumber();
             var appSettings = TestDataHelper.CreateAppSettings();
 
-            var mockHttp = new MockHttpMessageHandler();
-            var responseJson = JsonConvert.SerializeObject(serialNumber);
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/serialNumbers?value={serialNumber.Value}")
-                    .Respond("application/json", responseJson.ToString());
-            var httpClientMock = mockHttp.ToHttpClient();
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<SerialNumber>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(serialNumber);
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
-            SerialNumberService service = new SerialNumberService(httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            SerialNumberService service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var result = service.GetSerialNumberByValue(serialNumber.Value).Result;
 
@@ -55,52 +54,47 @@ namespace WCA.Customer.Api.Tests
             var serialNumber = TestDataHelper.CreateSerialNumber();
             var appSettings = TestDataHelper.CreateAppSettings();
 
-            var mockHttp = new MockHttpMessageHandler();
-            var responseJson = JsonConvert.SerializeObject(serialNumber);
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/serialNumbers?value={serialNumber.Value}")
-                    .Respond(HttpStatusCode.NotFound);
-            var httpClientMock = mockHttp.ToHttpClient();
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<SerialNumber>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync((SerialNumber)null);
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
-            SerialNumberService service = new SerialNumberService(httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            SerialNumberService service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = service.GetSerialNumberByValue(serialNumber.Value).Result;
+            var result = await service.GetSerialNumberByValue(serialNumber.Value);
 
             Assert.Null(result);
         }
 
         [Fact]
-        public void GetSerialNumbersByFilter_SingleMatch()
+        public async void GetSerialNumbersByFilter_SingleMatch()
         {
             var serialNumbers = TestDataHelper.CreateSerialNumbers(1);
             var serialNumber = serialNumbers.First();
             var appSettings = TestDataHelper.CreateAppSettings();
 
-            var mockHttp = new MockHttpMessageHandler();
-            var responseJson = JsonConvert.SerializeObject(serialNumbers);
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/serialNumbers?filter={serialNumber.Value}")
-                    .Respond("application/json", responseJson.ToString());
-            var httpClientMock = mockHttp.ToHttpClient();
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<IList<SerialNumber>>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(serialNumbers);
+
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
-            SerialNumberService service = new SerialNumberService(httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            SerialNumberService service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = service.GetSerialNumbersByFilter(serialNumber.Value).Result;
+            var result = await service.GetSerialNumbersByFilter(serialNumber.Value);
 
             Assert.Equal(typeof(List<SerialNumberModel>), result.GetType());
             var expectedSerialNumbers = result.ToList();
-            Assert.Equal(expectedSerialNumbers.Count, 1);
+            Assert.Single(expectedSerialNumbers);
             Assert.Equal(expectedSerialNumbers[0].SerialNumberId, serialNumber.SerialNumberId);
             Assert.Equal(expectedSerialNumbers[0].Value, serialNumber.Value);
             Assert.Equal(expectedSerialNumbers[0].DeviceId, serialNumber.DeviceId);
         }
 
         [Fact]
-        public void GetSerialNumbersByFilter_MultipleMatches()
+        public async void GetSerialNumbersByFilter_MultipleMatches()
         {
             var count = 5;
             var serialNumbers = TestDataHelper.CreateSerialNumbers(count);
@@ -108,18 +102,16 @@ namespace WCA.Customer.Api.Tests
             var appSettings = TestDataHelper.CreateAppSettings();
             var searchFilter = serialNumber.Value.Substring(0, 10);
 
-            var mockHttp = new MockHttpMessageHandler();
-            var responseJson = JsonConvert.SerializeObject(serialNumbers);
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/serialNumbers?filter={searchFilter}")
-                    .Respond("application/json", responseJson.ToString());
-            var httpClientMock = mockHttp.ToHttpClient();
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<IList<SerialNumber>>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(serialNumbers);
+
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
-            SerialNumberService service = new SerialNumberService(httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            SerialNumberService service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = service.GetSerialNumbersByFilter(searchFilter).Result;
+            var result = await service.GetSerialNumbersByFilter(searchFilter);
 
             Assert.Equal(typeof(List<SerialNumberModel>), result.GetType());
             var expectedSerialNumbers = result.ToList();
@@ -137,19 +129,17 @@ namespace WCA.Customer.Api.Tests
         {
             var appSettings = TestDataHelper.CreateAppSettings();
 
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When($"{appSettings.StorageAppHttp.BaseUri}/serialNumbers*")
-                    .Respond(HttpStatusCode.NotFound);
-            var httpClientMock = mockHttp.ToHttpClient();
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<IList<SerialNumber>>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).Throws(new Exception());
 
             var mapperMock = TestDataHelper.CreateMockMapper();
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
-            SerialNumberService service = new SerialNumberService(httpClientMock, appSettings, mapperMock.Object, loggerMock.Object);
+            SerialNumberService service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
                 service.GetSerialNumbersByFilter("non-existent"));
-            Assert.Equal("Error getting serial number. NotFound Response code from downstream: ", exception.Message);
+            Assert.Contains("GetSerialNumbers failed", exception.Message);
         }
     }
 }

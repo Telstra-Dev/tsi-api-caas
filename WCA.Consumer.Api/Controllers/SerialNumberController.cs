@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
+using System.Threading.Tasks;
 
 namespace WCA.Consumer.Api.Controllers
 {
@@ -13,11 +14,11 @@ namespace WCA.Consumer.Api.Controllers
     [Route("[controller]s")]
     public class SerialNumberController : BaseController
     {
-        readonly ISerialNumberService service;
+        readonly ISerialNumberService _snService;
 
-        public SerialNumberController(ISerialNumberService service)
+        public SerialNumberController(ISerialNumberService snService)
         {
-            this.service = service;
+            _snService = snService;
         }
 
         [HttpGet()]
@@ -26,13 +27,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetSerialNumbers([FromQuery] string value, [FromQuery] string filter, [FromQuery] bool inactiveOnly = false, [FromQuery] uint? maxResults = null)
+        public async Task<IActionResult> GetSerialNumbers([FromQuery] string value, [FromQuery] string filter, [FromQuery] bool inactiveOnly = false, [FromQuery] uint? maxResults = null)
         {
-            try {
+            try
+            {
                 // Value query param has priority
                 if (value != null)
                 {
-                    var serialNumber = this.service.GetSerialNumberByValue(value).Result;
+                    var serialNumber = await _snService.GetSerialNumberByValue(value);
                     if (serialNumber == null)
                     {
                         return NotFound(new { message = "No serial numbers could be found with the given criteria" });
@@ -43,7 +45,7 @@ namespace WCA.Consumer.Api.Controllers
                     }
                 }
 
-                var serialNumbers = this.service.GetSerialNumbersByFilter(filter, inactiveOnly, maxResults).Result;
+                var serialNumbers = await _snService.GetSerialNumbersByFilter(filter, inactiveOnly, maxResults);
                 if (serialNumbers == null || serialNumbers.Count == 0)
                 {
                     return NotFound(new { message = "No serial numbers could be found with the given criteria" });

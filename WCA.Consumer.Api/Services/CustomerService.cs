@@ -1,25 +1,25 @@
 ﻿using System.Threading.Tasks;
 using WCA.Consumer.Api.Models.StorageReponse;
 using WCA.Consumer.Api.Services.Contracts;
-using System.Net;
 using System.Net.Http;
 using Telstra.Common;
 using WCA.Storage.Api.Proto;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace WCA.Consumer.Api.Services
 {
     public class CustomerService : ICustomerService
     {
         private readonly WCA.Storage.Api.Proto.Customer.CustomerClient _grpcClient;
-        private readonly HttpClient _httpClient;
+        private readonly IRestClient _httpClient;
         private readonly AppSettings _appSettings;
 
-        public CustomerService(WCA.Storage.Api.Proto.Customer.CustomerClient grpcClient, HttpClient httpClient, AppSettings appSettings)
+        public CustomerService(WCA.Storage.Api.Proto.Customer.CustomerClient grpcClient, IRestClient httpClient, AppSettings appSettings)
         {
-            this._grpcClient = grpcClient;
-            this._httpClient = httpClient;
-            this._appSettings = appSettings;
+            _grpcClient = grpcClient;
+            _httpClient = httpClient;
+            _appSettings = appSettings;
         }
         public async Task<WCA.Consumer.Api.Models.Customer> GetCustomerById(int id)
         {
@@ -36,9 +36,9 @@ namespace WCA.Consumer.Api.Services
 
         public async Task<WCA.Consumer.Api.Models.Customer> GetCustomerById2(int id)
         {
-            var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/customer/{id}");
-            var reply = await response.Content.ReadAsStringAsync();
-            CustomerResponse customerResponse = JsonConvert.DeserializeObject<CustomerResponse>(reply);
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/customer/{id}");
+            var customerResponse = await _httpClient.SendAsync<CustomerResponse>(request, CancellationToken.None);
+
             return customerResponse.Result[0];
         }
     }
