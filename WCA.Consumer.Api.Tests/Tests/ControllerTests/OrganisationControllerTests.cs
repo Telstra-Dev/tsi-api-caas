@@ -14,11 +14,11 @@ using WCA.Consumer.Api.Controllers;
 using Xunit;
 
 namespace WCA.Customer.Api.Tests
-{ 
+{
     public class OrganisationControllerTests
     {
         [Fact(DisplayName = "Get organisation")]
-        public void GetOrganisation()
+        public async void GetOrganisation()
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrganisation = TestDataHelper.CreateOrganisationModel();
@@ -26,7 +26,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new OrganisationController(serviceMock.Object);
 
-            var result = controller.GetOrganisation(myOrganisation.CustomerId, false);
+            var result = await controller.GetOrganisation(myOrganisation.CustomerId, false);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -35,7 +35,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Get organisation overview")]
-        public void GetOrganisationOverview()
+        public async void GetOrganisationOverview()
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrgSearchTree = TestDataHelper.CreateOrgSearchTreeNodes(1);
@@ -52,7 +52,7 @@ namespace WCA.Customer.Api.Tests
                 }
             };
 
-            var result = controller.GetOrganisationOverview().Result;
+            var result = await controller.GetOrganisationOverview();
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -62,7 +62,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Create organisation")]
-        public void CreateOrganisation()
+        public async void CreateOrganisation()
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrganisation = TestDataHelper.CreateOrganisationModel();
@@ -70,7 +70,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new OrganisationController(serviceMock.Object);
 
-            var result = controller.CreateOrganisation(myOrganisation).Result;
+            var result = await controller.CreateOrganisation(myOrganisation);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);

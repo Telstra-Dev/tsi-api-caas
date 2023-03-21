@@ -13,54 +13,54 @@ using WCA.Consumer.Api.Controllers;
 using Xunit;
 
 namespace WCA.Customer.Api.Tests
-{ 
+{
     public class DeviceControllerTests
     {
         [Fact(DisplayName = "Get devices")]
-        public void GetDevices_Success()
+        public async void GetDevices_Success()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var myDevice = TestDataHelper.CreateDeviceModel();
             var myDevices = new ArrayList() { myDevice };
-            serviceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(myDevices));
+            serviceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(myDevices);
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.GetDevices(myDevice.CustomerId, myDevice.SiteId);
+            var result = await controller.GetDevices(myDevice.CustomerId, myDevice.SiteId);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
             ArrayList expectedDevices = ((result as OkObjectResult).Value as ArrayList);
-            var expectedDevice = (DeviceModel) expectedDevices[0];
+            var expectedDevice = (DeviceModel)expectedDevices[0];
             Assert.Equal(expectedDevice.DeviceId, myDevice.DeviceId);
         }
 
         [Fact(DisplayName = "Get devices not found")]
-        public void GetDevices_NotFound()
+        public async void GetDevices_NotFound()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var customerId = "customer-id";
             var siteId = "site-id";
-            serviceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<ArrayList>(null));
+            serviceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((ArrayList)null);
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.GetDevices(customerId, siteId);
+            var result = await controller.GetDevices(customerId, siteId);
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
         }
 
         [Fact(DisplayName = "Get one device")]
-        public void GetDevice_Success()
+        public async void GetDevice_Success()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var myDevice = TestDataHelper.CreateDeviceModel();
-            serviceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(myDevice));
+            serviceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(myDevice);
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.GetDevice(myDevice.DeviceId, myDevice.CustomerId);
+            var result = await controller.GetDevice(myDevice.DeviceId, myDevice.CustomerId);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -69,7 +69,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Get device not found")]
-        public void GetDevice_NotFound()
+        public async void GetDevice_NotFound()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var customerId = "customer-id";
@@ -78,14 +78,14 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.GetDevice(deviceId, customerId);
+            var result = await controller.GetDevice(deviceId, customerId);
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
         }
 
         [Fact(DisplayName = "Delete device")]
-        public void DeleteDevice()
+        public async void DeleteDevice()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var myDevice = TestDataHelper.CreateDeviceModel();
@@ -93,7 +93,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.DeleteDevice(myDevice.CustomerId, myDevice.DeviceId);
+            var result = await controller.DeleteDevice(myDevice.CustomerId, myDevice.DeviceId);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -102,7 +102,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Create Camera Device")]
-        public void CreateCameraDevice()
+        public async void CreateCameraDevice()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var myDevice = TestDataHelper.CreateCameraModel();
@@ -110,7 +110,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.CreateCameraDevice(myDevice);
+            var result = await controller.CreateCameraDevice(myDevice);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -119,7 +119,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Update Camera Device")]
-        public void UpdateCameraDevice()
+        public async void UpdateCameraDevice()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var myDevice = TestDataHelper.CreateCameraModel();
@@ -127,7 +127,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.UpdateCameraDevice(myDevice.DeviceId, myDevice);
+            var result = await controller.UpdateCameraDevice(myDevice.DeviceId, myDevice);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -136,7 +136,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Create Edge Device")]
-        public void CreateEdgeDevice()
+        public async void CreateEdgeDevice()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var myDevice = TestDataHelper.CreateGatewayModel();
@@ -144,7 +144,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.CreateEdgeDevice(myDevice);
+            var result = await controller.CreateEdgeDevice(myDevice);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -153,7 +153,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Update Camera Device")]
-        public void UpdateEdgeDevice()
+        public async void UpdateEdgeDevice()
         {
             var serviceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             var myDevice = TestDataHelper.CreateGatewayModel();
@@ -161,7 +161,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new DeviceController(serviceMock.Object);
 
-            var result = controller.UpdateEdgeDevice(myDevice.DeviceId, myDevice);
+            var result = await controller.UpdateEdgeDevice(myDevice.DeviceId, myDevice);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);

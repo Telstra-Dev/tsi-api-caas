@@ -11,24 +11,25 @@ using Telstra.Common;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
+using System.Threading;
 
 namespace WCA.Consumer.Api.Services
 {
     public class DeviceService : IDeviceService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IRestClient _httpClient;
         private readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        public DeviceService(HttpClient httpClient,
-                        AppSettings appSettings, 
-                        IMapper mapper, 
+        public DeviceService(IRestClient httpClient,
+                        AppSettings appSettings,
+                        IMapper mapper,
                         ILogger<OrganisationService> logger)
         {
-            this._httpClient = httpClient;
-            this._appSettings = appSettings;
-            this._mapper = mapper;
-            this._logger = logger;
+            _httpClient = httpClient;
+            _appSettings = appSettings;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<ArrayList> GetDevices(string customerId, string siteId)
@@ -36,34 +37,26 @@ namespace WCA.Consumer.Api.Services
             ArrayList devices = new ArrayList();
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&siteId={siteId}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&siteId={siteId}");
+                var returnedDevices = await _httpClient.SendAsync<IList<Device>>(request, CancellationToken.None);
+
+                if (returnedDevices != null)
                 {
-                    var returnedDevices = JsonConvert.DeserializeObject<IList<Device>>(reply);
-                    if (returnedDevices != null && returnedDevices.Count > 0)
+                    foreach (var returnedDevice in returnedDevices)
                     {
-                        foreach (var returnedDevice in returnedDevices)
-                        {
-                            if (returnedDevice.Type == DeviceType.gateway.ToString())
-                                devices.Add(_mapper.Map<Gateway>(returnedDevice));
-                            else // camera
-                                devices.Add(_mapper.Map<Camera>(returnedDevice));
-                        }
+                        if (returnedDevice.Type == DeviceType.gateway.ToString())
+                            devices.Add(_mapper.Map<Gateway>(returnedDevice));
+                        else // camera
+                            devices.Add(_mapper.Map<Camera>(returnedDevice));
                     }
                 }
-                else
-                {
-                    _logger.LogError("GetDevices failed with error: " + reply);
-                    throw new Exception($"Error getting devices. {response.StatusCode} Response code from downstream: " + reply); 
-                }
+                return devices;
             }
             catch (Exception e)
             {
                 _logger.LogError("GetDevices: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message); ;
             }
-            return devices;
         }
 
         public async Task<DeviceModel> GetDevice(string deviceId, string customerId)
@@ -71,35 +64,25 @@ namespace WCA.Consumer.Api.Services
             DeviceModel foundMappedDevice = null;
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}?customerId={customerId}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}?customerId={customerId}");
+                var returnedDevice = await _httpClient.SendAsync<Device>(request, CancellationToken.None);
+
+                if (returnedDevice != null)
                 {
-                    var foundDevice = JsonConvert.DeserializeObject<Device>(reply);
-                    if (foundDevice != null)
-                    {
-                        if (foundDevice.Type == DeviceType.gateway.ToString())
-                            foundMappedDevice = _mapper.Map<Gateway>(foundDevice);
-                        else // camera
-                            foundMappedDevice = _mapper.Map<Camera>(foundDevice);
-                    }
+                    if (returnedDevice.Type == DeviceType.gateway.ToString())
+                        foundMappedDevice = _mapper.Map<Gateway>(returnedDevice);
+                    else // camera
+                        foundMappedDevice = _mapper.Map<Camera>(returnedDevice);
                 }
-                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    return foundMappedDevice;
-                }
-                else
-                {
-                    _logger.LogError("GetDevice failed with error: " + reply);
-                    throw new Exception($"Error getting device. {response.StatusCode} Response code from downstream: " + reply); 
-                }
+
+                return foundMappedDevice;
+
             }
             catch (Exception e)
             {
                 _logger.LogError("GetDevice: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message); ;
             }
-            return foundMappedDevice;
         }
 
         public async Task<DeviceModel> DeleteDevice(string customerId, string deviceId)
@@ -107,7 +90,9 @@ namespace WCA.Consumer.Api.Services
             DeviceModel deletedMappedDevice = null;
             try
             {
-                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&deviceId={deviceId}");
+                var request = new HttpRequestMessage(HttpMethod.Delete, $"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&deviceId={deviceId}");
+                var response = await _httpClient.SendAsync(request, CancellationToken.None);
+
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
@@ -123,15 +108,15 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("DeleteDevice failed with error: " + reply);
-                    throw new Exception($"Error deleting a device. {response.StatusCode} Response code from downstream: " + reply); 
+                    throw new Exception($"Error deleting a device. {response.StatusCode} Response code from downstream: " + reply);
                 }
+                return deletedMappedDevice;
             }
             catch (Exception e)
             {
                 _logger.LogError("DeleteDevice: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message); ;
             }
-            return deletedMappedDevice;
         }
 
         public async Task<Camera> CreateCameraDevice(Camera newCamera)
@@ -153,21 +138,29 @@ namespace WCA.Consumer.Api.Services
         {
             return await SaveEdgeDevice(gateway, true);
         }
-        
+
         private async Task<Camera> SaveCameraDevice(Camera saveCamera, bool isUpdate = false)
         {
-            Camera returnedMappedDevice= null;
+            Camera returnedMappedDevice = null;
             Device mappedDevice = _mapper.Map<Device>(saveCamera);
             mappedDevice.IsActive = true;
             try
             {
-                var payload =JsonConvert.SerializeObject(mappedDevice);
+                var payload = JsonConvert.SerializeObject(mappedDevice);
                 HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = null;
+                HttpRequestMessage request;
+
                 if (!isUpdate)
-                    response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices", httpContent);
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, $"{_appSettings.StorageAppHttp.BaseUri}/devices");
+                }
                 else
-                    response = await _httpClient.PutAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{saveCamera.DeviceId}", httpContent);
+                {
+                    request = new HttpRequestMessage(HttpMethod.Put, $"{_appSettings.StorageAppHttp.BaseUri}/devices/{saveCamera.DeviceId}");
+                }
+                request.Content = httpContent;
+                response = await _httpClient.SendAsync(request, CancellationToken.None);
 
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -178,36 +171,41 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("CreateEdgeDevice failed with error: " + reply);
-                    throw new Exception($"Error creating an edge device. {response.StatusCode} Response code from downstream: " + reply); 
+                    throw new Exception($"Error creating an edge device. {response.StatusCode} Response code from downstream: " + reply);
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError("CreateEdgeDevice: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message); ;
             }
             return returnedMappedDevice;
         }
 
         private async Task<Gateway> SaveEdgeDevice(Gateway saveGateway, bool isUpdate = false)
         {
-            Gateway returnedMappedDevice= null;
+            Gateway returnedMappedDevice = null;
             Device mappedDevice = _mapper.Map<Device>(saveGateway);
 
             // @TODO Hacks for now (hard-code)
             mappedDevice.IsActive = true;
             mappedDevice.MetadataAuthConnString = "HostName=tcp-azu0032-ae-iot-sv01-dev.azure-devices.net;DeviceId=3917acd9-2185-48a0-a71a-905316e2aae2;SharedAccessKey=Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=";
             mappedDevice.MetadataAuthSymmetricKey = "Yi1J4AtlTMrIYYFHZHdQ6OBQUmALsbiMTliAxK/F1mo=";
-            
+
             try
             {
-                var payload =JsonConvert.SerializeObject(mappedDevice);
+                var payload = JsonConvert.SerializeObject(mappedDevice);
                 HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = null;
+                HttpRequestMessage request;
+
                 if (!isUpdate)
-                    response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices", httpContent);
+                    request = new HttpRequestMessage(HttpMethod.Post, $"{_appSettings.StorageAppHttp.BaseUri}/devices");
                 else
-                    response = await _httpClient.PutAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{saveGateway.DeviceId}", httpContent);
+                    request = new HttpRequestMessage(HttpMethod.Put, $"{_appSettings.StorageAppHttp.BaseUri}/devices/{saveGateway.DeviceId}");
+
+                request.Content = httpContent;
+                response = await _httpClient.SendAsync(request, CancellationToken.None);
 
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -218,13 +216,13 @@ namespace WCA.Consumer.Api.Services
                 else
                 {
                     _logger.LogError("SaveEdgeDevice failed with error: " + reply);
-                    throw new Exception($"Error saving an edge device. {response.StatusCode} Response code from downstream: " + reply); 
+                    throw new Exception($"Error saving an edge device. {response.StatusCode} Response code from downstream: " + reply);
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError("SaveEdgeDevice: " + e.Message);
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message); ;
             }
             return returnedMappedDevice;
         }
@@ -234,7 +232,8 @@ namespace WCA.Consumer.Api.Services
             var devices = new List<Device>();
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}/leafDevices");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/devices/{deviceId}/leafDevices");
+                var response = await _httpClient.SendAsync(request, CancellationToken.None);
                 var reply = await response.Content.ReadAsStringAsync();
                 if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {

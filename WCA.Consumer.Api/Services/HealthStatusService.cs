@@ -1,8 +1,6 @@
 using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Text;
@@ -17,7 +15,7 @@ namespace WCA.Consumer.Api.Services
 {
     public class HealthStatusService : IHealthStatusService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IRestClient _httpClient;
         private readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
@@ -26,9 +24,9 @@ namespace WCA.Consumer.Api.Services
         private IMemoryCache _cache { get; }
         private DateTimeOffset _shortCacheTime = DateTimeOffset.Now.AddSeconds(60);
 
-        public HealthStatusService(HttpClient httpClient,
-                        AppSettings appSettings, 
-                        IMapper mapper, 
+        public HealthStatusService(IRestClient httpClient,
+                        AppSettings appSettings,
+                        IMapper mapper,
                         ILogger<OrganisationService> logger,
                         IDeviceService deviceService,
                         ISiteService siteService,
@@ -73,7 +71,7 @@ namespace WCA.Consumer.Api.Services
 
             // Check cache
             var cacheKey = $"{nameof(GetGatewayHealthStatus)}-{device.DeviceId}";
-            var cacheValue = (HealthStatusModel) _cache.Get(cacheKey);
+            var cacheValue = (HealthStatusModel)_cache.Get(cacheKey);
             if (cacheValue != null)
             {
                 return cacheValue;

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
+using System.Threading.Tasks;
 
 namespace WCA.Consumer.Api.Controllers
 {
@@ -12,11 +13,11 @@ namespace WCA.Consumer.Api.Controllers
     [Route("[controller]s")]
     public class DeviceController : BaseController
     {
-        readonly IDeviceService service;
+        readonly IDeviceService _deviceService;
 
         public DeviceController(IDeviceService service)
         {
-            this.service = service;
+            _deviceService = service;
         }
 
         /// <summary>
@@ -36,14 +37,15 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetDevices([FromQuery] string customerId = null,
+        public async Task<IActionResult> GetDevices([FromQuery] string customerId = null,
                                         [FromQuery] string siteId = null)
         {
-            try {
-                var newDevice = this.service.GetDevices(customerId, siteId).Result;
+            try
+            {
+                var newDevice = await _deviceService.GetDevices(customerId, siteId);
                 if (newDevice != null && newDevice.Count > 0)
                     return Ok(newDevice);
-                else 
+                else
                     return NotFound(new { message = "No devices could be found with the given criteria" });
             }
             catch (Exception e)
@@ -57,13 +59,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetDevice([FromRoute] string deviceId, [FromQuery] string customerId)
+        public async Task<IActionResult> GetDevice([FromRoute] string deviceId, [FromQuery] string customerId)
         {
-            try {
-                var newDevice = this.service.GetDevice(deviceId, customerId).Result;
+            try
+            {
+                var newDevice = await _deviceService.GetDevice(deviceId, customerId);
                 if (newDevice != null)
                     return Ok(newDevice);
-                else 
+                else
                     return NotFound(new { message = "Device doesn't exist" });
             }
             catch (Exception e)
@@ -76,10 +79,11 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(DeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult DeleteDevice([FromQuery] string customerId, [FromRoute] string deviceId)
+        public async Task<IActionResult> DeleteDevice([FromQuery] string customerId, [FromRoute] string deviceId)
         {
-            try {
-                var deletedDevice = this.service.DeleteDevice(customerId, deviceId).Result;
+            try
+            {
+                var deletedDevice = await _deviceService.DeleteDevice(customerId, deviceId);
 
                 return Ok(deletedDevice);
             }
@@ -97,10 +101,11 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult CreateCameraDevice([FromBody] Camera device)
+        public async Task<IActionResult> CreateCameraDevice([FromBody] Camera device)
         {
-            try {
-                var newDevice = this.service.CreateCameraDevice(device).Result;
+            try
+            {
+                var newDevice = await _deviceService.CreateCameraDevice(device);
 
                 return Ok(newDevice);
             }
@@ -118,11 +123,12 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPut("camera/{deviceId}")]
         [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult UpdateCameraDevice([FromRoute] string deviceId,
+        public async Task<IActionResult> UpdateCameraDevice([FromRoute] string deviceId,
                                 [FromBody] Camera device)
         {
-            try {
-                var updatedDevice = this.service.UpdateCameraDevice(deviceId, device).Result;
+            try
+            {
+                var updatedDevice = await _deviceService.UpdateCameraDevice(deviceId, device);
 
                 return Ok(updatedDevice);
             }
@@ -140,10 +146,11 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(Gateway), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult CreateEdgeDevice([FromBody] Gateway device)
+        public async Task<IActionResult> CreateEdgeDevice([FromBody] Gateway device)
         {
-            try {
-                var newDevice = this.service.CreateEdgeDevice(device).Result;
+            try
+            {
+                var newDevice = await _deviceService.CreateEdgeDevice(device);
 
                 return Ok(newDevice);
             }
@@ -161,11 +168,12 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPut("edge-device/{deviceId}")]
         [ProducesResponseType(typeof(Gateway), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult UpdateEdgeDevice([FromRoute] string deviceId,
+        public async Task<IActionResult> UpdateEdgeDevice([FromRoute] string deviceId,
                                 [FromBody] Gateway device)
         {
-            try {
-                var updatedDevice = this.service.UpdateEdgeDevice(deviceId, device).Result;
+            try
+            {
+                var updatedDevice = await _deviceService.UpdateEdgeDevice(deviceId, device);
 
                 return Ok(updatedDevice);
             }

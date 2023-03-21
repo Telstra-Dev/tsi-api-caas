@@ -5,38 +5,37 @@ using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System;
 using System.Linq;
-using System.Text;
-using System.Net.Http;
 using Telstra.Common;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Helpers;
+using System.Threading;
 
 namespace WCA.Consumer.Api.Services
 {
     public class OrganisationService : IOrganisationService
     {
         private readonly WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient _grpcClient;
-        private readonly HttpClient _httpClient;
+        private readonly IRestClient _httpClient;
         private readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IHealthStatusService _healthStatusService;
 
         public OrganisationService(WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient grpcClient,
-                                    HttpClient httpClient,
+                                    IRestClient httpClient,
                                     AppSettings appSettings,
                                     IMapper mapper,
                                     ILogger<OrganisationService> logger,
                                     IHealthStatusService healthStatusService)
         {
-            this._grpcClient = grpcClient;
-            this._httpClient = httpClient;
-            this._appSettings = appSettings;
-            this._mapper = mapper;
-            this._logger = logger;
-            this._healthStatusService = healthStatusService;
+            _grpcClient = grpcClient;
+            _httpClient = httpClient;
+            _appSettings = appSettings;
+            _mapper = mapper;
+            _logger = logger;
+            _healthStatusService = healthStatusService;
         }
 
         public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token, bool includeHealthStatus = false)
@@ -50,7 +49,7 @@ namespace WCA.Consumer.Api.Services
 
             var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
             if (string.IsNullOrEmpty(emailFromToken))
-                throw new NullReferenceException("Unrecognized email domain from JWT token.");
+                throw new NullReferenceException("Invalid claim from token.");
 
             if (emailFromToken.Contains("wcc-") && emailFromToken.Contains("telstrasmartspacesdemo.onmicrosoft.com"))
             {
@@ -78,79 +77,54 @@ namespace WCA.Consumer.Api.Services
             IList<OrgSearchTreeNode> orgList = new List<OrgSearchTreeNode>();
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations{orgRequestSuffix}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
+                //Get org detail
+                var orgResponse = await _httpClient.GetAsync<IList<Organisation>>($"{_appSettings.StorageAppHttp.BaseUri}/organisations{orgRequestSuffix}", CancellationToken.None);
+                orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
+                _logger.LogInformation($"Organisations added to orgList for user {emailFromToken}");
 
-                    IList<Organisation> orgResponse = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
-                    orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
+                //Get sites detail
+                var siteResponse = await _httpClient.GetAsync<IList<Site>>($"{_appSettings.StorageAppHttp.BaseUri}/sites{siteRequestSuffix}", CancellationToken.None);
+                if (includeHealthStatus)
+                {
+                    foreach (var site in siteResponse)
+                    {
+                        var node = _mapper.Map<OrgSearchTreeNode>(site);
+                        node.Status = await _healthStatusService.GetSiteHealthStatus(site);
+                        orgList.Add(node);
+                    }
+                    _logger.LogInformation($"Sites and health status added to orgList for user {emailFromToken}");
                 }
                 else
                 {
-                    _logger.LogError("GetOrganisationOverview failed with error: " + reply);
-                    throw new Exception($"Error getting org overview. {response.StatusCode} Response code from downstream: " + response.StatusCode);
+                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
+                    _logger.LogInformation($"Sites added to orgList for user {emailFromToken}");
                 }
 
-                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites{siteRequestSuffix}");
-                reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                //Get devices detail
+                var deviceResponse = await _httpClient.GetAsync<IList<Device>>($"{_appSettings.StorageAppHttp.BaseUri}/devices{deviceRequestSuffix}", CancellationToken.None);
+                if (includeHealthStatus)
                 {
-                    IList<Site> siteResponse = JsonConvert.DeserializeObject<IList<Site>>(reply);
-
-                    if (includeHealthStatus)
+                    foreach (var device in deviceResponse)
                     {
-                        foreach (var site in siteResponse)
-                        {
-                            var node = _mapper.Map<OrgSearchTreeNode>(site);
-                            node.Status = await _healthStatusService.GetSiteHealthStatus(site);
-                            orgList.Add(node);
-                        }
+                        var node = _mapper.Map<OrgSearchTreeNode>(device);
+                        node.Status = await _healthStatusService.GetDeviceHealthStatus(device);
+                        orgList.Add(node);
                     }
-                    else
-                    {
-                        orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
-                    }
+                    _logger.LogInformation($"Devices and health status added to orgList for user {emailFromToken}");
                 }
                 else
                 {
-                    _logger.LogError("GetSites failed with error: " + reply);
-                    throw new Exception("$Error getting sites for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode);
+                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
+                    _logger.LogInformation($"Devices added to orgList for user {emailFromToken}");
                 }
 
-                response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/devices{deviceRequestSuffix}");
-                reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IList<Device> deviceResponse = JsonConvert.DeserializeObject<IList<Device>>(reply);
-
-                    if (includeHealthStatus)
-                    {
-                        foreach (var device in deviceResponse)
-                        {
-                            var node = _mapper.Map<OrgSearchTreeNode>(device);
-                            node.Status = await _healthStatusService.GetDeviceHealthStatus(device);
-                            orgList.Add(node);
-                        }
-                    }
-                    else
-                    {
-                        orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
-                    }
-                }
-                else
-                {
-                    _logger.LogError("GetDevices failed with error: " + reply);
-                    throw new Exception($"Error getting devices for overview. {response.StatusCode} Response code from downstream: " + response.StatusCode);
-                }
+                return orgList;
             }
             catch (Exception e)
             {
-                _logger.LogError("Fail to Get Organisation Overview: " + e.Message);
+                _logger.LogError($"Fail to Get Organisation Overview for user {emailFromToken}: " + e.Message);
                 throw new Exception(e.Message); ;
             }
-
-            return orgList;
         }
 
         public async Task<OrganisationModel> GetOrganisation(string customerId, bool includeChildren)
@@ -158,58 +132,43 @@ namespace WCA.Consumer.Api.Services
             OrganisationModel foundMappedOrg = null;
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations?customerId={customerId}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IList<Organisation> foundOrgs = JsonConvert.DeserializeObject<IList<Organisation>>(reply);
-                    if (foundOrgs != null && foundOrgs.Count > 0)
-                        foundMappedOrg = _mapper.Map<OrganisationModel>(foundOrgs.FirstOrDefault());
-                }
-                else
-                {
-                    _logger.LogError("GetOrganisation failed with error: " + reply);
-                    throw new Exception($"Error getting an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode);
-                }
+                var foundOrgs = await _httpClient.GetAsync<IList<Organisation>>($"{_appSettings.StorageAppHttp.BaseUri}/organisations?customerId={customerId}", CancellationToken.None);
+                if (foundOrgs != null)
+                    foundMappedOrg = _mapper.Map<OrganisationModel>(foundOrgs.FirstOrDefault());
+
+                return foundMappedOrg;
             }
             catch (Exception e)
             {
-                _logger.LogError("GetOrganisation: " + e.Message);
+                _logger.LogError("Fail to call GetOrganisation: " + e.Message);
                 throw new Exception(e.Message);
             }
-            return foundMappedOrg;
         }
 
         public async Task<OrganisationModel> CreateOrganisation(OrganisationModel newOrg)
         {
-            OrganisationModel savedOrg = new OrganisationModel();
+            var savedOrg = new OrganisationModel();
             try
             {
                 var payload = JsonConvert.SerializeObject(newOrg);
-                HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/organisations", httpContent);
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    savedOrg = JsonConvert.DeserializeObject<OrganisationModel>(reply);
-                }
-                else
-                {
-                    _logger.LogError("CreateOrganisation failed with error: " + reply);
-                    throw new Exception($"Error creating an organisation. {response.StatusCode} Response code from downstream: " + response.StatusCode);
-                }
+                savedOrg = await _httpClient.PostAsync<OrganisationModel>($"{_appSettings.StorageAppHttp.BaseUri}/organisations", payload, CancellationToken.None);
+
+                return savedOrg;
             }
             catch (Exception e)
             {
-                _logger.LogError("CreateOrganisation: " + e.Message);
+                _logger.LogError("Fail to CreateOrganisation: " + e.Message);
                 throw new Exception(e.Message);
             }
-            return savedOrg;
         }
+
+        //TO DO: Fake function
         public OrganisationModel UpdateOrganisation(string id, OrganisationModel org)
         {
             return org;
         }
+
+        //TO DO: Fake function
         public OrganisationModel DeleteOrganisation(string id)
         {
             return new OrganisationModel

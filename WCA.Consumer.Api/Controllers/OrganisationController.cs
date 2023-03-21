@@ -12,11 +12,11 @@ namespace WCA.Consumer.Api.Controllers
     [ApiController]
     public class OrganisationController : BaseController
     {
-        readonly IOrganisationService _service;
+        readonly IOrganisationService _orgService;
 
-        public OrganisationController(IOrganisationService service)
+        public OrganisationController(IOrganisationService orgService)
         {
-            this._service = service;
+            _orgService = orgService;
         }
 
         /// <summary>
@@ -29,11 +29,11 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetOrganisation([FromRoute] string customerId,
+        public async Task<IActionResult> GetOrganisation([FromRoute] string customerId,
                                               [FromQuery] bool includeChildren = true,
                                               [FromQuery] bool displaySearchTree = true)
         {
-            return Ok(this._service.GetOrganisation(customerId, includeChildren).Result);
+            return Ok(await _orgService.GetOrganisation(customerId, includeChildren));
         }
 
         /// <summary>
@@ -51,14 +51,15 @@ namespace WCA.Consumer.Api.Controllers
             try
             {
                 var token = this.HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-                return Ok(await _service.GetOrganisationOverview(token, includeHealthStatus));
+                return Ok(await _orgService.GetOrganisationOverview(token, includeHealthStatus));
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-                if (e is ArgumentOutOfRangeException) {
+                if (e is ArgumentOutOfRangeException)
+                {
                     return new BadRequestObjectResult(e.Message);
                 }
-                throw new Exception(e.Message);;
+                throw new Exception(e.Message); ;
             }
         }
 
@@ -74,16 +75,16 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                return Ok(await _service.CreateOrganisation(org));
+                return Ok(await _orgService.CreateOrganisation(org));
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-                if (e is ArgumentOutOfRangeException) {
+                if (e is ArgumentOutOfRangeException)
+                {
                     return new BadRequestObjectResult(e.Message);
                 }
                 throw new Exception(e.Message);
             }
-            //return Ok(_service.CreateOrganisation(org));
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace WCA.Consumer.Api.Controllers
         public IActionResult UpdateOrganisation([FromRoute] string id,
                                 [FromBody] OrganisationModel org)
         {
-            return Ok(_service.UpdateOrganisation(id, org));
+            return Ok(_orgService.UpdateOrganisation(id, org));
         }
 
         /// <summary>
@@ -110,7 +111,7 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public IActionResult DeleteOrganisation([FromRoute] string id)
         {
-            return Ok(_service.DeleteOrganisation(id));
+            return Ok(_orgService.DeleteOrganisation(id));
         }
     }
 }
