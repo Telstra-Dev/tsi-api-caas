@@ -88,7 +88,7 @@ namespace WCA.Customer.Api.Tests
                     SiteId = $"site-id-{i}",
                     Name = $"site-name-{i}",
                     CustomerId = "customer-id",
-                    
+
                     Active = true,
                     SiteLocationId = $"site-location-id-{i}",
                     Location = new SiteLocation

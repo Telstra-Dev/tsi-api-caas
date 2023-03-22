@@ -1,13 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Telstra.Common;
-using Telstra.Core.Data;
-using Telstra.Core.Data.Contexts;
-using Telstra.Core.Repo;
-using Microsoft.EntityFrameworkCore;
-using Finbuckle.MultiTenant;
 using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Services;
 

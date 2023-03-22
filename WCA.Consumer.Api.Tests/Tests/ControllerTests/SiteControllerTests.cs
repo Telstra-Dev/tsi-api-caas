@@ -5,19 +5,17 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json;
-using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Controllers;
 using Xunit;
 
 namespace WCA.Customer.Api.Tests
-{ 
+{
     public class SiteControllerTests
     {
         [Fact(DisplayName = "Get sites")]
-        public void GetSites_Success()
+        public async void GetSites_Success()
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var mySites = TestDataHelper.CreateSiteModels(1);
@@ -25,17 +23,17 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new SiteController(serviceMock.Object);
 
-            var result = controller.GetSites(mySites.First().CustomerId);
+            var result = await controller.GetSites(mySites.First().CustomerId);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
             IList<SiteModel> expectedSites = ((result as OkObjectResult).Value as IList<SiteModel>);
-            var expectedSite = (SiteModel) expectedSites[0];
+            var expectedSite = (SiteModel)expectedSites[0];
             Assert.Equal(expectedSite.SiteId, mySites.First().SiteId);
         }
 
         [Fact(DisplayName = "Get sites not found")]
-        public void GetSites()
+        public async void GetSites()
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var customerId = "customer-id";
@@ -43,14 +41,14 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new SiteController(serviceMock.Object);
 
-            var result = controller.GetSites(customerId);
+            var result = await controller.GetSites(customerId);
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
         }
 
         [Fact(DisplayName = "Get one site")]
-        public void GetSite_Success()
+        public async void GetSite_Success()
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var mySite = TestDataHelper.CreateSiteModel();
@@ -58,7 +56,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new SiteController(serviceMock.Object);
 
-            var result = controller.GetSite(mySite.SiteId, mySite.CustomerId);
+            var result = await controller.GetSite(mySite.SiteId, mySite.CustomerId);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -67,7 +65,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Get site not found")]
-        public void GetSite_NotFound()
+        public async void GetSite_NotFound()
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var customerId = "customer-id";
@@ -76,14 +74,14 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new SiteController(serviceMock.Object);
 
-            var result = controller.GetSite(siteId, customerId);
+            var result = await controller.GetSite(siteId, customerId);
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
         }
 
         [Fact(DisplayName = "Create site")]
-        public void CreateSite()
+        public async void CreateSite()
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var mySite = TestDataHelper.CreateSiteModel();
@@ -91,7 +89,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new SiteController(serviceMock.Object);
 
-            var result = controller.CreateSite(mySite);
+            var result = await controller.CreateSite(mySite);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -100,7 +98,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Update site")]
-        public void UpdateSite()
+        public async void UpdateSite()
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var mySite = TestDataHelper.CreateSiteModel();
@@ -108,7 +106,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new SiteController(serviceMock.Object);
 
-            var result = controller.UpdateSite(mySite.SiteId, mySite);
+            var result = await controller.UpdateSite(mySite.SiteId, mySite);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -117,7 +115,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact(DisplayName = "Delete site")]
-        public void DeleteSite()
+        public async void DeleteSite()
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var mySite = TestDataHelper.CreateSiteModel();
@@ -125,7 +123,7 @@ namespace WCA.Customer.Api.Tests
 
             var controller = new SiteController(serviceMock.Object);
 
-            var result = controller.DeleteSite(mySite.SiteId);
+            var result = await controller.DeleteSite(mySite.SiteId);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);

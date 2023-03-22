@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
+using System.Threading.Tasks;
 
 namespace WCA.Consumer.Api.Controllers
 {
@@ -12,11 +13,11 @@ namespace WCA.Consumer.Api.Controllers
     [Route("/")]
     public class SiteController : BaseController
     {
-        readonly ISiteService service;
+        readonly ISiteService _siteService;
 
-        public SiteController(ISiteService service)
+        public SiteController(ISiteService siteService)
         {
-            this.service = service;
+            _siteService = siteService;
         }
 
         /// <summary>
@@ -30,13 +31,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetSites([FromQuery] string customerId)
+        public async Task<IActionResult> GetSites([FromQuery] string customerId)
         {
-            try {
-                var newSite = this.service.GetSitesForCustomer(customerId).Result;
-                if (newSite != null && newSite.Count > 0)
+            try
+            {
+                var newSite = await _siteService.GetSitesForCustomer(customerId);
+                if (newSite?.Count > 0)
                     return Ok(newSite);
-                else 
+                else
                     return NotFound(new { message = "No sites exist with this customer" });
             }
             catch (Exception e)
@@ -54,13 +56,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public IActionResult GetSite([FromRoute] string siteId, [FromQuery] string customerId)
+        public async Task<IActionResult> GetSite([FromRoute] string siteId, [FromQuery] string customerId)
         {
-            try {
-                var newSite = this.service.GetSite(siteId, customerId).Result;
+            try
+            {
+                var newSite = await _siteService.GetSite(siteId, customerId);
                 if (newSite != null)
                     return Ok(newSite);
-                else 
+                else
                     return NotFound(new { message = "Site doesn't exist with this customer" });
             }
             catch (Exception e)
@@ -77,12 +80,13 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public IActionResult CreateSite([FromBody] SiteModel site)
+        public async Task<IActionResult> CreateSite([FromBody] SiteModel site)
         {
-            try {
-                var newSite = this.service.CreateSite(site);
+            try
+            {
+                var newSite = await _siteService.CreateSite(site);
 
-                return Ok(newSite.Result);
+                return Ok(newSite);
             }
             catch (Exception e)
             {
@@ -98,14 +102,18 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPut("sites/{siteId}")]
         [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult UpdateSite([FromRoute] string siteId,
+        public async Task<IActionResult> UpdateSite([FromRoute] string siteId,
                                 [FromBody] SiteModel site)
         {
-            try {
-                if (site.SiteId == null) site.SiteId = siteId;
-                var updatedSite = this.service.UpdateSite(siteId, site);
+            try
+            {
+                if (site.SiteId == null)
+                {
+                    site.SiteId = siteId;
+                }
+                var updatedSite = await _siteService.UpdateSite(siteId, site);
 
-                return Ok(updatedSite.Result);
+                return Ok(updatedSite);
             }
             catch (Exception e)
             {
@@ -121,12 +129,13 @@ namespace WCA.Consumer.Api.Controllers
         [HttpDelete("sites/{siteId}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult DeleteSite([FromRoute] string siteId)
+        public async Task<IActionResult> DeleteSite([FromRoute] string siteId)
         {
-           try {
-                var updatedSite = this.service.DeleteSite(siteId);
-                
-                return Ok(updatedSite.Result);
+            try
+            {
+                var updatedSite = await _siteService.DeleteSite(siteId);
+
+                return Ok(updatedSite);
             }
             catch (Exception e)
             {

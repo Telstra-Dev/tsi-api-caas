@@ -4,26 +4,25 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using System.Text;
-using System.Net.Http;
 using Telstra.Common;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
+using System.Threading;
 
 namespace WCA.Consumer.Api.Services
 {
     public class SiteService : ISiteService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IRestClient _httpClient;
         private readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
-        public SiteService(HttpClient httpClient,
+        public SiteService(IRestClient httpClient,
                         AppSettings appSettings,
                         IMapper mapper,
-                        ILogger<OrganisationService> logger)
+                        ILogger<SiteService> logger)
         {
             this._httpClient = httpClient;
             this._appSettings = appSettings;
@@ -37,26 +36,17 @@ namespace WCA.Consumer.Api.Services
             IList<SiteModel> foundMappedSites = null;
             try
             {
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId={customerId}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
-                {
-                    IList<Site> foundSites = JsonConvert.DeserializeObject<IList<Site>>(reply);
-                    if (foundSites != null && foundSites.Count > 0)
-                        foundMappedSites = _mapper.Map<IList<SiteModel>>(foundSites);
-                }
-                else
-                {
-                    _logger.LogError("GetSitesForCustomer failed with error: " + reply);
-                    throw new Exception("Error getting sites for customerId. Response code from downstream: " + response.StatusCode);
-                }
+                var foundSites = await _httpClient.GetAsync<IList<Site>>($"{_appSettings.StorageAppHttp.BaseUri}/sites?customerId={customerId}", CancellationToken.None);
+                if (foundSites?.Count > 0)
+                    foundMappedSites = _mapper.Map<IList<SiteModel>>(foundSites);
+
+                return foundMappedSites;
             }
             catch (Exception e)
             {
-                _logger.LogError("GetSitesForCustomer: " + e.Message);
+                _logger.LogError("Fail to GetSitesForCustomer: " + e.Message);
                 throw new Exception(e.Message);
             }
-            return foundMappedSites;
         }
 
         public async Task<SiteModel> GetSite(string siteId, string customerId)
@@ -66,27 +56,20 @@ namespace WCA.Consumer.Api.Services
             try
             {
                 var includeCustomerId = "";
-                if (customerId != null) includeCustomerId = $"?customerId={customerId}";
-                var response = await _httpClient.GetAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}{includeCustomerId}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                if (customerId != null)
                 {
-                    Site foundSite = JsonConvert.DeserializeObject<Site>(reply);
-                    if (foundSite != null)
-                        foundMappedSite = _mapper.Map<SiteModel>(foundSite);
+                    includeCustomerId = $"?customerId={customerId}";
                 }
-                else
-                {
-                    _logger.LogError("GetSite failed with error: " + reply);
-                    throw new Exception("Error getting site. Response code from downstream: " + response.StatusCode);
-                }
+                var foundSite = await _httpClient.GetAsync<Site>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}{includeCustomerId}", CancellationToken.None);
+                if (foundSite != null)
+                    foundMappedSite = _mapper.Map<SiteModel>(foundSite);
+                return foundMappedSite;
             }
             catch (Exception e)
             {
                 _logger.LogError("GetSite: " + e.Message);
                 throw new Exception(e.Message);
             }
-            return foundMappedSite;
         }
 
         public async Task<SiteModel> CreateSite(SiteModel newSite)
@@ -104,60 +87,41 @@ namespace WCA.Consumer.Api.Services
             SiteModel mappedDeletedSite = null;
             try
             {
-                var response = await _httpClient.DeleteAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}");
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var deletedSite = JsonConvert.DeserializeObject<Site>(reply);
-                    mappedDeletedSite = _mapper.Map<SiteModel>(deletedSite);
-                }
-                else
-                {
-                    _logger.LogError("DeleteSite failed with error: " + reply);
-                    throw new Exception($"Error deleting a site. {response.StatusCode} Response code from downstream: " + reply);
-                }
+                var deletedSite = await _httpClient.DeleteAsync<Site>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}", CancellationToken.None);
+                mappedDeletedSite = _mapper.Map<SiteModel>(deletedSite);
+
+                return mappedDeletedSite;
             }
             catch (Exception e)
             {
-                _logger.LogError("DeleteSite: " + e.Message);
+                _logger.LogError("Fail to DeleteSite: " + e.Message);
                 throw new Exception(e.Message);
             }
-            return mappedDeletedSite;
         }
 
         private async Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false)
         {
-            SiteModel returnedMappedSite = null;
-            Site mappedSite = _mapper.Map<Site>(newSite);
-
+            Site savedSite;
             try
             {
+                Site mappedSite = _mapper.Map<Site>(newSite);
                 var payload = JsonConvert.SerializeObject(mappedSite);
-                HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = null;
                 if (!isUpdate)
-                    response = await _httpClient.PostAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites", httpContent);
+                {
+                    savedSite = await _httpClient.PostAsync<Site>($"{_appSettings.StorageAppHttp.BaseUri}/sites", payload, CancellationToken.None);
+                }
                 else
-                    response = await _httpClient.PutAsync($"{_appSettings.StorageAppHttp.BaseUri}/sites/{newSite.SiteId}", httpContent);
+                {
+                    savedSite = await _httpClient.PutAsync<Site>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{newSite.SiteId}", payload, CancellationToken.None);
+                }
 
-                var reply = await response.Content.ReadAsStringAsync();
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var returnedSite = JsonConvert.DeserializeObject<Site>(reply);
-                    returnedMappedSite = _mapper.Map<SiteModel>(returnedSite);
-                }
-                else
-                {
-                    _logger.LogError("SaveSite failed with error: " + reply);
-                    throw new Exception($"Error saving a site. {response.StatusCode} Response code from downstream: " + reply);
-                }
+                return _mapper.Map<SiteModel>(savedSite);
             }
             catch (Exception e)
             {
-                _logger.LogError("SaveSite: " + e.Message);
+                _logger.LogError("Fail to SaveSite: " + e.Message);
                 throw new Exception(e.Message);
             }
-            return returnedMappedSite;
         }
     }
 }
