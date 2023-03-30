@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System;
 using System.Text;
@@ -77,27 +79,36 @@ namespace WCA.Consumer.Api.Services
                 return cacheValue;
             }
 
-            // TODO: Check if gateway offline
-
-            var leafDevices = await _deviceService.GetLeafDevicesForGateway(device.DeviceId);
-
-            if (leafDevices == null || leafDevices.Count == 0)
+            // Check online status
+            if (!await CheckDeviceRecentlyOnline(device.DeviceId, _appSettings.DeviceRecentlyOnlineMaxMinutes))
             {
-                health.Code = HealthStatusCode.AMBER;
-                health.Reason = "No cameras attached";
-                health.Action = "Configure on gateway";
+                health.Code = HealthStatusCode.RED;
+                health.Reason = "Gateway offline";
+                health.Action = "Contact support";
             }
-
-            foreach (var leafDevice in leafDevices)
+            else
             {
-                var deviceHealth = await GetCameraHealthStatus(leafDevice);
-                if (deviceHealth.Code != HealthStatusCode.GREEN)
-                {
-                    health.Code = deviceHealth.Code;
-                    health.Reason = deviceHealth.Reason;
-                    health.Action = deviceHealth.Action;
+                // Check leaf devices
+                var leafDevices = await _deviceService.GetLeafDevicesForGateway(device.DeviceId);
 
-                    break;
+                if (leafDevices == null || leafDevices.Count == 0)
+                {
+                    health.Code = HealthStatusCode.AMBER;
+                    health.Reason = "No cameras attached";
+                    health.Action = "Configure on gateway";
+                }
+
+                foreach (var leafDevice in leafDevices)
+                {
+                    var deviceHealth = await GetCameraHealthStatus(leafDevice);
+                    if (deviceHealth.Code != HealthStatusCode.GREEN)
+                    {
+                        health.Code = deviceHealth.Code;
+                        health.Reason = deviceHealth.Reason;
+                        health.Action = deviceHealth.Action;
+
+                        break;
+                    }
                 }
             }
 
@@ -122,7 +133,13 @@ namespace WCA.Consumer.Api.Services
                 return cacheValue;
             }
 
-            // TODO: Implement checks including camera offline, not capturing data correctly
+            // Check online status
+            if (!await CheckDeviceRecentlyOnline(device.DeviceId, _appSettings.DeviceRecentlyOnlineMaxMinutes))
+            {
+                health.Code = HealthStatusCode.RED;
+                health.Reason = "Camera offline";
+                health.Action = "Contact support";
+            }
 
             _ = Task.Run(() =>
             {
@@ -175,6 +192,30 @@ namespace WCA.Consumer.Api.Services
             }
 
             return health;
+        }
+
+        private async Task<bool> CheckDeviceRecentlyOnline(string deviceId, int maxMinutes)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/healthStatus?deviceId={deviceId}");
+                var returnedHealthDataStatus = await _httpClient.SendAsync<HealthDataStatus>(request, CancellationToken.None);
+
+                if (returnedHealthDataStatus != null && returnedHealthDataStatus.EdgeStarttime != null)
+                {
+                    TimeSpan span = DateTime.UtcNow.Subtract((DateTime) returnedHealthDataStatus.EdgeStarttime);
+                    if (span < TimeSpan.FromMinutes(maxMinutes))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("CheckDeviceRecentlyOnline: " + e.Message);
+            }
+
+            return false;
         }
     }
 }

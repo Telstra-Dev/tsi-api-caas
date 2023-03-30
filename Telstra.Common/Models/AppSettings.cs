@@ -31,6 +31,7 @@ namespace Telstra.Common
         public StorageAppSettings StorageAppGrpc { get; set; }
         public StorageAppSettings StorageAppHttp { get; set; }
         public AzureMapsAuthSettings AzureMapsAuthCredentials { get; set; }
+        public int DeviceRecentlyOnlineMaxMinutes { get; set; } = 5;
     }
 
     public class DBSetting

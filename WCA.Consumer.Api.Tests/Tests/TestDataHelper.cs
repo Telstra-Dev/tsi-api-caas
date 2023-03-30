@@ -380,6 +380,17 @@ namespace WCA.Customer.Api.Tests
                         Type = "gateway",
                     };
                 });
+            mapperMock.Setup(a => a.Map<Device>(It.IsAny<DeviceModel>()))
+                      .Returns((DeviceModel d) =>
+                {
+                    return new Device
+                    {
+                        DeviceId = d.DeviceId,
+                        SiteId = d.SiteId,
+                        Name = d.Name,
+                        Type = d.Type.ToString(),
+                    };
+                });
 
             mapperMock.Setup(a => a.Map<IList<OrgSearchTreeNode>>(It.IsAny<IList<Organisation>>()))
                       .Returns((IList<Organisation> orgs) =>
@@ -542,6 +553,28 @@ namespace WCA.Customer.Api.Tests
         public static SerialNumberModel CreateSerialNumberModel()
         {
             return CreateSerialNumberModels(1)[0];
+        }
+
+        public static IList<HealthStatusModel> CreateHealthStatusModels(int count)
+        {
+            var list = new List<HealthStatusModel>();
+
+            for (int i = 1; i <= count; i++)
+            {
+                list.Add(new HealthStatusModel
+                {
+                    Code = HealthStatusCode.GREEN,
+                    Reason = "Reason",
+                    Action = "Action"
+                });
+            }
+
+            return list;
+        }
+
+        public static HealthStatusModel CreateHealthStatusModel()
+        {
+            return CreateHealthStatusModels(1)[0];
         }
     }
 }
