@@ -38,8 +38,22 @@ namespace WCA.Customer.Api.Tests
             Assert.Equal(result.Location.Latitude, siteModel.Location.GeoLocation.Latitude);
             Assert.Equal(result.Location.Longitude, siteModel.Location.GeoLocation.Longitude);
 
-            Assert.Equal(result.Tags.ToList()[0].TagName, siteModel.Metadata.Tags.First().Key);
-            Assert.Equal(result.Tags.ToList()[0].TagValue, siteModel.Metadata.Tags.First().Value.First());
+            var origTags = siteModel.Metadata.Tags;
+            var resultTags = result.Tags.ToList();
+
+            for (int i = 0; i < origTags.Count; i++)
+            {
+                var origKey = origTags.ElementAt(i).Key;
+                var origValues = origTags.ElementAt(i).Value;
+
+                var resultValues = resultTags.Where(t => t.TagName == origKey).Select(t => t.TagValue).ToList();
+                Assert.Equal(resultValues.Count, origValues.Count());
+
+                for (int j = 0; j < origValues.Count(); j++)
+                {
+                    Assert.Equal(resultValues[j].ToString(), origValues[j]);
+                }
+            }
         }
 
         [Fact]
@@ -63,8 +77,21 @@ namespace WCA.Customer.Api.Tests
             Assert.Equal(result.Location.GeoLocation.Latitude, site.Location.Latitude);
             Assert.Equal(result.Location.GeoLocation.Longitude, site.Location.Longitude);
 
-            Assert.Equal(result.Metadata.Tags.First().Key, site.Tags.ToList()[0].TagName);
-            Assert.Equal(result.Metadata.Tags.First().Value.First(), site.Tags.ToList()[0].TagValue);
+            var origTags = site.Tags.ToList();
+            var resultTags = result.Metadata.Tags;
+
+            for (int i = 0; i < origTags.Count; i++)
+            {
+                var origKey = origTags[i].TagName;
+                var origValues = origTags.Where(t => t.TagName == origKey).Select(t => t.TagValue).ToList();
+
+                Assert.Equal(resultTags[origKey].Count(), origValues.Count());
+
+                for (int j = 0; j < origValues.Count(); j++)
+                {
+                    Assert.Equal(resultTags[origKey][j], origValues[j]);
+                }
+            }
         }
     }
 }

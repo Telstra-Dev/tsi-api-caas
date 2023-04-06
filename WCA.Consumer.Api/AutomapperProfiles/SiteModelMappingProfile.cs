@@ -1,6 +1,7 @@
 using AutoMapper;
 using WCA.Consumer.Api.Models;
 using Telstra.Core.Data.Entities;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,9 +49,17 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 foreach(var tagItem in origTags)
                 {
                     if (!tags.ContainsKey(tagItem.TagName))
-                        tags.Add(tagItem.TagName, new []{ tagItem.TagValue });
+                    {
+                        tags.Add(tagItem.TagName, new[] { tagItem.TagValue });
+                    }
+                    else
+                    {
+                        var newValue = tags[tagItem.TagName].ToList();
+                        newValue.Add(tagItem.TagValue);
+                        tags[tagItem.TagName] = newValue.ToArray();
+                    }
                 }
-                remappedTags = tags; 
+                remappedTags = tags;
             }
             return remappedTags;
         }
@@ -61,13 +70,17 @@ namespace WCA.Consumer.Api.AutomapperProfiles
 
             foreach(var tagItem in origTags)
             {
-                if (mappedTags.Where(t => t.TagName == tagItem.Key).Count() == 0)
+                foreach (var tagItemValue in tagItem.Value)
+                {
                     mappedTags.Add(
-                        new SiteTag {
+                        new SiteTag
+                        {
                             SiteId = siteId,
                             TagName = tagItem.Key,
-                            TagValue = tagItem.Value[0]
-                        });
+                            TagValue = tagItemValue
+                        }
+                    );
+                }
             }
             return mappedTags;
         }
