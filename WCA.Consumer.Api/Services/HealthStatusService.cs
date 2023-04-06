@@ -164,7 +164,12 @@ namespace WCA.Consumer.Api.Services
 
         public async Task<HealthStatusModel> GetSiteHealthStatus(Site site)
         {
-            var health = new HealthStatusModel();
+            var health = new HealthStatusModel
+            {
+                Code = HealthStatusCode.GREEN,
+                Reason = "Site online",
+                Action = "Expand site to review",
+            };
 
             var deviceModels = await _deviceService.GetDevices(null, site.SiteId);
             if (deviceModels == null || deviceModels.Count == 0)
