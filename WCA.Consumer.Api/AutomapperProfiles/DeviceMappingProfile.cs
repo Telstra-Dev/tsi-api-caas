@@ -8,7 +8,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
     {
         public DeviceMappingProfile()
         {
-            CreateMap<Gateway, Telstra.Core.Data.Entities.Device>()
+            CreateMap<Gateway, Device>()
                 .ForMember(dest => dest.EdgeDeviceId, opts => opts.MapFrom(s => s.EdgeDevice))
                 .ForMember(dest => dest.MetadataUrl, opts => opts.MapFrom(s => s.Metadata.Hub))
                 .ForMember(dest => dest.IsEdgeCapable, opts => opts.MapFrom(s => s.EdgeCapable))

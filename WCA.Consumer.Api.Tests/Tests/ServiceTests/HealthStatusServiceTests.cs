@@ -32,14 +32,7 @@ namespace WCA.Customer.Api.Tests
         {
             var deviceModel = TestDataHelper.CreateCameraModel();
 
-            var healthDataStatus = new HealthDataStatus
-            {
-                SvId = 1,
-                EdgeEdgedeviceid = deviceModel.EdgeDevice,
-                EdgeLeafdeviceid = deviceModel.DeviceId,
-                EdgeStarttime = DateTime.UtcNow,
-                EdgeEndtime = DateTime.UtcNow,
-            };
+            var healthDataStatus = TestDataHelper.CreateHealthDataStatus(deviceModel.EdgeDevice, deviceModel.DeviceId, true);
 
             var httpClientMock = new Mock<IRestClient>();
             httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
@@ -74,14 +67,7 @@ namespace WCA.Customer.Api.Tests
                 Action = "Contact support"
             };
 
-            var healthDataStatus = new HealthDataStatus
-            {
-                SvId = 1,
-                EdgeEdgedeviceid = deviceModel.EdgeDevice,
-                EdgeLeafdeviceid = deviceModel.DeviceId,
-                EdgeStarttime = new DateTime(2000, 3, 29, 10, 0, 0),
-                EdgeEndtime = new DateTime(2000, 3, 29, 10, 0, 0),
-            };
+            var healthDataStatus = TestDataHelper.CreateHealthDataStatus(deviceModel.EdgeDevice, deviceModel.DeviceId, false);
 
             var httpClientMock = new Mock<IRestClient>();
             httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
@@ -112,22 +98,14 @@ namespace WCA.Customer.Api.Tests
             var healthStatusModel = new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
-                Reason = "No cameras attached",
-                Action = "Configure on gateway"
+                Reason = "No cameras",
+                Action = "Configure in gateway menu"
             };
 
-            var healthDataStatus = new HealthDataStatus
-            {
-                SvId = 1,
-                EdgeEdgedeviceid = deviceModel.EdgeDevice,
-                EdgeLeafdeviceid = deviceModel.DeviceId,
-                EdgeStarttime = DateTime.UtcNow,
-                EdgeEndtime = DateTime.UtcNow,
-            };
+            var healthDataStatus = TestDataHelper.CreateHealthDataStatus(deviceModel.EdgeDevice, deviceModel.DeviceId, true);
 
             var httpClientMock = new Mock<IRestClient>();
             httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
-
 
             var appSettings = TestDataHelper.CreateAppSettings();
             var mapperMock = TestDataHelper.CreateMockMapper();
@@ -160,14 +138,7 @@ namespace WCA.Customer.Api.Tests
                 Action = "Contact support"
             };
 
-            var healthDataStatus = new HealthDataStatus
-            {
-                SvId = 1,
-                EdgeEdgedeviceid = deviceModel.EdgeDevice,
-                EdgeLeafdeviceid = deviceModel.DeviceId,
-                EdgeStarttime = new DateTime(2000, 3, 29, 10, 0, 0),
-                EdgeEndtime = new DateTime(2000, 3, 29, 10, 0, 0),
-            };
+            var healthDataStatus = TestDataHelper.CreateHealthDataStatus(deviceModel.EdgeDevice, deviceModel.DeviceId, false);
 
             var httpClientMock = new Mock<IRestClient>();
             httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
@@ -193,7 +164,7 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact]
-        public void GetDeviceHealthStatus_Gateway_Online_LeafDevices()
+        public void GetDeviceHealthStatus_Gateway_Online_LeafDevices_Online()
         {
             var gatewayModel = TestDataHelper.CreateGatewayModel();
             var camera = TestDataHelper.CreateDevice(DeviceType.camera);
@@ -203,67 +174,25 @@ namespace WCA.Customer.Api.Tests
                 camera
             };
 
-            var healthDataStatus = new HealthDataStatus
-            {
-                SvId = 1,
-                EdgeEdgedeviceid = gatewayModel.EdgeDevice,
-                EdgeLeafdeviceid = camera.DeviceId,
-                EdgeStarttime = DateTime.UtcNow,
-                EdgeEndtime = DateTime.UtcNow,
-            };
-
-            var httpClientMock = new Mock<IRestClient>();
-            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
-
-            var appSettings = TestDataHelper.CreateAppSettings();
-            var mapperMock = TestDataHelper.CreateMockMapper();
-            var loggerMock = new Mock<ILogger<OrganisationService>>();
-            var cacheMock = new Mock<IMemoryCache>();
-
-            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
-
-            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
-                                                              deviceServiceMock.Object, null, cacheMock.Object);
-
-            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
-
-            Assert.Equal(typeof(HealthStatusModel), result.GetType());
-            Assert.Null(result.Reason);
-            Assert.Null(result.Action);
-            Assert.Equal(result.Code, HealthStatusCode.GREEN);
-        }
-
-        [Fact]
-        public void GetDeviceHealthStatus_Gateway_Offline_LeafDevices()
-        {
-            var gatewayModel = TestDataHelper.CreateGatewayModel();
-            var camera = TestDataHelper.CreateDevice(DeviceType.camera);
-            camera.EdgeDeviceId = gatewayModel.DeviceId;
-            var leafDevices = new List<Device>()
-            {
-                camera
-            };
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, true);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, camera.DeviceId, true);
 
             var healthStatusModel = new HealthStatusModel
             {
-                Code = HealthStatusCode.RED,
-                Reason = "Gateway offline",
-                Action = "Contact support"
-            };
-
-            var healthDataStatus = new HealthDataStatus
-            {
-                SvId = 1,
-                EdgeEdgedeviceid = gatewayModel.EdgeDevice,
-                EdgeLeafdeviceid = gatewayModel.DeviceId,
-                EdgeStarttime = new DateTime(2000, 3, 29, 10, 0, 0),
-                EdgeEndtime = new DateTime(2000, 3, 29, 10, 0, 0),
+                Code = HealthStatusCode.GREEN,
+                Reason = "Gateway online",
+                Action = "Expand gateway to review"
             };
 
             var httpClientMock = new Mock<IRestClient>();
-            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(camera.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
 
             var appSettings = TestDataHelper.CreateAppSettings();
             var mapperMock = TestDataHelper.CreateMockMapper();
@@ -286,13 +215,166 @@ namespace WCA.Customer.Api.Tests
         }
 
         [Fact]
-        public void GetDeviceHealthStatus_Site_NoDevices()
+        public void GetDeviceHealthStatus_Gateway_Offline_LeafDevices_Online()
+        {
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var camera = TestDataHelper.CreateDevice(DeviceType.camera);
+            camera.EdgeDeviceId = gatewayModel.DeviceId;
+            var leafDevices = new List<Device>()
+            {
+                camera
+            };
+
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, false);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, camera.DeviceId, true);
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.RED,
+                Reason = "Gateway offline",
+                Action = "Contact support"
+            };
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(camera.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Gateway_Online_LeafDevices_Offline()
+        {
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var camera = TestDataHelper.CreateDevice(DeviceType.camera);
+            camera.EdgeDeviceId = gatewayModel.DeviceId;
+            var leafDevices = new List<Device>()
+            {
+                camera
+            };
+
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, true);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, camera.DeviceId, false);
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.RED,
+                Reason = "Camera offline",
+                Action = "Expand gateway to review"
+            };
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(camera.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Gateway_Offline_LeafDevices_Offline()
+        {
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var camera = TestDataHelper.CreateDevice(DeviceType.camera);
+            camera.EdgeDeviceId = gatewayModel.DeviceId;
+            var leafDevices = new List<Device>()
+            {
+                camera
+            };
+
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, false);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, camera.DeviceId, false);
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.RED,
+                Reason = "Gateway offline",
+                Action = "Contact support"
+            };
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(camera.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_NoGateways_NoLeafDevices()
         {
             var site = TestDataHelper.CreateSite();
             var healthStatusModel = new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
-                Reason = "No devices",
+                Reason = "No gateways",
                 Action = "Configure in site menu"
             };
 
@@ -305,6 +387,355 @@ namespace WCA.Customer.Api.Tests
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
             deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new ArrayList());
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_NoGateways_LeafDevices()
+        {
+            var site = TestDataHelper.CreateSite();
+            var cameraModel = TestDataHelper.CreateCameraModel();
+            var devices = new ArrayList();
+            devices.Add(cameraModel);
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.AMBER,
+                Reason = "No gateways",
+                Action = "Configure in site menu"
+            };
+
+            var httpClientMock = new Mock<IRestClient>();
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_Gateways_Online_NoLeafDevices()
+        {
+            var site = TestDataHelper.CreateSite();
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var devices = new ArrayList();
+            devices.Add(gatewayModel);
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.AMBER,
+                Reason = "No cameras",
+                Action = "Expand site to review"
+            };
+
+            var healthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, true);
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_Gateways_Offline_NoLeafDevices()
+        {
+            var site = TestDataHelper.CreateSite();
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var devices = new ArrayList();
+            devices.Add(gatewayModel);
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.RED,
+                Reason = "Gateway offline",
+                Action = "Expand site to review"
+            };
+
+            var healthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, false);
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(healthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_Gateways_Online_LeafDevices_Online()
+        {
+            var site = TestDataHelper.CreateSite();
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var cameraModel = TestDataHelper.CreateCameraModel();
+
+            var devices = new ArrayList();
+            devices.Add(gatewayModel);
+            devices.Add(cameraModel);
+
+            var camera = TestDataHelper.CreateDevice(DeviceType.camera);
+            camera.EdgeDeviceId = gatewayModel.DeviceId;
+            camera.DeviceId = cameraModel.DeviceId;
+            var leafDevices = new List<Device>()
+            {
+                camera
+            };
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.GREEN,
+                Reason = "Site online",
+                Action = "Expand site to review"
+            };
+
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, true);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, cameraModel.DeviceId, true);
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(cameraModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_Gateways_Offline_LeafDevices_Online()
+        {
+            var site = TestDataHelper.CreateSite();
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var cameraModel = TestDataHelper.CreateCameraModel();
+
+            var devices = new ArrayList();
+            devices.Add(gatewayModel);
+            devices.Add(cameraModel);
+
+            var camera = TestDataHelper.CreateDevice(DeviceType.camera);
+            camera.EdgeDeviceId = gatewayModel.DeviceId;
+            camera.DeviceId = cameraModel.DeviceId;
+            var leafDevices = new List<Device>()
+            {
+                camera
+            };
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.RED,
+                Reason = "Gateway offline",
+                Action = "Expand site to review"
+            };
+
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, false);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, cameraModel.DeviceId, true);
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(cameraModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_Gateways_Online_LeafDevices_Offline()
+        {
+            var site = TestDataHelper.CreateSite();
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var cameraModel = TestDataHelper.CreateCameraModel();
+
+            var devices = new ArrayList();
+            devices.Add(gatewayModel);
+            devices.Add(cameraModel);
+
+            var camera = TestDataHelper.CreateDevice(DeviceType.camera);
+            camera.EdgeDeviceId = gatewayModel.DeviceId;
+            camera.DeviceId = cameraModel.DeviceId;
+            var leafDevices = new List<Device>()
+            {
+                camera
+            };
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.RED,
+                Reason = "Camera offline",
+                Action = "Expand site to review"
+            };
+
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, true);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, cameraModel.DeviceId, false);
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(cameraModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+
+            var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
+                                                              deviceServiceMock.Object, null, cacheMock.Object);
+
+            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+
+            Assert.Equal(typeof(HealthStatusModel), result.GetType());
+            Assert.Equal(result.Reason, healthStatusModel.Reason);
+            Assert.Equal(result.Action, healthStatusModel.Action);
+            Assert.Equal(result.Code, healthStatusModel.Code);
+        }
+
+        [Fact]
+        public void GetDeviceHealthStatus_Site_Gateways_Offline_LeafDevices_Offline()
+        {
+            var site = TestDataHelper.CreateSite();
+            var gatewayModel = TestDataHelper.CreateGatewayModel();
+            var cameraModel = TestDataHelper.CreateCameraModel();
+            var devices = new ArrayList();
+            devices.Add(gatewayModel);
+            devices.Add(cameraModel);
+
+            var healthStatusModel = new HealthStatusModel
+            {
+                Code = HealthStatusCode.RED,
+                Reason = "Gateway offline",
+                Action = "Expand site to review"
+            };
+
+            var gatewayHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, gatewayModel.DeviceId, false);
+            var cameraHealthDataStatus = TestDataHelper.CreateHealthDataStatus(gatewayModel.EdgeDevice, cameraModel.DeviceId, false);
+
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(gatewayModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(gatewayHealthDataStatus);
+            httpClientMock.Setup(x => x.SendAsync<HealthDataStatus>(
+                It.Is<HttpRequestMessage>(r => r.RequestUri.ToString().EndsWith(cameraModel.DeviceId)),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(cameraHealthDataStatus);
+
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+            var cacheMock = new Mock<IMemoryCache>();
+
+            var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
+            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);

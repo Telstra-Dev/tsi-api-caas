@@ -1,16 +1,14 @@
 using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System;
-using System.Text;
+using System.Linq;
 using System.Net.Http;
 using Telstra.Common;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
-using WCA.Consumer.Api.Controllers;
 using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Services
@@ -69,7 +67,12 @@ namespace WCA.Consumer.Api.Services
 
         private async Task<HealthStatusModel> GetGatewayHealthStatus(Device device)
         {
-            var health = new HealthStatusModel();
+            var health = new HealthStatusModel
+            {
+                Code = HealthStatusCode.GREEN,
+                Reason = "Gateway online",
+                Action = "Expand gateway to review",
+            };
 
             // Check cache
             var cacheKey = $"{nameof(GetGatewayHealthStatus)}-{device.DeviceId}";
@@ -94,20 +97,28 @@ namespace WCA.Consumer.Api.Services
                 if (leafDevices == null || leafDevices.Count == 0)
                 {
                     health.Code = HealthStatusCode.AMBER;
-                    health.Reason = "No cameras attached";
-                    health.Action = "Configure on gateway";
+                    health.Reason = "No cameras";
+                    health.Action = "Configure in gateway menu";
                 }
 
                 foreach (var leafDevice in leafDevices)
                 {
                     var deviceHealth = await GetCameraHealthStatus(leafDevice);
-                    if (deviceHealth.Code != HealthStatusCode.GREEN)
+
+                    // Prioritise RED, keep looping if AMBER to catch any RED
+                    if (deviceHealth.Code == HealthStatusCode.RED)
                     {
                         health.Code = deviceHealth.Code;
                         health.Reason = deviceHealth.Reason;
-                        health.Action = deviceHealth.Action;
+                        health.Action = "Expand gateway to review";
 
                         break;
+                    }
+                    else if (deviceHealth.Code == HealthStatusCode.AMBER)
+                    {
+                        health.Code = deviceHealth.Code;
+                        health.Reason = deviceHealth.Reason;
+                        health.Action = "Expand gateway to review";
                     }
                 }
             }
@@ -171,28 +182,36 @@ namespace WCA.Consumer.Api.Services
                 Action = "Expand site to review",
             };
 
-            var deviceModels = await _deviceService.GetDevices(null, site.SiteId);
-            if (deviceModels == null || deviceModels.Count == 0)
+            var gatewayModels = (await _deviceService.GetDevices(null, site.SiteId))
+                                .Cast<DeviceModel>()
+                                .Where(d => d.Type == DeviceType.gateway);
+
+            if (gatewayModels == null || gatewayModels.Count() == 0)
             {
                 health.Code = HealthStatusCode.AMBER;
-                health.Reason = "No devices";
+                health.Reason = "No gateways";
                 health.Action = "Configure in site menu";
             }
 
-            foreach (DeviceModel deviceModel in deviceModels)
+            foreach (var gatewayModel in gatewayModels)
             {
-                if (deviceModel.Type == DeviceType.gateway)
-                {
-                    var device = _mapper.Map<Device>(deviceModel);
-                    var deviceHealth = await GetGatewayHealthStatus(device);
-                    if (deviceHealth.Code != HealthStatusCode.GREEN)
-                    {
-                        health.Code = deviceHealth.Code;
-                        health.Reason = deviceHealth.Reason;
-                        health.Action = deviceHealth.Action;
+                var device = _mapper.Map<Device>(gatewayModel);
+                var deviceHealth = await GetGatewayHealthStatus(device);
 
-                        break;
-                    }
+                // Prioritise RED, keep looping if AMBER to catch any RED
+                if (deviceHealth.Code == HealthStatusCode.RED)
+                {
+                    health.Code = deviceHealth.Code;
+                    health.Reason = deviceHealth.Reason;
+                    health.Action = "Expand site to review";
+
+                    return health;
+                }
+                else if (deviceHealth.Code == HealthStatusCode.AMBER)
+                {
+                    health.Code = deviceHealth.Code;
+                    health.Reason = deviceHealth.Reason;
+                    health.Action = "Expand site to review";
                 }
             }
 

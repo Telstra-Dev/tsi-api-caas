@@ -1,11 +1,10 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using Telstra.Common;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using AutoMapper;
 using Moq;
-using Xunit;
 
 namespace WCA.Customer.Api.Tests
 {
@@ -575,6 +574,27 @@ namespace WCA.Customer.Api.Tests
         public static HealthStatusModel CreateHealthStatusModel()
         {
             return CreateHealthStatusModels(1)[0];
+        }
+
+        public static HealthDataStatus CreateHealthDataStatus(string edgeDeviceId, string leafDeviceId, bool online = true)
+        {
+            return online ?
+                new HealthDataStatus
+                {
+                    SvId = 1,
+                    EdgeEdgedeviceid = edgeDeviceId,
+                    EdgeLeafdeviceid = leafDeviceId,
+                    EdgeStarttime = DateTime.UtcNow,
+                    EdgeEndtime = DateTime.UtcNow,
+                } :
+                new HealthDataStatus
+                {
+                    SvId = 1,
+                    EdgeEdgedeviceid = edgeDeviceId,
+                    EdgeLeafdeviceid = leafDeviceId,
+                    EdgeStarttime = new DateTime(2000, 3, 29, 10, 0, 0),
+                    EdgeEndtime = new DateTime(2000, 3, 29, 10, 0, 0),
+                };
         }
     }
 }
