@@ -59,6 +59,33 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
+        public async Task<IList<Device>> GetGatewayDevices(string customerId, string siteId)
+        {
+            var devices = new List<Device>();
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/devices?customerId={customerId}&siteId={siteId}");
+                var returnedDevices = await _httpClient.SendAsync<IList<Device>>(request, CancellationToken.None);
+
+                if (returnedDevices != null)
+                {
+                    foreach (var returnedDevice in returnedDevices)
+                    {
+                        if (returnedDevice.Type == DeviceType.gateway.ToString())
+                        {
+                            devices.Add(returnedDevice);
+                        }
+                    }
+                }
+                return devices;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("GetGatewayDevices: " + e.Message);
+                throw new Exception(e.Message); ;
+            }
+        }
+
         public async Task<DeviceModel> GetDevice(string deviceId, string customerId)
         {
             DeviceModel foundMappedDevice = null;

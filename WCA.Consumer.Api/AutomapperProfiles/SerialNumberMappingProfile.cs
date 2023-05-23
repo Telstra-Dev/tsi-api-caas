@@ -1,6 +1,6 @@
 using AutoMapper;
 using WCA.Consumer.Api.Models;
-using Telstra.Core.Data.Entities;
+// using Telstra.Core.Data.Entities;
 
 namespace WCA.Consumer.Api.AutomapperProfiles
 {
@@ -8,9 +8,11 @@ namespace WCA.Consumer.Api.AutomapperProfiles
     {
         public SerialNumberMappingProfile()
         {
-            CreateMap<SerialNumberModel, SerialNumber>();
+            CreateMap<SerialNumberModel, string>()
+                .ConvertUsing(s => s.Value);
 
-            CreateMap<SerialNumber, SerialNumberModel>();
+            CreateMap<string, SerialNumberModel>()
+                .ForMember(dest => dest.Value, opts => opts.MapFrom(s => s));
         }
     }
 }

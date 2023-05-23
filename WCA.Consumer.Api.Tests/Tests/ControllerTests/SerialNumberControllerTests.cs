@@ -1,12 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json;
-using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Controllers;
@@ -29,7 +26,7 @@ namespace WCA.Customer.Api.Tests
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
             var expectedSerialNumber = ((result as OkObjectResult).Value as SerialNumberModel);
-            Assert.Equal(expectedSerialNumber.SerialNumberId, serialNumber.SerialNumberId);
+            Assert.Equal(expectedSerialNumber.Value, serialNumber.Value);
         }
 
         [Fact]
@@ -62,9 +59,7 @@ namespace WCA.Customer.Api.Tests
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
             var expectedSerialNumbers = (result as OkObjectResult).Value as List<SerialNumberModel>;
             Assert.Single(expectedSerialNumbers);
-            Assert.Equal(expectedSerialNumbers[0].SerialNumberId, serialNumber.SerialNumberId);
             Assert.Equal(expectedSerialNumbers[0].Value, serialNumber.Value);
-            Assert.Equal(expectedSerialNumbers[0].DeviceId, serialNumber.DeviceId);
         }
 
         [Fact]
@@ -85,9 +80,7 @@ namespace WCA.Customer.Api.Tests
             Assert.Single(expectedSerialNumbers);
             for (int i = 0; i < serialNumbers.Count; i++)
             {
-                Assert.Equal(expectedSerialNumbers[i].SerialNumberId, serialNumbers[i].SerialNumberId);
                 Assert.Equal(expectedSerialNumbers[i].Value, serialNumbers[i].Value);
-                Assert.Equal(expectedSerialNumbers[i].DeviceId, serialNumbers[i].DeviceId);
             }
         }
 

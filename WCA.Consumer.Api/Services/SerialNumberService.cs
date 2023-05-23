@@ -1,17 +1,16 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using System.Text;
+using System.Linq;
 using System.Net.Http;
 using Telstra.Common;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Threading;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -21,30 +20,39 @@ namespace WCA.Consumer.Api.Services
         private readonly IRestClient _httpClient;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
+        private readonly IDeviceService _deviceService;
+        private IMemoryCache _cache { get; }
+        private DateTimeOffset _shortCacheTime = DateTimeOffset.Now.AddSeconds(60);
         public SerialNumberService(IRestClient httpClient,
                         AppSettings appSettings,
                         IMapper mapper,
-                        ILogger<OrganisationService> logger)
+                        ILogger<OrganisationService> logger,
+                        IDeviceService deviceService,
+                        IMemoryCache cache)
         {
             _httpClient = httpClient;
             _appSettings = appSettings;
             _mapper = mapper;
             _logger = logger;
+            _deviceService = deviceService;
+            _cache = cache;
         }
 
         public async Task<SerialNumberModel> GetSerialNumberByValue(string value)
         {
-            SerialNumberModel serialNumberModel = null;
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/serialNumbers?value={value}");
-                var foundSerialNumber = await _httpClient.SendAsync<SerialNumber>(request, CancellationToken.None);
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.EdgeDevicesAppHttp.BaseUri}/search?filter={value}&maxResults=1");
+                var foundSerialNumbers = await _httpClient.SendAsync<IList<string>>(request, CancellationToken.None);
 
-                if (foundSerialNumber != null)
+                if (foundSerialNumbers != null && foundSerialNumbers.Count > 0 && foundSerialNumbers[0] == value)
                 {
-                    serialNumberModel = _mapper.Map<SerialNumberModel>(foundSerialNumber);
+                    return new SerialNumberModel
+                    {
+                        Value = foundSerialNumbers[0]
+                    };
                 }
-                return serialNumberModel;
+                return null;
             }
             catch (Exception e)
             {
@@ -58,11 +66,39 @@ namespace WCA.Consumer.Api.Services
             IList<SerialNumberModel> serialNumberModels = null;
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/serialNumbers?filter={filter}&inactiveOnly={inactiveOnly}&maxResults={maxResults}");
-                var foundSerialNumbers = await _httpClient.SendAsync<IList<SerialNumber>>(request, CancellationToken.None);
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.EdgeDevicesAppHttp.BaseUri}/search?filter={filter}&maxResults={maxResults}");
+                var foundSerialNumbers = await _httpClient.SendAsync<IList<string>>(request, CancellationToken.None);
 
                 if (foundSerialNumbers != null && foundSerialNumbers.Count > 0)
                 {
+                    if (inactiveOnly)
+                    {
+                        IList<Device> activeDevices = null;
+
+                        // Check cache
+                        var cacheKey = $"{nameof(GetSerialNumbersByFilter)}-{nameof(_deviceService.GetGatewayDevices)}";
+                        var cacheValue = (IList<Device>) _cache.Get(cacheKey);
+                        if (cacheValue != null)
+                        {
+                            activeDevices = cacheValue;
+                        }
+                        else
+                        {
+                            activeDevices = await _deviceService.GetGatewayDevices(null, null);
+
+                            // Set cache
+                            _ = Task.Run(() =>
+                            {
+                                _cache.Set<IList<Device>>(cacheKey, activeDevices, _shortCacheTime);
+                                _logger.LogTrace($"{nameof(GetSerialNumbersByFilter)}-{nameof(_deviceService.GetGatewayDevices)} cache set");
+                            });
+                        }
+
+                        foundSerialNumbers = foundSerialNumbers.Select(d => d)
+                                             .Except(activeDevices.Select(d => d.DeviceId),
+                                             StringComparer.OrdinalIgnoreCase).ToList();
+                    }
+
                     serialNumberModels = _mapper.Map<IList<SerialNumberModel>>(foundSerialNumbers);
                 }
                 return serialNumberModels;

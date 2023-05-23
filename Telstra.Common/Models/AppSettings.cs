@@ -30,6 +30,7 @@ namespace Telstra.Common
         public bool UseAd { get; set; }
         public StorageAppSettings StorageAppGrpc { get; set; }
         public StorageAppSettings StorageAppHttp { get; set; }
+        public StorageAppSettings EdgeDevicesAppHttp { get; set; }
         public AzureMapsAuthSettings AzureMapsAuthCredentials { get; set; }
         public int DeviceRecentlyOnlineMaxMinutes { get; set; } = 5;
     }

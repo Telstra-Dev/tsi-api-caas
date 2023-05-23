@@ -9,6 +9,7 @@ namespace WCA.Consumer.Api.Services.Contracts
     public interface IDeviceService
     {
         public Task<ArrayList> GetDevices(string customerId, string siteId);
+        public Task<IList<Device>> GetGatewayDevices(string customerId, string siteId);
 
         public Task<DeviceModel> GetDevice(string deviceId, string customerId);
 
