@@ -27,7 +27,7 @@ namespace WCA.Customer.Api.Tests
         public async Task GetOrganisationOverview_Success()
         {
             var jwtHandler = new JwtSecurityTokenHandler();
-            var issuer = Guid.NewGuid().ToString();
+            var issuer = "b2clogin";
             var claims = new List<Claim>
             {
                 new Claim("email", "someone@team.telstra.com")
@@ -63,7 +63,7 @@ namespace WCA.Customer.Api.Tests
         public async Task GetOrganisationOverview_Success_WCC()
         {
             var jwtHandler = new JwtSecurityTokenHandler();
-            var issuer = Guid.NewGuid().ToString();
+            var issuer = "b2clogin";
             var claims = new List<Claim>
             {
                 new Claim("email", "wcc-admin@telstrasmartspacesdemo.onmicrosoft.com")
@@ -142,7 +142,7 @@ namespace WCA.Customer.Api.Tests
         public async void GetOrganisationOverview_EmptyResult()
         {
             var jwtHandler = new JwtSecurityTokenHandler();
-            var issuer = Guid.NewGuid().ToString();
+            var issuer = "b2clogin";
             var claims = new List<Claim>
             {
                 new Claim("email", "user@unknown.domain.com")
