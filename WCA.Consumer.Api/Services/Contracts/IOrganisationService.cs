@@ -8,11 +8,11 @@ namespace WCA.Consumer.Api.Services.Contracts
 {
     public interface IOrganisationService
     {
-        public Task<OrganisationModel> GetOrganisation(string customerId, bool includeChildren);
-        public Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token, bool includeHealthStatus);
-        // public Task<IList<OrgSearchTreeNode>> GetOrganisationOverviewTest();
-        public Task<OrganisationModel> CreateOrganisation(OrganisationModel org);
-        public OrganisationModel UpdateOrganisation(string id, OrganisationModel org);
-        public OrganisationModel DeleteOrganisation(string id);
+        Task<OrganisationModel> GetOrganisation(string customerId, bool includeChildren);
+        Task<TenantOverview> GetLandingPageOverview(string token, bool includeHealthStatus);
+        Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token, bool includeHealthStatus);
+        Task<OrganisationModel> CreateOrganisation(OrganisationModel org);
+        OrganisationModel UpdateOrganisation(string id, OrganisationModel org);
+        OrganisationModel DeleteOrganisation(string id);
     }
 }

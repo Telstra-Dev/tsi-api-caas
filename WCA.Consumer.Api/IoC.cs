@@ -3,6 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Telstra.Common;
 using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Services;
+using Telstra.Core.Data.Contexts;
+using Microsoft.AspNetCore.Http;
+using Telstra.Core.Data;
+using Finbuckle.MultiTenant;
+using Microsoft.EntityFrameworkCore;
+using Telstra.Core.Repo;
+using Microsoft.Extensions.Logging;
 
 namespace Telstra.Core.Api
 {
@@ -15,21 +22,20 @@ namespace Telstra.Core.Api
             collection.AddSingleton(f => appSettings);
             collection.AddHttpContextAccessor();
 
-            // @this.RegisterMultiTenantStore<TenantStoreDbContext>(appSettings.Storage.MyDb, "tenant");
-            // @this.RegisterContextBuilderOptions<MyMultiTenantContext>(appSettings.Storage.MyDb);
+            //collection.RegisterMultiTenantStore<TenantStoreDbContext>(appSettings.Storage.MyDb, "tenant");
+            //collection.RegisterContextBuilderOptions<MyMultiTenantContext>(appSettings.Storage.MyDb);
 
-            // @this.RegisterDbContext<MyDBContext>(appSettings.Storage.MyDb);
-            // @this.RegisterMultiTenantDbContext<MyMultiTenantContext>(m => new MyMultiTenantContext(
-            //     m.GetService<IHttpContextAccessor>().HttpContext.GetMultiTenantContext<MyTenentInfo>()?.TenantInfo,
-            //     m.GetService<DbContextOptions<MyMultiTenantContext>>(),
-            //     appSettings.Storage.MyDb.Schema)
-            // );
+            //collection.RegisterDbContext<MyDBContext>(appSettings.Storage.MyDb);
+            //collection.RegisterMultiTenantDbContext<MyMultiTenantContext>(m => new MyMultiTenantContext(
+            //    m.GetService<IHttpContextAccessor>().HttpContext.GetMultiTenantContext<MyTenentInfo>()?.TenantInfo,
+            //    m.GetService<DbContextOptions<MyMultiTenantContext>>(),
+            //    appSettings.Storage.MyDb.Schema)
+            //);
+            //collection.AddMultiTenancy().WithStaticStrategy("TELSTRA");
+            //collection.AddScoped<BookingRepository>();
+            //collection.AddScoped<MyMultitenantRepository>(m => new MyMultitenantRepository(
+            //    m.GetService<MyMultiTenantContext>(), m.GetService<ILogger<MyMultiTenantContext>>()));
 
-            // @this.AddMultiTenancy().WithStaticStrategy("TELSTRA");
-
-            // @this.AddScoped<BookingRepository>();
-            // @this.AddScoped<MyMultitenantRepository>(m => new MyMultitenantRepository(
-            //     m.GetService<MyMultiTenantContext>(), m.GetService<ILogger<MyMultiTenantContext>>()));
             collection.AddSingleton<IRestClient, RestClient>();
             collection.AddScoped<ICustomerService, CustomerService>();
             collection.AddScoped<IHomeService, HomeService>();

@@ -75,7 +75,9 @@ namespace WCA.Consumer.Api.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException(response.ReasonPhrase);
+
+                    var contentString = await response.Content.ReadAsStringAsync();
+                    throw new HttpRequestException(contentString);
                 }
 
                 return response;
@@ -84,7 +86,7 @@ namespace WCA.Consumer.Api.Services
             {
                 _logger.LogError("Error calling api {@statusCode} {method} {requestUri} {@error}", response?.StatusCode, request.Method, request.RequestUri, ex.Message);
 
-                throw new HttpRequestException($"Error code: { response?.StatusCode}, Error: {ex.Message}");
+                throw new HttpRequestException(ex.Message);
             }
         }
 

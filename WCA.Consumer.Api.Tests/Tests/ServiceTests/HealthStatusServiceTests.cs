@@ -48,7 +48,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Null(result.Reason);
@@ -83,7 +83,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Equal(result.Reason, healthStatusModel.Reason);
@@ -119,7 +119,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Equal(result.Reason, healthStatusModel.Reason);
@@ -155,7 +155,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Equal(result.Reason, healthStatusModel.Reason);
@@ -206,7 +206,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Equal(result.Reason, healthStatusModel.Reason);
@@ -257,7 +257,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Equal(result.Reason, healthStatusModel.Reason);
@@ -308,7 +308,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Equal(result.Reason, healthStatusModel.Reason);
@@ -359,7 +359,7 @@ namespace WCA.Customer.Api.Tests
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetDeviceHealthStatus(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
 
             Assert.Equal(typeof(HealthStatusModel), result.GetType());
             Assert.Equal(result.Reason, healthStatusModel.Reason);

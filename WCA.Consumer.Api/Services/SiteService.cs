@@ -9,6 +9,8 @@ using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Threading;
+using WCA.Consumer.Api.Helpers;
+using System.Linq;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -24,10 +26,30 @@ namespace WCA.Consumer.Api.Services
                         IMapper mapper,
                         ILogger<SiteService> logger)
         {
-            this._httpClient = httpClient;
-            this._appSettings = appSettings;
-            this._mapper = mapper;
-            this._logger = logger;
+            _httpClient = httpClient;
+            _appSettings = appSettings;
+            _mapper = mapper;
+            _logger = logger;
+        }
+
+        public async Task<IList<SiteModel>> GetSitesFromToken(string token)
+        {
+            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
+            if (string.IsNullOrEmpty(emailFromToken))
+                throw new NullReferenceException("Invalid claim from token.");
+
+            try
+            {
+                var foundSites = await _httpClient.GetAsync<IList<SiteNameModel>>($"{_appSettings.StorageAppHttp.BaseUri}/sites/names?email={emailFromToken}", CancellationToken.None);
+
+                return foundSites.Select(x => new SiteModel { SiteId = x.Id, Name = x.DisplayName }).ToList();
+            }
+            catch (Exception e)
+            {
+                var errorMsg = "Fail to GetSitesForToken: " + e.Message;
+                _logger.LogError(errorMsg);
+                throw new Exception(errorMsg);
+            }
         }
 
         public async Task<IList<SiteModel>> GetSitesForCustomer(string customerId)
@@ -45,6 +67,26 @@ namespace WCA.Consumer.Api.Services
             catch (Exception e)
             {
                 _logger.LogError("Fail to GetSitesForCustomer: " + e.Message);
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<SiteTelemetryProperty> GetSiteTelProperties(string token, string siteId)
+        {
+            try
+            {
+                var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
+                if (string.IsNullOrEmpty(emailFromToken))
+                    throw new NullReferenceException("Invalid claim from token.");
+
+                var downstreamResult = await _httpClient.GetAsync<SiteTelemetryProperty>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}/locations?email={emailFromToken}", CancellationToken.None);
+
+                return downstreamResult;
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Get site location error: " + e.Message);
                 throw new Exception(e.Message);
             }
         }

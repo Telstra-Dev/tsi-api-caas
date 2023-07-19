@@ -9,6 +9,8 @@ using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Controllers;
 using Xunit;
+using Microsoft.AspNetCore.Http;
+using Telstra.Common;
 
 namespace WCA.Customer.Api.Tests
 {
@@ -21,7 +23,17 @@ namespace WCA.Customer.Api.Tests
             var mySites = TestDataHelper.CreateSiteModels(1);
             serviceMock.Setup(m => m.GetSitesForCustomer(It.IsAny<string>())).Returns(Task.FromResult(mySites));
 
-            var controller = new SiteController(serviceMock.Object);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
+
+            var controller = new SiteController(serviceMock.Object)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
+
 
             var result = await controller.GetSites(mySites.First().CustomerId);
 
@@ -39,7 +51,16 @@ namespace WCA.Customer.Api.Tests
             var customerId = "customer-id";
             serviceMock.Setup(m => m.GetSitesForCustomer(It.IsAny<string>())).Returns(Task.FromResult<IList<SiteModel>>(null));
 
-            var controller = new SiteController(serviceMock.Object);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
+
+            var controller = new SiteController(serviceMock.Object)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
 
             var result = await controller.GetSites(customerId);
 
@@ -54,7 +75,16 @@ namespace WCA.Customer.Api.Tests
             var mySite = TestDataHelper.CreateSiteModel();
             serviceMock.Setup(m => m.GetSite(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(mySite));
 
-            var controller = new SiteController(serviceMock.Object);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
+
+            var controller = new SiteController(serviceMock.Object)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
 
             var result = await controller.GetSite(mySite.SiteId, mySite.CustomerId);
 
@@ -72,12 +102,21 @@ namespace WCA.Customer.Api.Tests
             var siteId = "site-id";
             serviceMock.Setup(m => m.GetSite(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<SiteModel>(null));
 
-            var controller = new SiteController(serviceMock.Object);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
+
+            var controller = new SiteController(serviceMock.Object)
+            {
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext
+                }
+            };
 
             var result = await controller.GetSite(siteId, customerId);
 
-            Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
+            Assert.Equal(typeof(OkResult), result.GetType());
+            Assert.Equal((int)HttpStatusCode.OK, (result as OkResult).StatusCode);
         }
 
         [Fact(DisplayName = "Create site")]

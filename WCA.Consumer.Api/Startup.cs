@@ -17,6 +17,7 @@ using Newtonsoft.Json.Serialization;
 using Telstra.Common;
 using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Services;
+using System.Text.Json;
 
 namespace Telstra.Core.Api
 {
@@ -34,12 +35,16 @@ namespace Telstra.Core.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<RouteOptions>(options => options.LowercaseUrls = true); 
+            services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
             services.AddFeatureManagement();
             services.AddSwagger(this.appSettings);
             services.AddCors();
             services.AddLogging();
-            
+            services.AddControllers()
+           .AddJsonOptions(options =>
+           {
+               options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+           });
 
             // Response Compression
             services.Configure<GzipCompressionProviderOptions>(options =>
@@ -56,7 +61,8 @@ namespace Telstra.Core.Api
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.ContractResolver = new DefaultContractResolver {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver
+                    {
                         NamingStrategy = new CamelCaseNamingStrategy()
                     };
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -111,7 +117,7 @@ namespace Telstra.Core.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                
+
             }
 
             app.UseSwagger(c => c.ConfigureSwaggerBehindProxy());

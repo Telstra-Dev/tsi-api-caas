@@ -42,24 +42,28 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("organisations/overview")]
-        [ProducesResponseType(typeof(IList<OrganisationModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetOrganisationOverview([FromQuery] bool includeHealthStatus = false)
+        public async Task<IActionResult> GetOrganisationOverview([FromQuery] bool includeHealthStatus = false, [FromQuery] bool isVantage = true)
         {
             try
             {
-                var token = this.HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-                return Ok(await _orgService.GetOrganisationOverview(token, includeHealthStatus));
+                var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+
+                if (isVantage)
+                    return Ok(await _orgService.GetOrganisationOverview(token, includeHealthStatus));
+                else
+                    return Ok(await _orgService.GetLandingPageOverview(token, includeHealthStatus));
+            }
+            catch (NullReferenceException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {
-                if (e is ArgumentOutOfRangeException)
-                {
-                    return new BadRequestObjectResult(e.Message);
-                }
-                throw new Exception(e.Message); ;
+                return StatusCode(500, e.Message);
             }
         }
 

@@ -35,11 +35,22 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                var newSite = await _siteService.GetSitesForCustomer(customerId);
-                if (newSite?.Count > 0)
-                    return Ok(newSite);
+                if (string.IsNullOrEmpty(customerId))
+                {
+                    //data from flexi DB
+                    var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+                    var sites = await _siteService.GetSitesFromToken(token);
+
+                    return Ok(sites);
+                }
                 else
-                    return NotFound(new { message = "No sites exist with this customer" });
+                {
+                    var newSite = await _siteService.GetSitesForCustomer(customerId);
+                    if (newSite?.Count > 0)
+                        return Ok(newSite);
+                    else
+                        return NotFound(new { message = "No sites exist with this customer" });
+                }
             }
             catch (Exception e)
             {
@@ -52,23 +63,33 @@ namespace WCA.Consumer.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("sites/{siteId}")]
-        [ProducesResponseType(typeof(IList<SiteModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSite([FromRoute] string siteId, [FromQuery] string customerId)
+        public async Task<IActionResult> GetSite([FromRoute] string siteId, [FromQuery] string customerId, [FromQuery] bool telemetryProperties = false)
         {
             try
             {
-                var newSite = await _siteService.GetSite(siteId, customerId);
-                if (newSite != null)
-                    return Ok(newSite);
+                if (telemetryProperties)
+                {
+                    var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+                    var result = await _siteService.GetSiteTelProperties(token, siteId);
+
+                    return Ok(result);
+                }
                 else
-                    return NotFound(new { message = "Site doesn't exist with this customer" });
+                {
+
+                    var newSite = await _siteService.GetSite(siteId, customerId);
+                    if (newSite != null)
+                        return Ok(newSite);
+                    else
+                        return Ok();
+                }
             }
             catch (Exception e)
             {
-                return BadRequest(e);
+                return BadRequest(e.Message);
             }
         }
 

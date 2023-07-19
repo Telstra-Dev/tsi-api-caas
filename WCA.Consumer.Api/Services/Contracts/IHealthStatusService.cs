@@ -7,10 +7,11 @@ namespace WCA.Consumer.Api.Services.Contracts
 {
     public interface IHealthStatusService
     {
-        Task<HealthStatusModel> GetDeviceHealthStatus(string deviceId);
+        Task<HealthStatusModel> GetHealthStatusFromDeviceId(string deviceId);
         Task<HealthStatusModel> GetDeviceHealthStatus(Device device);
 
-        Task<HealthStatusModel> GetSiteHealthStatus(string siteId);
+        Task<HealthStatusModel> GetHealthStatusFromSiteId(string siteId);
         Task<HealthStatusModel> GetSiteHealthStatus(Site site);
+        TenantOverview ConvertTimeToHealthStatus(TenantOverview overview);
     }
 }

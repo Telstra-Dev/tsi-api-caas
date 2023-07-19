@@ -1,21 +1,30 @@
-﻿namespace WCA.Consumer.Api.Helpers
+﻿using System;
+
+namespace WCA.Consumer.Api.Helpers
 {
     public static class TokenClaimsHelper
     {
         public static string GetEmailFromToken(string token)
         {
-            var emailClaim = "";
-
-            if (IsAadB2cToken(token))
+            try
             {
-                emailClaim = JwtExtractor.ExtractField(token, "email").ToLower();
-            }
-            else
-            {
-                emailClaim = JwtExtractor.ExtractField(token, "username").ToLower();
-            }
+                var emailClaim = string.Empty;
 
-            return emailClaim;
+                if (IsAadB2cToken(token))
+                {
+                    emailClaim = JwtExtractor.ExtractField(token, "email").ToLower();
+                }
+                else
+                {
+                    emailClaim = JwtExtractor.ExtractField(token, "username").ToLower();
+                }
+
+                return emailClaim;
+            }
+            catch (Exception ex)
+            {
+                throw new NullReferenceException("Cannot get valid claim from token. " + ex.Message);
+            }
         }
 
         public static bool IsAadB2cToken(string token)

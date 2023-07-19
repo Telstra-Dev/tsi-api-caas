@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Helpers;
 using System.Threading;
+using System.Net.Http;
+using Device = Telstra.Core.Data.Entities.Device;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -36,6 +38,43 @@ namespace WCA.Consumer.Api.Services
             _mapper = mapper;
             _logger = logger;
             _healthStatusService = healthStatusService;
+        }
+
+        public async Task<TenantOverview> GetLandingPageOverview(string token, bool includeHealthStatus)
+        {
+            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
+            if (string.IsNullOrEmpty(emailFromToken))
+                throw new NullReferenceException("Invalid claim from token.");
+
+            var overview = new TenantOverview();
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview?email={emailFromToken}&withHealthStatus={includeHealthStatus}");
+                overview = await _httpClient.SendAsync<TenantOverview>(request, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"Fail to get tenant overview data from downstream service for user {emailFromToken}. With health status is {includeHealthStatus}.";
+                _logger.LogError($"{errMsg} System message: {ex.Message}");
+                throw new Exception(errMsg);
+            }
+
+            try
+            {
+                if (includeHealthStatus && overview != null && overview.Sites.Count > 0)
+                {
+                    overview = _healthStatusService.ConvertTimeToHealthStatus(overview);
+                }
+
+                return overview;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"Fail to generate tenant overview with health status for user {emailFromToken}";
+                _logger.LogError($"{errMsg} System message: {ex.Message}");
+                throw new Exception(errMsg);
+            }
+
         }
 
         public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token, bool includeHealthStatus = false)
@@ -64,10 +103,12 @@ namespace WCA.Consumer.Api.Services
                 if (emailFromToken.Contains("@team.telstra.com"))
                 {
                     //engineer access to all orgs, sites and devices
+                    _logger.LogInformation("CAAS: Access to all sites for " + emailFromToken);
                     orgRequestSuffix = "/overview";
                 }
                 else
                 {
+                    _logger.LogInformation("CAAS: Try get sites for " + emailFromToken);
                     orgRequestSuffix = $"?email={emailFromToken}";
                     siteRequestSuffix = $"?email={emailFromToken}";
                     deviceRequestSuffix = $"?email={emailFromToken}";

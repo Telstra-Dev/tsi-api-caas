@@ -30,7 +30,7 @@ namespace WCA.Consumer.Api.Controllers
             try {
                 if (deviceId != null)
                 {
-                    var deviceHealth = await this.service.GetDeviceHealthStatus(deviceId);
+                    var deviceHealth = await this.service.GetHealthStatusFromDeviceId(deviceId);
                     if (deviceHealth != null)
                         return Ok(deviceHealth);
                     else
@@ -38,7 +38,7 @@ namespace WCA.Consumer.Api.Controllers
                 }
                 else
                 {
-                    var siteHealth = await this.service.GetSiteHealthStatus(siteId);
+                    var siteHealth = await this.service.GetHealthStatusFromSiteId(siteId);
                     if (siteHealth != null)
                         return Ok(siteHealth);
                     else
