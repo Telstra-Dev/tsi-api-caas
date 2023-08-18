@@ -7,6 +7,8 @@ parameters:
     type: string
   - name: appSlotName
     type: string
+  - name: appShortCacheTime
+    type: string
 
 steps:
 - task: AzureRmWebAppDeployment@4
@@ -21,6 +23,7 @@ steps:
     packageForLinux: '$(Pipeline.Workspace)/wca-api-consumer/WCA.Consumer.Api.zip'
     RuntimeStack: 'DOTNETCORE|6.0'
     StartupCommand: 'dotnet WCA.Consumer.Api.dll'
+    ShortCacheTime: ${{ parameters.appShortCacheTime }}
     #AppSettings: 'test1'
     
 - task: AzureAppServiceSettings@1
@@ -59,6 +62,11 @@ steps:
         {
           "name": "WCA_UseAd",
           "value": true,
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_Short_Cache_Time",
+          "value": ${{ parameters.appShortCacheTime }},
           "slotSetting": false
         }
       ]

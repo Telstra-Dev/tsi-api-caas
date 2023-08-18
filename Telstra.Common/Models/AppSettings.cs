@@ -33,6 +33,7 @@ namespace Telstra.Common
         public StorageAppSettings EdgeDevicesAppHttp { get; set; }
         public AzureMapsAuthSettings AzureMapsAuthCredentials { get; set; }
         public int DeviceRecentlyOnlineMaxMinutes { get; set; } = 5;
+        public int ShortCacheTime = 60;
     }
 
     public class DBSetting

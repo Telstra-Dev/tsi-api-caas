@@ -44,6 +44,7 @@ namespace Telstra.Core.Api
             collection.AddScoped<IDeviceService, DeviceService>();
             collection.AddScoped<ISerialNumberService, SerialNumberService>();
             collection.AddScoped<IHealthStatusService, HealthStatusService>();
+            collection.AddScoped<ITagManagerService, TagManagerService>();
         }
     }
 }

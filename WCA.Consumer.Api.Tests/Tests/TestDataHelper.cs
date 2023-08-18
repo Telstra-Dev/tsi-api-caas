@@ -5,6 +5,9 @@ using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using AutoMapper;
 using Moq;
+using System.Runtime.ExceptionServices;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace WCA.Customer.Api.Tests
 {
@@ -581,6 +584,53 @@ namespace WCA.Customer.Api.Tests
                     EdgeStarttime = new DateTime(2000, 3, 29, 10, 0, 0),
                     EdgeEndtime = new DateTime(2000, 3, 29, 10, 0, 0),
                 };
+        }
+
+        public static List<TagModel> CreateTags(int count) 
+        {
+            var tagsList = new List<TagModel>();
+
+            for (int i = 1; i <= count; i++)
+            {
+                tagsList.Add(new TagModel 
+                {
+                    Id = i,
+                    Name = $"Test Tag {i}",
+                    Category = "crossing",
+                    Type = "trip line"
+                });
+            }
+
+            return tagsList;
+        }
+
+        public static List<CreateTagModel> GenerateCreateTagsPayload(int count)
+        {
+            var tagsList = new List<CreateTagModel>();
+
+            for (int i = 1; i <= count; i++)
+            {
+                tagsList.Add(new CreateTagModel 
+                {
+                    Name = $"Test Tag {i}",
+                    Category = "crossing",
+                    Type = "trip line"
+                });
+            }
+
+            return tagsList;
+        }
+
+        public static string GenerateJwtToken()
+        {
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var issuer = "b2clogin";
+            var claims = new List<Claim>
+            {
+                new Claim("email", "someone@team.telstra.com")
+            };
+            var jwt = new JwtSecurityToken(issuer, null, claims, null, DateTime.UtcNow.AddMinutes(60), null);
+            return jwtHandler.WriteToken(jwt);
         }
     }
 }

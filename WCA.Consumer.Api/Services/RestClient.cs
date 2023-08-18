@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Core;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WCA.Consumer.Api.Services.Contracts;
@@ -87,6 +88,28 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogError("Error calling api {@statusCode} {method} {requestUri} {@error}", response?.StatusCode, request.Method, request.RequestUri, ex.Message);
 
                 throw new HttpRequestException(ex.Message);
+            }
+        }
+
+        public async Task<HttpResponseMessage> SendWithResponseAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            HttpResponseMessage response = null;
+            try
+            {
+                response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException(response.ReasonPhrase);
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var reply = await response.Content.ReadAsStringAsync();
+                _logger.LogError("Error calling api {@statusCode} {method} {requestUri} {@error}", response?.StatusCode, request.Method, request.RequestUri, reply);                
+                throw new HttpRequestException($"Error code: {response?.StatusCode}, Error: {reply}");
             }
         }
 

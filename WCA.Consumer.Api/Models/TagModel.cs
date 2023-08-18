@@ -1,8 +1,7 @@
 namespace WCA.Consumer.Api.Models
 {
-    public class TagModel
+    public class TagModel : CreateTagModel
     {
-            public string Name { get; set; }
-            public string Value { get; set; } 
+            public int Id { get; set; }
     }
 }

@@ -39,6 +39,8 @@ variables:
   # TODO: this should be `inactive-slot` in future once we get working with VNETs.
   APP_SLOT_NAME_PRODUCTION: production
 
+  APP_SHORT_CACHE_TIME: 60
+
 stages:
   - stage: build
     dependsOn: []
@@ -148,6 +150,7 @@ stages:
                     resourceGroupName: $(APP_RESOURCE_GROUP_NAME_DEVELOPMENT)
                     appName: $(APP_NAME_DEVELOPMENT)
                     appSlotName: $(APP_SLOT_NAME_DEVELOPMENT)
+                    appShortCacheTime: $(APP_SHORT_CACHE_TIME)
 
   - stage: deployToStaging
     dependsOn: ["test"]
@@ -183,6 +186,7 @@ stages:
                     resourceGroupName: $(APP_RESOURCE_GROUP_NAME_STAGING)
                     appName: $(APP_NAME_STAGING)
                     appSlotName: $(APP_SLOT_NAME_STAGING)
+                    appShortCacheTime: $(APP_SHORT_CACHE_TIME)
 
   - stage: deployToProduction
     dependsOn: ["test"]
@@ -218,3 +222,4 @@ stages:
                     resourceGroupName: $(APP_RESOURCE_GROUP_NAME_PRODUCTION)
                     appName: $(APP_NAME_PRODUCTION)
                     appSlotName: $(APP_SLOT_NAME_PRODUCTION)
+                    appShortCacheTime: $(APP_SHORT_CACHE_TIME)
