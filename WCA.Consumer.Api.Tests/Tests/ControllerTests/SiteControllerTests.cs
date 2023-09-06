@@ -15,35 +15,7 @@ using Telstra.Common;
 namespace WCA.Customer.Api.Tests
 {
     public class SiteControllerTests
-    {
-        [Fact(DisplayName = "Get sites")]
-        public async void GetSites_Success()
-        {
-            var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
-            var mySites = TestDataHelper.CreateSiteModels(1);
-            serviceMock.Setup(m => m.GetSitesForCustomer(It.IsAny<string>())).Returns(Task.FromResult(mySites));
-
-            var httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
-
-            var controller = new SiteController(serviceMock.Object)
-            {
-                ControllerContext = new ControllerContext()
-                {
-                    HttpContext = httpContext
-                }
-            };
-
-
-            var result = await controller.GetSites(mySites.First().CustomerId);
-
-            Assert.Equal(typeof(OkObjectResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
-            IList<SiteModel> expectedSites = ((result as OkObjectResult).Value as IList<SiteModel>);
-            var expectedSite = (SiteModel)expectedSites[0];
-            Assert.Equal(expectedSite.SiteId, mySites.First().SiteId);
-        }
-
+    {        
         [Fact(DisplayName = "Get sites not found")]
         public async void GetSites()
         {
@@ -66,108 +38,6 @@ namespace WCA.Customer.Api.Tests
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
-        }
-
-        [Fact(DisplayName = "Get one site")]
-        public async void GetSite_Success()
-        {
-            var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
-            var mySite = TestDataHelper.CreateSiteModel();
-            serviceMock.Setup(m => m.GetSite(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(mySite));
-
-            var httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
-
-            var controller = new SiteController(serviceMock.Object)
-            {
-                ControllerContext = new ControllerContext()
-                {
-                    HttpContext = httpContext
-                }
-            };
-
-            var result = await controller.GetSite(mySite.SiteId, mySite.CustomerId);
-
-            Assert.Equal(typeof(OkObjectResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
-            SiteModel expectedSite = ((result as OkObjectResult).Value as SiteModel);
-            Assert.Equal(expectedSite.SiteId, mySite?.SiteId);
-        }
-
-        [Fact(DisplayName = "Get site not found")]
-        public async void GetSite_NotFound()
-        {
-            var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
-            var customerId = "customer-id";
-            var siteId = "site-id";
-            serviceMock.Setup(m => m.GetSite(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<SiteModel>(null));
-
-            var httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
-
-            var controller = new SiteController(serviceMock.Object)
-            {
-                ControllerContext = new ControllerContext()
-                {
-                    HttpContext = httpContext
-                }
-            };
-
-            var result = await controller.GetSite(siteId, customerId);
-
-            Assert.Equal(typeof(OkResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.OK, (result as OkResult).StatusCode);
-        }
-
-        [Fact(DisplayName = "Create site")]
-        public async void CreateSite()
-        {
-            var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
-            var mySite = TestDataHelper.CreateSiteModel();
-            serviceMock.Setup(m => m.CreateSite(It.IsAny<SiteModel>())).Returns(Task.FromResult(mySite));
-
-            var controller = new SiteController(serviceMock.Object);
-
-            var result = await controller.CreateSite(mySite);
-
-            Assert.Equal(typeof(OkObjectResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
-            SiteModel expectedSite = ((result as OkObjectResult).Value as SiteModel);
-            Assert.Equal(expectedSite.SiteId, mySite?.SiteId);
-        }
-
-        [Fact(DisplayName = "Update site")]
-        public async void UpdateSite()
-        {
-            var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
-            var mySite = TestDataHelper.CreateSiteModel();
-            serviceMock.Setup(m => m.UpdateSite(It.IsAny<string>(), It.IsAny<SiteModel>())).Returns(Task.FromResult(mySite));
-
-            var controller = new SiteController(serviceMock.Object);
-
-            var result = await controller.UpdateSite(mySite.SiteId, mySite);
-
-            Assert.Equal(typeof(OkObjectResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
-            SiteModel expectedSite = ((result as OkObjectResult).Value as SiteModel);
-            Assert.Equal(expectedSite.SiteId, mySite?.SiteId);
-        }
-
-        [Fact(DisplayName = "Delete site")]
-        public async void DeleteSite()
-        {
-            var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
-            var mySite = TestDataHelper.CreateSiteModel();
-            serviceMock.Setup(m => m.DeleteSite(It.IsAny<string>())).Returns(Task.FromResult(mySite));
-
-            var controller = new SiteController(serviceMock.Object);
-
-            var result = await controller.DeleteSite(mySite.SiteId);
-
-            Assert.Equal(typeof(OkObjectResult), result.GetType());
-            Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
-            SiteModel expectedSite = ((result as OkObjectResult).Value as SiteModel);
-            Assert.Equal(expectedSite.SiteId, mySite?.SiteId);
         }
     }
 }

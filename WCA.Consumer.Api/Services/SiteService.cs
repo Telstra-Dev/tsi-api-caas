@@ -42,7 +42,25 @@ namespace WCA.Consumer.Api.Services
             {
                 var foundSites = await _httpClient.GetAsync<IList<SiteNameModel>>($"{_appSettings.StorageAppHttp.BaseUri}/sites/names?email={emailFromToken}", CancellationToken.None);
 
-                return foundSites.Select(x => new SiteModel { SiteId = x.Id, Name = x.DisplayName }).ToList();
+                return foundSites.Select(x => new SiteModel 
+                { 
+                    SiteId = x.Id, 
+                    Name = x.DisplayName,
+                    Metadata = new SiteMetadata 
+                    {
+                        Tags = x.Tags
+                    },
+                    Location = new SiteLocationModel
+                    {
+                        Id = Convert.ToString(x.Address.Id),
+                        Address = $"{x.Address.SvNote}, {x.Address.State}, {x.Address.Country}",
+                        GeoLocation = new GeoLocation 
+                        {
+                            Longitude = Convert.ToDouble(x.Address.Sites[0].Longitude),
+                            Latitude = Convert.ToDouble(x.Address.Sites[0].Latitude)
+                        }
+                    }
+                }).ToList();
             }
             catch (Exception e)
             {
@@ -114,25 +132,75 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<SiteModel> CreateSite(SiteModel newSite)
+        public async Task<SiteModel> GetSiteById(string siteId, string token)
+        {
+            try
+            {
+                var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
+                if (string.IsNullOrEmpty(emailFromToken))
+                    throw new NullReferenceException("Invalid claim from token.");
+
+                SiteModel foundMappedSite = null;
+                var foundSite = await _httpClient.GetAsync<SiteNameModel>(
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}?email={emailFromToken}",
+                                                    CancellationToken.None);
+                if (foundSite != null)
+                {
+                    foundMappedSite = new SiteModel 
+                    {
+                        SiteId = foundSite.Id,
+                        Name = foundSite.DisplayName,
+                        Metadata = new SiteMetadata 
+                        {
+                            Tags = foundSite.Tags
+                        },
+                        Location = new SiteLocationModel
+                        {
+                            Id = Convert.ToString(foundSite.Address.Id),
+                            Address = $"{foundSite.Address.SvNote}, {foundSite.Address.State}, {foundSite.Address.Country}",
+                            GeoLocation = new GeoLocation
+                            {
+                                Longitude = Convert.ToDouble(foundSite.Address.Sites[0].Longitude),
+                                Latitude = Convert.ToDouble(foundSite.Address.Sites[0].Latitude)
+                            }
+                        }
+                    };
+                }
+
+                return foundMappedSite;
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"GetSiteById: {ex.Message}";
+                _logger.LogError(errorMessage);
+                throw new Exception(errorMessage);
+            }
+        }
+
+        public async Task<bool> CreateSite(SiteModel newSite)
         {
             return await SaveSite(newSite);
         }
 
-        public async Task<SiteModel> UpdateSite(string siteId, SiteModel updateSite)
+        public async Task<bool> UpdateSite(string siteId, SiteModel updateSite)
         {
             return await SaveSite(updateSite, true);
         }
 
-        public async Task<SiteModel> DeleteSite(string siteId)
+        public async Task<bool> DeleteSite(string siteId, string token)
         {
-            SiteModel mappedDeletedSite = null;
             try
             {
-                var deletedSite = await _httpClient.DeleteAsync<Site>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}", CancellationToken.None);
-                mappedDeletedSite = _mapper.Map<SiteModel>(deletedSite);
+                var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
+                if (string.IsNullOrEmpty(emailFromToken))
+                    throw new NullReferenceException("Invalid claim from token.");
 
-                return mappedDeletedSite;
+                var deletedSite = await _httpClient.DeleteAsync<bool>(
+                                                        $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}?email={emailFromToken}",
+                                                        CancellationToken.None);
+
+                return deletedSite;
+
             }
             catch (Exception e)
             {
@@ -141,23 +209,40 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        private async Task<SiteModel> SaveSite(SiteModel newSite, bool isUpdate = false)
+        private async Task<bool> SaveSite(SiteModel newSite, bool isUpdate = false)
         {
-            Site savedSite;
             try
             {
-                Site mappedSite = _mapper.Map<Site>(newSite);
-                var payload = JsonConvert.SerializeObject(mappedSite);
+                var siteNameModel = new SiteNameModel 
+                {
+                    Id = newSite.SiteId,
+                    DisplayName = newSite.Name,
+                    Tags = newSite.Metadata.Tags,
+                    Address = new SiteAddress
+                    {
+                        Id = Convert.ToInt32(newSite.Location.Id),
+                        SvNote = newSite.Location.Address,
+                        Sites = new List<NameModelSite> 
+                        {
+                            new NameModelSite
+                            {
+                                Longitude = Convert.ToString(newSite.Location.GeoLocation.Longitude),
+                                Latitude = Convert.ToString(newSite.Location.GeoLocation.Latitude)
+                            }
+                        }
+                    }
+                };
+
+                var payload = JsonConvert.SerializeObject(siteNameModel);
+
                 if (!isUpdate)
                 {
-                    savedSite = await _httpClient.PostAsync<Site>($"{_appSettings.StorageAppHttp.BaseUri}/sites", payload, CancellationToken.None);
+                    return await _httpClient.PostAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites", payload, CancellationToken.None);
                 }
                 else
                 {
-                    savedSite = await _httpClient.PutAsync<Site>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{newSite.SiteId}", payload, CancellationToken.None);
+                    return await _httpClient.PutAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{newSite.SiteId}", payload, CancellationToken.None);
                 }
-
-                return _mapper.Map<SiteModel>(savedSite);
             }
             catch (Exception e)
             {

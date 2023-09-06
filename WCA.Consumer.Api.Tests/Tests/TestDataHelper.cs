@@ -132,21 +132,9 @@ namespace WCA.Customer.Api.Tests
                 {
                     SiteId = $"site-id-{i}",
                     Name = $"site-name-{i}",
-                    CustomerId = "customer-id",
-                    Active = true,
                     Metadata = new SiteMetadata
                     {
-                        StoreCode = "StoreCode",
-                        State = "State",
-                        Type = "Type",
-                        StoreFormat = "StoreFormat",
-                        GeoClassification = "GeoClassification",
-                        Region = "Region",
-                        Tags = new Dictionary<string, string[]>
-                            {
-                                { "Tag1Name", new string[2] { "tag-1-value-a", "tag-1-value-b" } },
-                                { "Tag2Name", new string[2] { "tag-2-value-a", "tag-2-value-b" } },
-                            },
+                        Tags = new List<int> { 1, 2, 3 }
                     },
                     Location = new SiteLocationModel
                     {
@@ -471,8 +459,7 @@ namespace WCA.Customer.Api.Tests
                             new SiteModel
                             {
                                 SiteId = e.SiteId,
-                                Name = e.Name,
-                                CustomerId = e.CustomerId,
+                                Name = e.Name
                             });
                     }
                     return list;
@@ -484,7 +471,6 @@ namespace WCA.Customer.Api.Tests
                     {
                         SiteId = s.SiteId,
                         Name = s.Name,
-                        CustomerId = s.CustomerId,
                     };
                 });
             mapperMock.Setup(a => a.Map<IList<SerialNumberModel>>(It.IsAny<IList<string>>()))

@@ -66,25 +66,20 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSite([FromRoute] string siteId, [FromQuery] string customerId, [FromQuery] bool telemetryProperties = false)
+        public async Task<IActionResult> GetSite([FromRoute] string siteId, [FromQuery] bool telemetryProperties = false)
         {
             try
             {
-                if (telemetryProperties)
-                {
-                    var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-                    var result = await _siteService.GetSiteTelProperties(token, siteId);
+                var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
 
+                if (telemetryProperties)
+                {   
+                    var result = await _siteService.GetSiteTelProperties(token, siteId);
                     return Ok(result);
                 }
                 else
                 {
-
-                    var newSite = await _siteService.GetSite(siteId, customerId);
-                    if (newSite != null)
-                        return Ok(newSite);
-                    else
-                        return Ok();
+                    return Ok(await _siteService.GetSiteById(siteId, token));
                 }
             }
             catch (Exception e)
@@ -105,9 +100,7 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                var newSite = await _siteService.CreateSite(site);
-
-                return Ok(newSite);
+                return Ok(await _siteService.CreateSite(site));
             }
             catch (Exception e)
             {
@@ -154,7 +147,8 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                var updatedSite = await _siteService.DeleteSite(siteId);
+                var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+                var updatedSite = await _siteService.DeleteSite(siteId, token);
 
                 return Ok(updatedSite);
             }

@@ -55,27 +55,14 @@ namespace WCA.Consumer.Api.Services
             try
             {
                 var userEmail = GetUserEmail(token);
-                var cacheKey = $"{nameof(GetTagsAsync)}-{userEmail}";
-                var cacheValue = (List<TagModel>)_cache.Get(cacheKey);
-                if (cacheValue != null)
-                {
-                    return cacheValue;
-                }
 
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/tagmanager/{userEmail}");
                 var response = await _httpClient.SendWithResponseAsync(request, CancellationToken.None);
                 var reply = await response.Content.ReadAsStringAsync();
 
-                if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var tags = JsonConvert.DeserializeObject<List<TagModel>>(reply);
-
-                    _ = Task.Run(() =>
-                    {
-                        _cache.Set<List<TagModel>>(cacheKey, tags, _shortCacheTime);
-                        _logger.LogTrace($"{nameof(GetTagsAsync)} cache set");
-                    });
-
                     return tags;
                 }
                 else
@@ -140,7 +127,7 @@ namespace WCA.Consumer.Api.Services
                 var response = await _httpClient.SendWithResponseAsync(request, CancellationToken.None);
                 var reply = await response.Content.ReadAsStringAsync();
 
-                if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var renamedTag = JsonConvert.DeserializeObject<TagModel>(reply);
                     return renamedTag;

@@ -10,12 +10,13 @@ namespace WCA.Consumer.Api.Services.Contracts
         public Task<IList<SiteModel>> GetSitesForCustomer(string customerId);
 
         public Task<SiteModel> GetSite(string siteId, string customerId);
+        public Task<SiteModel> GetSiteById(string siteId, string token);
         public Task<SiteTelemetryProperty> GetSiteTelProperties(string token, string siteId);
 
-        public Task<SiteModel> CreateSite(SiteModel newSite);
+        public Task<bool> CreateSite(SiteModel newSite);
 
-        public Task<SiteModel> UpdateSite(string siteId, SiteModel site);
+        public Task<bool> UpdateSite(string siteId, SiteModel site);
 
-        public Task<SiteModel> DeleteSite(string siteId);
+        public Task<bool> DeleteSite(string siteId, string token);
     }
 }
