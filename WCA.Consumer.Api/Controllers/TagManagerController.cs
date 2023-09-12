@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using WCA.Consumer.Api.Helpers;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 
@@ -69,7 +70,7 @@ namespace WCA.Consumer.Api.Controllers
 
         private string GetToken()
         {
-            return HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+            return TokenHelper.GetToken(HttpContext);
         }
     }
 }

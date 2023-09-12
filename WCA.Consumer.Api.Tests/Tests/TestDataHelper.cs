@@ -618,5 +618,26 @@ namespace WCA.Customer.Api.Tests
             var jwt = new JwtSecurityToken(issuer, null, claims, null, DateTime.UtcNow.AddMinutes(60), null);
             return jwtHandler.WriteToken(jwt);
         }
+
+        public static RtspFeedModel GenerateRtspFeedResponse() 
+        {
+            return new RtspFeedModel
+            {
+                DeviceId = "svaEdge1",
+                TimeStamp = DateTimeOffset.Now,
+                Message = "Test message.",
+                Result = new Result
+                {
+                    Status = 200,
+                    Payload = new Payload
+                    {
+                        ImageResponse = new ImageResponse
+                        {
+                            Image = "Test image."
+                        }
+                    }
+                }
+            };
+        }
     }
 }

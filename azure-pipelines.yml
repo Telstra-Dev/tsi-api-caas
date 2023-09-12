@@ -41,6 +41,15 @@ variables:
 
   APP_SHORT_CACHE_TIME: 60
 
+  # Device Management API related
+  # (currently only development environment present)
+  DEV_DM_BASE_URI: https://slot5.org005.t-dev.telstra.net/
+  DEV_DM_ACCESS_TOKEN_URI: v2/oauth/token
+  DEV_DM_RTSP_FEED_URI: v1/iot-shared-test/v1/devices/{0}/modules/platformAzureEdge/commands
+  DEV_DM_CLIENT_ID: GcBBZtgHx5YzpSSwBOrwOALsdwApY4om
+  DEV_DM_CLIENT_SECRET: 0fNj3vqJqZXJcBoL
+  DEV_DM_GRANT_TYPE: client_credentials
+
 stages:
   - stage: build
     dependsOn: []
@@ -151,6 +160,12 @@ stages:
                     appName: $(APP_NAME_DEVELOPMENT)
                     appSlotName: $(APP_SLOT_NAME_DEVELOPMENT)
                     appShortCacheTime: $(APP_SHORT_CACHE_TIME)
+                    dmBaseUri: $(DEV_DM_BASE_URI)
+                    dmAccessTokenUri: $(DEV_DM_ACCESS_TOKEN_URI)
+                    dmRtspFeedUri: $(DEV_DM_RTSP_FEED_URI)
+                    dmClientId: $(DEV_DM_CLIENT_ID)
+                    dmClientSecret: $(DEV_DM_CLIENT_SECRET)
+                    dmGrantType: $(DEV_DM_GRANT_TYPE)
 
   - stage: deployToStaging
     dependsOn: ["test"]
@@ -187,6 +202,12 @@ stages:
                     appName: $(APP_NAME_STAGING)
                     appSlotName: $(APP_SLOT_NAME_STAGING)
                     appShortCacheTime: $(APP_SHORT_CACHE_TIME)
+                    dmBaseUri: $(DEV_DM_BASE_URI)
+                    dmAccessTokenUri: $(DEV_DM_ACCESS_TOKEN_URI)
+                    dmRtspFeedUri: $(DEV_DM_RTSP_FEED_URI)
+                    dmClientId: $(DEV_DM_CLIENT_ID)
+                    dmClientSecret: $(DEV_DM_CLIENT_SECRET)
+                    dmGrantType: $(DEV_DM_GRANT_TYPE)
 
   - stage: deployToProduction
     dependsOn: ["test"]
@@ -223,3 +244,9 @@ stages:
                     appName: $(APP_NAME_PRODUCTION)
                     appSlotName: $(APP_SLOT_NAME_PRODUCTION)
                     appShortCacheTime: $(APP_SHORT_CACHE_TIME)
+                    dmBaseUri: $(DEV_DM_BASE_URI)
+                    dmAccessTokenUri: $(DEV_DM_ACCESS_TOKEN_URI)
+                    dmRtspFeedUri: $(DEV_DM_RTSP_FEED_URI)
+                    dmClientId: $(DEV_DM_CLIENT_ID)
+                    dmClientSecret: $(DEV_DM_CLIENT_SECRET)
+                    dmGrantType: $(DEV_DM_GRANT_TYPE)

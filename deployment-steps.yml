@@ -9,6 +9,18 @@ parameters:
     type: string
   - name: appShortCacheTime
     type: string
+  - name: dmBaseUri
+    type: string
+  - name: dmAccessTokenUri
+    type: string
+  - name: dmRtspFeedUri
+    type: string
+  - name: dmClientId
+    type: string
+  - name: dmClientSecret
+    type: string
+  - name: dmGrantType
+    type: string
 
 steps:
 - task: AzureRmWebAppDeployment@4
@@ -67,6 +79,36 @@ steps:
         {
           "name": "WCA_Short_Cache_Time",
           "value": ${{ parameters.appShortCacheTime }},
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_DeviceManagementCredentials__BaseUri",
+          "value": ${{parameters.dmBaseUri}},
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_DeviceManagementCredentials__AccessTokenUri",
+          "value": ${{parameters.dmAccessTokenUri}},
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_DeviceManagementCredentials__RtspFeedUri",
+          "value": ${{parameters.dmRtspFeedUri}},
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_DeviceManagementCredentials__ClientId",
+          "value": ${{parameters.dmClientId}},
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_DeviceManagementCredentials__ClientSecret",
+          "value": ${{parameters.dmClientSecret}},
+          "slotSetting": false
+        },
+        {
+          "name": "WCA_DeviceManagementCredentials__GrantType",
+          "value": ${{parameters.dmGrantType}},
           "slotSetting": false
         }
       ]

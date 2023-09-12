@@ -34,6 +34,7 @@ namespace Telstra.Common
         public AzureMapsAuthSettings AzureMapsAuthCredentials { get; set; }
         public int DeviceRecentlyOnlineMaxMinutes { get; set; } = 5;
         public int ShortCacheTime = 60;
+        public DeviceManagementSettings DeviceManagementCredentials { get; set; }
     }
 
     public class DBSetting
@@ -54,5 +55,15 @@ namespace Telstra.Common
             .Replace("{{username}}", this.Username)
             .Replace("{{password}}", this.Password)
             .Replace("{{database}}", this.DatabaseName);
+    }
+
+    public class DeviceManagementSettings
+    {
+        public string BaseUri { get; set; }
+        public string AccessTokenUri { get; set; }
+        public string RtspFeedUri { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
+        public string GrantType { get; set; }
     }
 }
