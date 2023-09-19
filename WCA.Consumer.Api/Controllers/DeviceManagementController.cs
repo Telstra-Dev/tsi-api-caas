@@ -22,11 +22,11 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetRtspFeed([FromQuery] string deviceId, [FromQuery] string moduleId)
+        public async Task<IActionResult> GetRtspFeed([FromQuery] string edgeDeviceId, [FromQuery] string leafDeviceId)
         {
             try
             {
-                return Ok(await _deviceManagementService.GetRtspFeed(TokenHelper.GetToken(HttpContext), deviceId, moduleId));
+                return Ok(await _deviceManagementService.GetRtspFeed(TokenHelper.GetToken(HttpContext), edgeDeviceId, leafDeviceId));
             }
             catch (Exception ex)
             {

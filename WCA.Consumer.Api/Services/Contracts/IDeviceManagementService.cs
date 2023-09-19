@@ -5,6 +5,6 @@ namespace WCA.Consumer.Api.Services.Contracts
 {
     public interface IDeviceManagementService
     {
-        public Task<RtspFeedModel> GetRtspFeed(string token, string deviceId, string moduleId);
+        public Task<RtspFeedModel> GetRtspFeed(string token, string edgeDeviceId, string leafDeviceId);
     }
 }

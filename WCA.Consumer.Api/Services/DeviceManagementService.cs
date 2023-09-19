@@ -41,7 +41,7 @@ namespace WCA.Consumer.Api.Services
             _shortCacheTime = DateTimeOffset.Now.AddSeconds(_appSettings.ShortCacheTime);
         }
 
-        public async Task<RtspFeedModel> GetRtspFeed(string token, string deviceId, string moduleId)
+        public async Task<RtspFeedModel> GetRtspFeed(string token, string edgeDeviceId, string leafDeviceId)
         {
             try
             {
@@ -51,14 +51,14 @@ namespace WCA.Consumer.Api.Services
                 var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token) 
                                         ?? throw new Exception(_errInvalidClaim);
 
-                var cacheKeyLeafDeviceMapped = $"{nameof(IsLeafDeviceMapped)}-{emailFromToken}-{deviceId}-{moduleId}";
-                var cacheKeyAccessToken = $"{nameof(GetAccessToken)}-{emailFromToken}-{deviceId}-{moduleId}";
+                var cacheKeyLeafDeviceMapped = $"{nameof(IsLeafDeviceMapped)}-{emailFromToken}-{edgeDeviceId}-{leafDeviceId}";
+                var cacheKeyAccessToken = $"{nameof(GetAccessToken)}-{emailFromToken}-{edgeDeviceId}-{leafDeviceId}";
                 var cachedValue = _cache.Get(cacheKeyLeafDeviceMapped);
 
                 if (cachedValue == null)
                 {
                     var tenantOverview = await GetTenantOverview(emailFromToken);
-                    isLeafDeviceMapped = IsLeafDeviceMapped(tenantOverview, cacheKeyLeafDeviceMapped);
+                    isLeafDeviceMapped = IsLeafDeviceMapped(tenantOverview, edgeDeviceId, leafDeviceId);
                     accessToken = await GetAccessToken();
 
                     _ = Task.Run(() => 
@@ -79,7 +79,7 @@ namespace WCA.Consumer.Api.Services
                     throw new Exception(_errUnauthorizedUser);
                 }
 
-                return await GetRtspFeedFromDm(accessToken, deviceId, moduleId);
+                return await GetRtspFeedFromDm(accessToken, edgeDeviceId, leafDeviceId);
             }
             catch (Exception ex)
             {
@@ -106,7 +106,7 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        private bool IsLeafDeviceMapped(TenantOverview tenantOverview, string moduleId)
+        private bool IsLeafDeviceMapped(TenantOverview tenantOverview, string edgeDeviceId, string leafDeviceId)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace WCA.Consumer.Api.Services
                     {
                         foreach (var leafDevice in edgeDevice.LeafDevices)
                         {
-                            if (leafDevice.LeafFriendlyName == moduleId)
+                            if (edgeDevice.EdgeDeviceId == edgeDeviceId && leafDevice.LeafId == leafDeviceId)
                             {
                                 leafDeviceMapped = true;
                                 break;
@@ -163,17 +163,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        private async Task<RtspFeedModel> GetRtspFeedFromDm(string accessToken, string deviceId, string moduleId)
+        private async Task<RtspFeedModel> GetRtspFeedFromDm(string accessToken, string edgeDeviceId, string leafDeviceId)
         {
             try
             {
                 var rtspFeedRequest = new HttpRequestMessage(
                                             HttpMethod.Post,
                                             $"{_appSettings.DeviceManagementCredentials.BaseUri}" +
-                                            $"{string.Format(_appSettings.DeviceManagementCredentials.RtspFeedUri, deviceId)}");
+                                            $"{string.Format(_appSettings.DeviceManagementCredentials.RtspFeedUri, edgeDeviceId)}");
                 rtspFeedRequest.Headers.Add("Authorization", $"Bearer {accessToken}");
                 var requestPayload = new RtspFeedRequestModel();
-                requestPayload.RequestParameters.Payload.ModuleName = moduleId;
+                requestPayload.RequestParameters.Payload.ModuleName = leafDeviceId;
                 rtspFeedRequest.Content = new StringContent(JsonConvert.SerializeObject(requestPayload), Encoding.UTF8, "application/json");
                 var rtspFeed = await _httpClient.SendAsync<RtspFeedModel>(rtspFeedRequest, CancellationToken.None);
 

@@ -623,9 +623,9 @@ namespace WCA.Customer.Api.Tests
         {
             return new RtspFeedModel
             {
-                DeviceId = "svaEdge1",
+                DeviceId = "rtsp-integration-test01",
                 TimeStamp = DateTimeOffset.Now,
-                Message = "Test message.",
+                Message = "Test message!",
                 Result = new Result
                 {
                     Status = 200,
@@ -633,7 +633,7 @@ namespace WCA.Customer.Api.Tests
                     {
                         ImageResponse = new ImageResponse
                         {
-                            Image = "Test image."
+                            Image = "base64-format-string"
                         }
                     }
                 }
