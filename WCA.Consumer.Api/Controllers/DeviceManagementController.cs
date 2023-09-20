@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using WCA.Consumer.Api.Helpers;
+using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Controllers
@@ -19,7 +20,7 @@ namespace WCA.Consumer.Api.Controllers
         }
 
         [HttpGet("rtspFeed")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(RtspFeedModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetRtspFeed([FromQuery] string edgeDeviceId, [FromQuery] string leafDeviceId)

@@ -83,32 +83,32 @@ steps:
         },
         {
           "name": "WCA_DeviceManagementCredentials__BaseUri",
-          "value": ${{parameters.dmBaseUri}},
+          "value": "${{ parameters.dmBaseUri }}",
           "slotSetting": false
         },
         {
           "name": "WCA_DeviceManagementCredentials__AccessTokenUri",
-          "value": ${{parameters.dmAccessTokenUri}},
+          "value": "${{ parameters.dmAccessTokenUri }}",
           "slotSetting": false
         },
         {
           "name": "WCA_DeviceManagementCredentials__RtspFeedUri",
-          "value": ${{parameters.dmRtspFeedUri}},
+          "value": "${{ parameters.dmRtspFeedUri }}",
           "slotSetting": false
         },
         {
           "name": "WCA_DeviceManagementCredentials__ClientId",
-          "value": ${{parameters.dmClientId}},
+          "value": "${{ parameters.dmClientId }}",
           "slotSetting": false
         },
         {
           "name": "WCA_DeviceManagementCredentials__ClientSecret",
-          "value": ${{parameters.dmClientSecret}},
+          "value": "${{ parameters.dmClientSecret }}",
           "slotSetting": false
         },
         {
           "name": "WCA_DeviceManagementCredentials__GrantType",
-          "value": ${{parameters.dmGrantType}},
+          "value": "${{ parameters.dmGrantType }}",
           "slotSetting": false
         }
       ]
