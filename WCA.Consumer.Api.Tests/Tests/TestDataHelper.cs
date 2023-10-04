@@ -55,28 +55,73 @@ namespace WCA.Customer.Api.Tests
             return CreateOrganisationModels(1)[0];
         }
 
-        public static IList<OrgSearchTreeNode> CreateOrgSearchTreeNodes(int count)
+        public static TenantOverview CreateTenantOverview(int siteCount, int gatewayCount, int cameraCount)
         {
-            var list = new List<OrgSearchTreeNode>();
-
-            for (int i = 1; i <= count; i++)
+            var tenantOverview = new TenantOverview()
             {
-                list.Add(new OrgSearchTreeNode
+                TenantName = "Manual Test Organisation",
+                Description = "",
+                Sites = new List<SiteOverview>(),
+            };
+
+            for (int i = 0; i < siteCount; i += 1)
+            {
+                var siteOverview = new SiteOverview()
                 {
-                    Id = $"orgSearchTreeNode-id-{i}",
-                    Type = "Type",
-                    Text = "Text",
-                    ParentId = "ParentId",
-                    Href = "Href",
-                });
+                    SiteId = "site-test1",
+                    SiteFriendlyName = "Test Site 1",
+                    HealthStatus = new HealthStatusModel()
+                    {
+                        Code = HealthStatusCode.GREEN,
+                        Reason = "",
+                        Action = ""
+                    },
+                    EdgeDevices = new List<EdgeDeviceOverview>(),
+                };
+
+                for (int j = 0; j < gatewayCount; j += 1)
+                {
+                    var edgeDeviceOverview = new EdgeDeviceOverview()
+                    {
+                        EdgeDeviceId = "edge-device-test1",
+                        EdgeDeviceFriendlyName = "Test Edge Device (Gateway) 1",
+                        LastActiveTime = "Not found",
+                        HealthStatus = new HealthStatusModel()
+                        {
+                            Code = HealthStatusCode.GREEN,
+                            Reason = "",
+                            Action = ""
+                        },
+                        LeafDevices = new List<LeafDeviceOverview>(),
+                    };
+
+                    for (int k = 0; k < gatewayCount; k += 1)
+                    {
+                        var leafDeviceOverview = new LeafDeviceOverview()
+                        {
+                            LeafId                  = "leaf-device-test1",
+                            LeafFriendlyName        = "Test Leaf Device (Camera) 1",
+                            LastActiveTime          = "Not found",
+                            LastTelemetryTime       = null,
+                            RequiresConfiguration   = null,
+                            HealthStatus = new HealthStatusModel()
+                            {
+                                Code = HealthStatusCode.RED,
+                                Reason = "",
+                                Action = ""
+                            }
+                        };
+
+                        edgeDeviceOverview.LeafDevices.Add(leafDeviceOverview);
+                    }
+
+                    siteOverview.EdgeDevices.Add(edgeDeviceOverview);
+                }
+
+                tenantOverview.Sites.Add(siteOverview);
             }
 
-            return list;
-        }
-
-        public static OrgSearchTreeNode CreateOrgSearchTreeNode()
-        {
-            return CreateOrgSearchTreeNodes(1)[0];
+            return tenantOverview;
         }
 
         public static IList<Site> CreateSites(int count)
@@ -165,8 +210,8 @@ namespace WCA.Customer.Api.Tests
             {
                 list.Add(new Device
                 {
-                    DeviceId = $"device-id-{i}",
-                    Name = $"device-name-{i}",
+                    DeviceId = type == DeviceType.gateway ? $"edge-device-id-{i}" : $"leaf-device-id-{i}",
+                    Name = type == DeviceType.gateway ? $"edge-device-name-{i}" : $"leaf-device-name-{i}",
                     CustomerId = "customer-id",
                     Type = type.ToString(),
                     SiteId = "site-id",
@@ -190,9 +235,9 @@ namespace WCA.Customer.Api.Tests
             {
                 list.Add(new DeviceModel
                 {
-                    DeviceId = $"device-id-{i}",
-                    Name = $"device-name-{i}",
-                    EdgeDevice = $"edge-device-{i}",
+                    DeviceId = type == DeviceType.gateway ? $"edge-device-id-{i}" : $"leaf-device-id-{i}",
+                    Name = type == DeviceType.gateway ? $"edge-device-name-{i}" : $"leaf-device-name-{i}",
+                    EdgeDevice = $"edge-device-id-{i}",
                     Type = type,
                     CustomerId = "customer-id",
                     SiteId = "site-id",
@@ -216,9 +261,9 @@ namespace WCA.Customer.Api.Tests
             {
                 list.Add(new Gateway
                 {
-                    DeviceId = $"gateway-id-{i}",
-                    Name = $"device-name-{i}",
-                    EdgeDevice = $"edge-device-{i}",
+                    DeviceId = $"edge-device-id-{i}",
+                    Name = $"edge-device-name-{i}",
+                    EdgeDevice = $"edge-device-id-{i}",
                     Type = DeviceType.gateway,
                     CustomerId = "customer-id",
                     SiteId = "site-id",
@@ -255,9 +300,9 @@ namespace WCA.Customer.Api.Tests
             {
                 list.Add(new Camera
                 {
-                    DeviceId = $"camera-id-{i}",
-                    Name = $"device-name-{i}",
-                    EdgeDevice = $"edge-device-{i}",
+                    DeviceId = $"leaf-device-id-{i}",
+                    Name = $"leaf-device-name-{i}",
+                    EdgeDevice = $"edge-device-id-{i}",
                     Type = DeviceType.camera,
                     CustomerId = "customer-id",
                     SiteId = "site-id",
@@ -336,6 +381,7 @@ namespace WCA.Customer.Api.Tests
                     return new Gateway
                     {
                         DeviceId = d.DeviceId,
+                        EdgeDevice = d.EdgeDeviceId,
                         SiteId = d.SiteId,
                         Name = d.Name,
                         Type = DeviceType.gateway,
@@ -347,6 +393,7 @@ namespace WCA.Customer.Api.Tests
                     return new Camera
                     {
                         DeviceId = d.DeviceId,
+                        EdgeDevice = d.EdgeDeviceId,
                         SiteId = d.SiteId,
                         Name = d.Name,
                         Type = DeviceType.camera,
@@ -358,6 +405,7 @@ namespace WCA.Customer.Api.Tests
                     return new Device
                     {
                         DeviceId = d.DeviceId,
+                        EdgeDeviceId = d.EdgeDevice,
                         SiteId = d.SiteId,
                         Name = d.Name,
                         Type = "camera",
@@ -369,6 +417,7 @@ namespace WCA.Customer.Api.Tests
                     return new Device
                     {
                         DeviceId = d.DeviceId,
+                        EdgeDeviceId = d.EdgeDevice,
                         SiteId = d.SiteId,
                         Name = d.Name,
                         Type = "gateway",
@@ -380,6 +429,7 @@ namespace WCA.Customer.Api.Tests
                     return new Device
                     {
                         DeviceId = d.DeviceId,
+                        EdgeDeviceId = d.EdgeDevice,
                         SiteId = d.SiteId,
                         Name = d.Name,
                         Type = d.Type.ToString(),

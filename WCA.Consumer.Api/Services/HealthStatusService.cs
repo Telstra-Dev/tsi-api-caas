@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using Telstra.Common;
 using Telstra.Core.Data.Entities;
+using Telstra.Core.Data.Models;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace WCA.Consumer.Api.Services
         private IMemoryCache _cache { get; }
         private DateTimeOffset _shortCacheTime = DateTimeOffset.Now.AddSeconds(60);
         private readonly int _deviceRecentlyOnlineMaxMinutes;
+        private readonly int _deviceRecentlySentTelemetryMaxMinutes;
 
         public HealthStatusService(IRestClient httpClient,
                         AppSettings appSettings,
@@ -43,6 +45,7 @@ namespace WCA.Consumer.Api.Services
             _siteService = siteService;
             _cache = cache;
             _deviceRecentlyOnlineMaxMinutes = _appSettings.DeviceRecentlyOnlineMaxMinutes;
+            _deviceRecentlySentTelemetryMaxMinutes = _appSettings.DeviceRecentlySentTelemetryMaxMinutes;
         }
         public async Task<HealthStatusModel> GetHealthStatusFromSiteId(string siteId)
         {
@@ -58,47 +61,10 @@ namespace WCA.Consumer.Api.Services
 
         public async Task<HealthStatusModel> GetSiteHealthStatus(Site site)
         {
-            var health = new HealthStatusModel
-            {
-                Code = HealthStatusCode.GREEN,
-                Reason = "Site online",
-                Action = "Expand site to review",
-            };
+            var siteStatus = await GetSiteStatus(site.SiteId);
+            var siteHealth = siteStatus.GetHealthStatus();
 
-            var gatewayModels = (await _deviceService.GetDevices(null, site.SiteId))
-                                .Cast<DeviceModel>()
-                                .Where(d => d.Type == DeviceType.gateway);
-
-            if (gatewayModels == null || gatewayModels.Count() == 0)
-            {
-                health.Code = HealthStatusCode.AMBER;
-                health.Reason = "No gateways";
-                health.Action = "Configure in site menu";
-            }
-
-            foreach (var gatewayModel in gatewayModels)
-            {
-                var device = _mapper.Map<Device>(gatewayModel);
-                var deviceHealth = await GetEdgeDeviceHealthStatus(device);
-
-                // Prioritise RED, keep looping if AMBER to catch any RED
-                if (deviceHealth.Code == HealthStatusCode.RED)
-                {
-                    health.Code = deviceHealth.Code;
-                    health.Reason = deviceHealth.Reason;
-                    health.Action = "Expand site to review";
-
-                    return health;
-                }
-                else if (deviceHealth.Code == HealthStatusCode.AMBER)
-                {
-                    health.Code = deviceHealth.Code;
-                    health.Reason = deviceHealth.Reason;
-                    health.Action = "Expand site to review";
-                }
-            }
-
-            return health;
+            return siteHealth;
         }
 
         public async Task<HealthStatusModel> GetHealthStatusFromDeviceId(string deviceId)
@@ -121,19 +87,12 @@ namespace WCA.Consumer.Api.Services
             }
             else
             {
-                return await GetCameraHealthStatus(device);
+                return await GetLeafDeviceHealthStatus(device);
             }
         }
 
         private async Task<HealthStatusModel> GetEdgeDeviceHealthStatus(Device device)
         {
-            var edgeDeviceHealth = new HealthStatusModel
-            {
-                Code = HealthStatusCode.GREEN,
-                Reason = "Gateway online",
-                Action = "Expand gateway to review",
-            };
-
             // Check cache
             var cacheKey = $"{nameof(GetEdgeDeviceHealthStatus)}-{device.DeviceId}";
             var cacheValue = (HealthStatusModel)_cache.Get(cacheKey);
@@ -142,47 +101,8 @@ namespace WCA.Consumer.Api.Services
                 return cacheValue;
             }
 
-            // Check online status
-            if (!await CheckDeviceRecentlyOnline(device.DeviceId, _deviceRecentlyOnlineMaxMinutes, "edgedevice"))
-            {
-                edgeDeviceHealth.Code = HealthStatusCode.RED;
-                edgeDeviceHealth.Reason = "Gateway offline";
-                edgeDeviceHealth.Action = "Contact support";
-            }
-            else
-            {
-                // Check leaf devices
-                var leafDevices = await _deviceService.GetLeafDevicesForGateway(device.DeviceId);
-
-                if (leafDevices == null || leafDevices.Count == 0)
-                {
-                    edgeDeviceHealth.Code = HealthStatusCode.AMBER;
-                    edgeDeviceHealth.Reason = "No cameras";
-                    edgeDeviceHealth.Action = "Configure in gateway menu";
-                }
-
-
-                foreach (var leafDevice in leafDevices)
-                {
-                    var deviceHealth = await GetCameraHealthStatus(leafDevice);
-
-                    // Prioritise RED, keep looping if AMBER to catch any RED
-                    if (deviceHealth.Code == HealthStatusCode.RED)
-                    {
-                        edgeDeviceHealth.Code = deviceHealth.Code;
-                        edgeDeviceHealth.Reason = deviceHealth.Reason;
-                        edgeDeviceHealth.Action = "Expand gateway to review";
-
-                        break;
-                    }
-                    else if (deviceHealth.Code == HealthStatusCode.AMBER)
-                    {
-                        edgeDeviceHealth.Code = deviceHealth.Code;
-                        edgeDeviceHealth.Reason = deviceHealth.Reason;
-                        edgeDeviceHealth.Action = "Expand gateway to review";
-                    }
-                }
-            }
+            var edgeDeviceStatus = await GetEdgeDeviceStatus(device);
+            var edgeDeviceHealth = edgeDeviceStatus.GetHealthStatus();
 
             _ = Task.Run(() =>
             {
@@ -190,126 +110,165 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogTrace($"{nameof(GetEdgeDeviceHealthStatus)} cache set");
             });
 
+            // Priority 6: Assume asset is online.
             return edgeDeviceHealth;
         }
 
-        private async Task<HealthStatusModel> GetCameraHealthStatus(Device device)
+        private async Task<HealthStatusModel> GetLeafDeviceHealthStatus(Device device)
         {
-            var health = new HealthStatusModel();
-
             // Check cache
-            var cacheKey = $"{nameof(GetCameraHealthStatus)}-{device.DeviceId}";
+            var cacheKey = $"{nameof(GetLeafDeviceHealthStatus)}-{device.DeviceId}";
             var cacheValue = (HealthStatusModel)_cache.Get(cacheKey);
             if (cacheValue != null)
             {
                 return cacheValue;
             }
 
-            // Check online status
-            if (!await CheckDeviceRecentlyOnline(device.DeviceId, _deviceRecentlyOnlineMaxMinutes, "camera"))
-            {
-                health.Code = HealthStatusCode.RED;
-                health.Reason = "Camera offline";
-                health.Action = "Contact support";
-            }
+            var edgeDeviceLastHealthReadingTimestamp = await GetDeviceLastOnlineTimestamp(device.EdgeDeviceId, "edgedevice") ?? new DateTime().ToString();
+            var edgeDeviceIsOnline = EdgeDeviceStatus.CheckEdgeDeviceRecentlyOnline(edgeDeviceLastHealthReadingTimestamp, _deviceRecentlyOnlineMaxMinutes);
+
+            var leafDeviceStatus = await GetLeafDeviceStatus(device, edgeDeviceIsOnline);
+            var health = leafDeviceStatus.GetHealthStatus();
 
             _ = Task.Run(() =>
             {
                 _cache.Set<HealthStatusModel>(cacheKey, health, _shortCacheTime);
-                _logger.LogTrace($"{nameof(GetCameraHealthStatus)} cache set");
+                _logger.LogTrace($"{nameof(GetLeafDeviceHealthStatus)} cache set");
             });
 
             return health;
         }
 
-        public TenantOverview ConvertTimeToHealthStatus(TenantOverview overview)
+        // public TenantOverview GetTenantHealthStatus(TenantOverview overview)
+        public async Task<TenantOverview> GetTenantHealthStatus(TenantOverview overview)
         {
             foreach (var site in overview.Sites)
             {
+                var edgeDevicesStatus = new List<EdgeDeviceStatus>();
+
                 foreach (var edgeDevice in site.EdgeDevices)
                 {
+                    var leafDevicesStatus = new List<LeafDeviceStatus>();
+
                     foreach (var leafDevice in edgeDevice.LeafDevices)
                     {
-                        leafDevice.HealthStatus = new HealthStatusModel();
-                        if (checkHealthTimeSpan(leafDevice.LastActiveTime))
+                        var leafDeviceStatus = new LeafDeviceStatus()
                         {
-                            leafDevice.HealthStatus.Code = HealthStatusCode.GREEN;
-                        }
-                        else
-                        {
-                            leafDevice.HealthStatus.Code = HealthStatusCode.RED;
-                            leafDevice.HealthStatus.Reason = "Camera offline";
-                            leafDevice.HealthStatus.Action = "Contact support";
-                        }
+                            LeafDeviceId                            = leafDevice.LeafId,
+                            EdgeDeviceId                            = edgeDevice.EdgeDeviceId,
+                            LastHealthReadingTimestamp              = leafDevice.LastActiveTime,
+                            LastTelemetryReadingTimestamp           = leafDevice.LastTelemetryTime ?? 0,
+                            RequiresConfiguration                   = leafDevice.RequiresConfiguration ?? true,
+                            // EdgeDeviceIsOnline                      = await CheckDeviceRecentlyOnline(edgeDevice.EdgeDeviceId, _deviceRecentlyOnlineMaxMinutes, "edgedevice"),
+                            EdgeDeviceIsOnline                      = EdgeDeviceStatus.CheckEdgeDeviceRecentlyOnline(edgeDevice.LastActiveTime, _deviceRecentlyOnlineMaxMinutes),
+                            DeviceRecentlyOnlineMaxMinutes          = _deviceRecentlyOnlineMaxMinutes,
+                            DeviceRecentlySentTelemetryMaxMinutes   = _deviceRecentlySentTelemetryMaxMinutes,
+                        };
+                        leafDevicesStatus.Add(leafDeviceStatus);
+                        leafDevice.HealthStatus = leafDeviceStatus.GetHealthStatus();
                     }
 
-                    edgeDevice.HealthStatus = new HealthStatusModel();
-                    if (edgeDevice.LeafDevices.Count == 0)
+                    var edgeDeviceStatus = new EdgeDeviceStatus()
                     {
-                        edgeDevice.HealthStatus.Code = HealthStatusCode.AMBER;
-                        edgeDevice.HealthStatus.Reason = "No camera found";
-                        edgeDevice.HealthStatus.Action = "Configure in gateway menu";
-                    }
-                    else if (edgeDevice.LeafDevices.All(x => x.HealthStatus.Code == HealthStatusCode.AMBER))
-                    {
-                        edgeDevice.HealthStatus.Code = HealthStatusCode.AMBER;
-                        edgeDevice.HealthStatus.Reason = "Camera(s) unusual";
-                        edgeDevice.HealthStatus.Action = "Check camera menu";
-                    }
-                    else if (edgeDevice.LeafDevices.Any(x => x.HealthStatus.Code == HealthStatusCode.RED))
-                    {
-                        edgeDevice.HealthStatus.Code = HealthStatusCode.RED;
-                        edgeDevice.HealthStatus.Reason = "Camera(s) offline";
-                        edgeDevice.HealthStatus.Action = "Contact support";
-                    }
-                    else
-                    {
-                        edgeDevice.HealthStatus.Code = HealthStatusCode.GREEN;
-                    }
+                        EdgeDeviceId                            = edgeDevice.EdgeDeviceId,
+                        LastHealthReadingTimestamp              = edgeDevice.LastActiveTime,
+                        LeafDevices                             = leafDevicesStatus,
+                        DeviceRecentlyOnlineMaxMinutes          = _deviceRecentlyOnlineMaxMinutes,
+                    };
+                    edgeDevicesStatus.Add(edgeDeviceStatus);
+                    edgeDevice.HealthStatus = edgeDeviceStatus.GetHealthStatus();
                 }
 
-                site.HealthStatus = new HealthStatusModel();
-                if (site.EdgeDevices.Count == 0)
+                var siteStatus = new SiteStatus()
                 {
-                    site.HealthStatus.Code = HealthStatusCode.AMBER;
-                    site.HealthStatus.Reason = "No gateway";
-                    site.HealthStatus.Action = "Configure in site menu";
-                }
-                else if (site.EdgeDevices.All(x => x.HealthStatus.Code == HealthStatusCode.AMBER))
-                {
-                    site.HealthStatus.Code = HealthStatusCode.AMBER;
-                    site.HealthStatus.Reason = "Gateway(s) unusual";
-                    site.HealthStatus.Action = "Check gateway menu";
-                }
-                else if (site.EdgeDevices.Any(x => x.HealthStatus.Code == HealthStatusCode.RED))
-                {
-                    site.HealthStatus.Code = HealthStatusCode.RED;
-                    site.HealthStatus.Reason = "Gateway(s) offline";
-                    site.HealthStatus.Action = "Contact support";
-                }
-                else
-                {
-                    site.HealthStatus.Code = HealthStatusCode.GREEN;
-                }
+                    EdgeDevices                             = edgeDevicesStatus,
+                };
+                site.HealthStatus = siteStatus.GetHealthStatus();
             }
+
+            // Less-optimal approach
+            // foreach (var site in overview.Sites)
+            // {
+            //     foreach (var edgeDevice in site.EdgeDevices)
+            //     {
+            //         foreach (var leafDevice in edgeDevice.LeafDevices)
+            //         {
+            //             leafDevice.HealthStatus = await GetHealthStatusFromDeviceId(leafDevice.LeafId);
+            //         }
+            //         edgeDevice.HealthStatus = await GetHealthStatusFromDeviceId(edgeDevice.EdgeDeviceId);
+            //     }
+            //     site.HealthStatus = await GetHealthStatusFromSiteId(site.SiteId);
+            // }
 
             return overview;
         }
 
-        private bool checkHealthTimeSpan(string lastActiveTime)
+        private async Task<LeafDeviceStatus> GetLeafDeviceStatus(Device leafDevice, bool edgeDeviceIsOnline)
         {
-            DateTime dateTimeFromDB;
-            if (DateTime.TryParse(lastActiveTime, out dateTimeFromDB))
+            var leafDeviceStatus = new LeafDeviceStatus()
             {
-                if (DateTime.UtcNow < dateTimeFromDB.ToUniversalTime().AddMinutes(_deviceRecentlyOnlineMaxMinutes))
-                {
-                    return true;
-                }
-            }
-            return false;
+                LeafDeviceId                            = leafDevice.DeviceId,
+                EdgeDeviceId                            = leafDevice.EdgeDeviceId,
+                LastHealthReadingTimestamp              = await GetDeviceLastOnlineTimestamp(leafDevice.DeviceId, "camera"),
+                LastTelemetryReadingTimestamp           = await GetLeafDeviceLastOnlineTimestamp(leafDevice.DeviceId, leafDevice.EdgeDeviceId) ?? 0,
+                RequiresConfiguration                   = await GetLeafDeviceRequiresConfiguration(leafDevice.DeviceId, leafDevice.EdgeDeviceId),
+                EdgeDeviceIsOnline                      = edgeDeviceIsOnline,
+                DeviceRecentlyOnlineMaxMinutes          = _deviceRecentlyOnlineMaxMinutes,
+                DeviceRecentlySentTelemetryMaxMinutes   = _deviceRecentlySentTelemetryMaxMinutes,
+            };
+
+            return leafDeviceStatus;
         }
 
-        private async Task<bool> CheckDeviceRecentlyOnline(string deviceId, int maxMinutes, string type)
+        private async Task<EdgeDeviceStatus> GetEdgeDeviceStatus(Device edgeDevice)
+        {
+            var edgeDeviceLastHealthReadingTimestamp = await GetDeviceLastOnlineTimestamp(edgeDevice.EdgeDeviceId, "edgedevice") ?? new DateTime().ToString();
+            var edgeDeviceIsOnline = EdgeDeviceStatus.CheckEdgeDeviceRecentlyOnline(edgeDeviceLastHealthReadingTimestamp, _deviceRecentlyOnlineMaxMinutes);
+
+            // Check leaf devices
+            var leafDevices = await _deviceService.GetLeafDevicesForGateway(edgeDevice.EdgeDeviceId);
+            var leafDevicesStatus = new List<LeafDeviceStatus>();
+
+            foreach (var leafDevice in leafDevices)
+            {
+                var leafDeviceStatus = await GetLeafDeviceStatus(leafDevice, edgeDeviceIsOnline);
+                leafDevicesStatus.Add(leafDeviceStatus);
+            }
+
+            var edgeDeviceStatus = new EdgeDeviceStatus()
+            {
+                EdgeDeviceId                            = edgeDevice.EdgeDeviceId,
+                LastHealthReadingTimestamp              = await GetDeviceLastOnlineTimestamp(edgeDevice.DeviceId, "edgedevice") ?? new DateTime().ToString(),
+                LeafDevices                             = leafDevicesStatus,
+                DeviceRecentlyOnlineMaxMinutes          = _deviceRecentlyOnlineMaxMinutes,
+            };
+
+            return edgeDeviceStatus;
+        }
+
+        private async Task<SiteStatus> GetSiteStatus(string siteId)
+        {
+            var edgeDevices = (await _deviceService.GetDevices(null, siteId))
+                .Cast<DeviceModel>()
+                .Where(d => d.Type == DeviceType.gateway)
+                .Select(d => _mapper.Map<Device>(d));
+            var edgeDevicesStatus = new List<EdgeDeviceStatus>();
+
+            foreach (var edgeDevice in edgeDevices)
+            {
+                var edgeDeviceStatus = await GetEdgeDeviceStatus(edgeDevice);
+                edgeDevicesStatus.Add(edgeDeviceStatus);
+            }
+
+            var siteStatus = new SiteStatus()
+            {
+                EdgeDevices = edgeDevicesStatus,
+            };
+
+            return siteStatus;
+        }
+
+        private async Task<string?> GetDeviceLastOnlineTimestamp(string deviceId, string type)
         {
             try
             {
@@ -317,19 +276,55 @@ namespace WCA.Consumer.Api.Services
                 var returnedHealthDataStatus = await _httpClient.SendAsync<HealthDataStatus>(request, CancellationToken.None);
                 if (returnedHealthDataStatus != null && returnedHealthDataStatus.EdgeStarttime != null)
                 {
-                    TimeSpan span = DateTime.UtcNow.Subtract((DateTime)returnedHealthDataStatus.EdgeStarttime);
-                    if (span < TimeSpan.FromMinutes(maxMinutes))
-                    {
-                        return true;
-                    }
+                    return returnedHealthDataStatus.EdgeStarttime.ToString();
                 }
             }
             catch (Exception e)
             {
-                _logger.LogWarning("CheckDeviceRecentlyOnline: " + e.Message);
+                _logger.LogWarning("GetDeviceLastOnlineTimestamp: " + e.Message);
             }
 
-            return false;
+            return null;
+        }
+
+        private async Task<long?> GetLeafDeviceLastOnlineTimestamp(string leafDeviceId, string edgeDeviceId)
+        {
+            try
+            {
+                // Return true if the camera's last telemetry timestamp is not NULL and is strictly within `maxMinutes` (>= maxMinutes is considered data offline).
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/devices/{edgeDeviceId}/leafDevices/{leafDeviceId}/latestTelemetryStatus");
+                var returnedStatus = await _httpClient.SendAsync<LeafDeviceLatestTelemetryStatus>(request, CancellationToken.None);
+                if (returnedStatus != null && returnedStatus.Timestamp != null)
+                {
+                    return (long)returnedStatus.Timestamp;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("CheckCameraRecentlySentTelemetry: " + e.Message);
+            }
+
+            return null;
+        }
+
+        private async Task<bool> GetLeafDeviceRequiresConfiguration(string leafDeviceId, string edgeDeviceId)
+        {
+            try
+            {
+                // Return true if camera has at least one associated tripline or polygon.
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/devices/{edgeDeviceId}/leafDevices/{leafDeviceId}/configurationStatus");
+                var status = await _httpClient.SendAsync<LeafDeviceConfigurationStatus>(request, CancellationToken.None);
+                if (status != null)
+                {
+                    return status.RequiresConfiguration;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("GetLeafDeviceRequiresConfiguration: " + e.Message);
+            }
+
+            return true;
         }
     }
 }

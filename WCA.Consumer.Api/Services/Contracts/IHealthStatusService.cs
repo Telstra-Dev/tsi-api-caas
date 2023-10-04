@@ -12,6 +12,7 @@ namespace WCA.Consumer.Api.Services.Contracts
 
         Task<HealthStatusModel> GetHealthStatusFromSiteId(string siteId);
         Task<HealthStatusModel> GetSiteHealthStatus(Site site);
-        TenantOverview ConvertTimeToHealthStatus(TenantOverview overview);
+        // TenantOverview GetTenantHealthStatus(TenantOverview overview);
+        Task<TenantOverview> GetTenantHealthStatus(TenantOverview overview);
     }
 }

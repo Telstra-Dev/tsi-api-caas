@@ -40,7 +40,7 @@ namespace WCA.Consumer.Api.Services
             _healthStatusService = healthStatusService;
         }
 
-        public async Task<TenantOverview> GetLandingPageOverview(string token, bool includeHealthStatus)
+        public async Task<TenantOverview> GetOrganisationOverview(string token, bool includeHealthStatus)
         {
             var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
             if (string.IsNullOrEmpty(emailFromToken))
@@ -63,7 +63,7 @@ namespace WCA.Consumer.Api.Services
             {
                 if (includeHealthStatus && overview != null && overview.Sites.Count > 0)
                 {
-                    overview = _healthStatusService.ConvertTimeToHealthStatus(overview);
+                    overview = await _healthStatusService.GetTenantHealthStatus(overview);
                 }
 
                 return overview;
@@ -73,98 +73,6 @@ namespace WCA.Consumer.Api.Services
                 var errMsg = $"Fail to generate tenant overview with health status for user {emailFromToken}";
                 _logger.LogError($"{errMsg} System message: {ex.Message}");
                 throw new Exception(errMsg);
-            }
-
-        }
-
-        public async Task<IList<OrgSearchTreeNode>> GetOrganisationOverview(string token, bool includeHealthStatus = false)
-        {
-            // Authorisation
-            //  - Currently, very basic pre-MVP tactical to allow WCC to have acces
-            //  - Strategic is to move to CAIMAN + authorisation uplift in the database (TBD).
-            var orgRequestSuffix = "";
-            var siteRequestSuffix = "";
-            var deviceRequestSuffix = "";
-
-            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-            if (string.IsNullOrEmpty(emailFromToken))
-                throw new NullReferenceException("Invalid claim from token.");
-
-            if (emailFromToken.Contains("wcc-") && emailFromToken.Contains("telstrasmartspacesdemo.onmicrosoft.com"))
-            {
-                //legacy logic for wcc login users
-                orgRequestSuffix = $"?customerId=wcc-id";
-                siteRequestSuffix = $"?customerId=wcc-id";
-                deviceRequestSuffix = $"?customerId=wcc-id";
-            }
-            else
-            {
-                //use email claim identifier
-                if (emailFromToken.Contains("@team.telstra.com"))
-                {
-                    //engineer access to all orgs, sites and devices
-                    _logger.LogInformation("CAAS: Access to all sites for " + emailFromToken);
-                    orgRequestSuffix = "/overview";
-                }
-                else
-                {
-                    _logger.LogInformation("CAAS: Try get sites for " + emailFromToken);
-                    orgRequestSuffix = $"?email={emailFromToken}";
-                    siteRequestSuffix = $"?email={emailFromToken}";
-                    deviceRequestSuffix = $"?email={emailFromToken}";
-                }
-            }
-
-            IList<OrgSearchTreeNode> orgList = new List<OrgSearchTreeNode>();
-            try
-            {
-                //Get org detail
-                var orgResponse = await _httpClient.GetAsync<IList<Organisation>>($"{_appSettings.StorageAppHttp.BaseUri}/organisations{orgRequestSuffix}", CancellationToken.None);
-                orgList = _mapper.Map<IList<OrgSearchTreeNode>>(orgResponse);
-                _logger.LogInformation($"Organisations added to orgList for user {emailFromToken}");
-
-                //Get sites detail
-                var siteResponse = await _httpClient.GetAsync<IList<Site>>($"{_appSettings.StorageAppHttp.BaseUri}/sites{siteRequestSuffix}", CancellationToken.None);
-                if (includeHealthStatus)
-                {
-                    foreach (var site in siteResponse)
-                    {
-                        var node = _mapper.Map<OrgSearchTreeNode>(site);
-                        node.Status = await _healthStatusService.GetSiteHealthStatus(site);
-                        orgList.Add(node);
-                    }
-                    _logger.LogInformation($"Sites and health status added to orgList for user {emailFromToken}");
-                }
-                else
-                {
-                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(siteResponse));
-                    _logger.LogInformation($"Sites added to orgList for user {emailFromToken}");
-                }
-
-                //Get devices detail
-                var deviceResponse = await _httpClient.GetAsync<IList<Device>>($"{_appSettings.StorageAppHttp.BaseUri}/devices{deviceRequestSuffix}", CancellationToken.None);
-                if (includeHealthStatus)
-                {
-                    foreach (var device in deviceResponse)
-                    {
-                        var node = _mapper.Map<OrgSearchTreeNode>(device);
-                        node.Status = await _healthStatusService.GetDeviceHealthStatus(device);
-                        orgList.Add(node);
-                    }
-                    _logger.LogInformation($"Devices and health status added to orgList for user {emailFromToken}");
-                }
-                else
-                {
-                    orgList.AddRange(_mapper.Map<IList<OrgSearchTreeNode>>(deviceResponse));
-                    _logger.LogInformation($"Devices added to orgList for user {emailFromToken}");
-                }
-
-                return orgList;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Fail to Get Organisation Overview for user {emailFromToken}: " + e.Message);
-                throw new Exception(e.Message); ;
             }
         }
 

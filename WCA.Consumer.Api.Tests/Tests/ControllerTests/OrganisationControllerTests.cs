@@ -38,8 +38,8 @@ namespace WCA.Customer.Api.Tests
         public async void GetOrganisationOverview()
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
-            var myOrgSearchTree = TestDataHelper.CreateOrgSearchTreeNodes(1);
-            serviceMock.Setup(m => m.GetOrganisationOverview(It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(myOrgSearchTree));
+            var myTenantOverview = TestDataHelper.CreateTenantOverview(1, 1, 1);
+            serviceMock.Setup(m => m.GetOrganisationOverview(It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(myTenantOverview));
 
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
@@ -56,9 +56,10 @@ namespace WCA.Customer.Api.Tests
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
-            List<OrgSearchTreeNode> expectedOrgSearchTree = ((result as OkObjectResult).Value as List<OrgSearchTreeNode>);
-            var expectedOrgSearchTreeNode = (OrgSearchTreeNode)expectedOrgSearchTree[0];
-            Assert.Equal(expectedOrgSearchTreeNode.Id, myOrgSearchTree?.First().Id);
+            TenantOverview expectedTenantOverview = ((result as OkObjectResult).Value as TenantOverview);
+
+            Assert.Equal(expectedTenantOverview.Sites.Count(), myTenantOverview?.Sites.Count());
+            Assert.Equal(expectedTenantOverview.Sites.First().EdgeDevices.Count(), myTenantOverview?.Sites.First().EdgeDevices.Count());
         }
 
         [Fact(DisplayName = "Create organisation")]

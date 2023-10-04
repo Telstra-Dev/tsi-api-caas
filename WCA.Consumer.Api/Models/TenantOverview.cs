@@ -32,6 +32,8 @@ namespace WCA.Consumer.Api.Models
         public string LeafId { get; set; }
         public string LeafFriendlyName { get; set; }
         public string LastActiveTime { get; set; }
+        public long? LastTelemetryTime { get; set; }
+        public bool? RequiresConfiguration { get; set; }
         public HealthStatusModel HealthStatus { get; set; }
     }
 }

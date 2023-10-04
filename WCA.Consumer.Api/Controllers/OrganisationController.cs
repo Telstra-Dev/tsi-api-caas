@@ -46,16 +46,12 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetOrganisationOverview([FromQuery] bool includeHealthStatus = false, [FromQuery] bool isVantage = true)
+        public async Task<IActionResult> GetOrganisationOverview([FromQuery] bool includeHealthStatus = false)
         {
             try
             {
                 var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-
-                if (isVantage)
-                    return Ok(await _orgService.GetOrganisationOverview(token, includeHealthStatus));
-                else
-                    return Ok(await _orgService.GetLandingPageOverview(token, includeHealthStatus));
+                return Ok(await _orgService.GetOrganisationOverview(token, includeHealthStatus));
             }
             catch (NullReferenceException e)
             {
