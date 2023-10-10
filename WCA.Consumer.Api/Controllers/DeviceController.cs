@@ -6,6 +6,8 @@ using System.Net;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using WCA.Consumer.Api.Helpers;
 
 namespace WCA.Consumer.Api.Controllers
 {
@@ -20,168 +22,158 @@ namespace WCA.Consumer.Api.Controllers
             _deviceService = service;
         }
 
-        /// <summary>
-        /// Devices come in multiple types. Edge capable devices like gateways, and end devices like cameras, sensors.
-        /// Query by deviceId or siteId or customerId. Not sending any of them will return device for logged-in customer.
-        /// When sending more than one query param, params with high specificity will be given priority.
-        /// Example: When sending deviceId and siteId together, siteId will be ignored.
-        /// Example: When sending siteId and customerId together, customerId will be ignored.
-        /// Logged-in customer must own the devices directly or indirectly, otherwise 401 will be returned.
-        /// Returns one or more Devices.
-        /// </summary>
-        /// <param name="customerId"></param>
-        /// <param name="siteId"></param>
-        /// <returns></returns>
-        [HttpGet()]
-        [ProducesResponseType(typeof(ArrayList), (int)HttpStatusCode.OK)]
+        [HttpGet("edge-devices")]
+        [ProducesResponseType(typeof(List<EdgeDeviceModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetDevices([FromQuery] string customerId = null,
-                                        [FromQuery] string siteId = null)
+        public async Task<IActionResult> GetEdgeDevices()
         {
             try
             {
-                var newDevice = await _deviceService.GetDevices(customerId, siteId);
-                if (newDevice != null && newDevice.Count > 0)
-                    return Ok(newDevice);
-                else
-                    return NotFound(new { message = "No devices could be found with the given criteria" });
+                return Ok(await _deviceService.GetEdgeDevices(TokenHelper.GetToken(HttpContext)));
             }
-            catch (Exception e)
+            catch (Exception ex) 
             {
-                return BadRequest(e);
+                return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("{deviceId}")]
-        [ProducesResponseType(typeof(DeviceModel), (int)HttpStatusCode.OK)]
+        [HttpGet("leaf-devices")]
+        [ProducesResponseType(typeof(List<LeafDeviceModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetDevice([FromRoute] string deviceId, [FromQuery] string customerId)
+        public async Task<IActionResult> GetLeafDevices()
         {
             try
             {
-                var newDevice = await _deviceService.GetDevice(deviceId, customerId);
-                if (newDevice != null)
-                    return Ok(newDevice);
-                else
-                    return NotFound(new { message = "Device doesn't exist" });
+                return Ok(await _deviceService.GetLeafDevices(TokenHelper.GetToken(HttpContext)));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return BadRequest(e);
+                return BadRequest(ex.Message);
             }
         }
 
-        [HttpDelete("{deviceId}")]
-        [ProducesResponseType(typeof(DeviceModel), (int)HttpStatusCode.OK)]
+        [HttpGet("edge-device/{deviceId}")]
+        [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [AllowAnonymous]
-        public async Task<IActionResult> DeleteDevice([FromQuery] string customerId, [FromRoute] string deviceId)
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetEdgeDevice([FromRoute] string deviceId)
         {
             try
             {
-                var deletedDevice = await _deviceService.DeleteDevice(customerId, deviceId);
-
-                return Ok(deletedDevice);
+                return Ok(await _deviceService.GetEdgeDevice(deviceId, TokenHelper.GetToken(HttpContext)));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return BadRequest(e);
+                return BadRequest(ex.Message);
             }
         }
 
-        /// <summary>
-        /// Creates a new camera device
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("camera")]
-        [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
+        [HttpGet("leaf-device/{deviceId}")]
+        [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [AllowAnonymous]
-        public async Task<IActionResult> CreateCameraDevice([FromBody] Camera device)
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetLeafDevice([FromRoute] string deviceId)
         {
             try
             {
-                var newDevice = await _deviceService.CreateCameraDevice(device);
-
-                return Ok(newDevice);
+                return Ok(await _deviceService.GetLeafDevice(deviceId, TokenHelper.GetToken(HttpContext)));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return BadRequest(e);
+                return BadRequest(ex.Message);
             }
         }
 
-        /// <summary>
-        /// Updates a camera device
-        /// </summary>
-        /// <param name="siteId"></param>
-        /// <returns></returns>
-        [HttpPut("camera/{deviceId}")]
-        [ProducesResponseType(typeof(Camera), (int)HttpStatusCode.OK)]
+        [HttpPut("edge-device")]
+        [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateCameraDevice([FromRoute] string deviceId,
-                                [FromBody] Camera device)
+        public async Task<IActionResult> UpdateEdgeDevice([FromBody] EdgeDeviceModel edgeDevice)
         {
             try
             {
-                var updatedDevice = await _deviceService.UpdateCameraDevice(deviceId, device);
-
-                return Ok(updatedDevice);
+                return Ok(await _deviceService.UpdateTsiEdgeDevice(edgeDevice, TokenHelper.GetToken(HttpContext)));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return BadRequest(e);
+                return BadRequest(ex.Message);
             }
         }
 
-        /// <summary>
-        /// Creates a new gateway device
-        /// </summary>
-        /// <returns></returns>
+        [HttpPut("leaf-device")]
+        [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> UpdateLeafDevice([FromBody] LeafDeviceModel leafDevice)
+        {
+            try
+            {
+                return Ok(await _deviceService.UpdateLeafDevice(leafDevice, TokenHelper.GetToken(HttpContext)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("edge-device")]
-        [ProducesResponseType(typeof(Gateway), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [AllowAnonymous]
-        public async Task<IActionResult> CreateEdgeDevice([FromBody] Gateway device)
+        public async Task<IActionResult> CreateEdgeDevice([FromBody] EdgeDeviceModel edgeDevice)
         {
             try
             {
-                var newDevice = await _deviceService.CreateEdgeDevice(device);
-
-                return Ok(newDevice);
+                return Ok(await _deviceService.CreateEdgeDevice(edgeDevice, TokenHelper.GetToken(HttpContext)));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return BadRequest(e);
+                return BadRequest(ex.Message);
             }
         }
 
-        /// <summary>
-        /// Updates a gateway device
-        /// </summary>
-        /// <param name="siteId"></param>
-        /// <returns></returns>
-        [HttpPut("edge-device/{deviceId}")]
-        [ProducesResponseType(typeof(Gateway), (int)HttpStatusCode.OK)]
+        [HttpPost("leaf-device")]
+        [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateEdgeDevice([FromRoute] string deviceId,
-                                [FromBody] Gateway device)
+        public async Task<IActionResult> CreateLeafDevice([FromBody] LeafDeviceModel leafDevice)
         {
             try
             {
-                var updatedDevice = await _deviceService.UpdateEdgeDevice(deviceId, device);
-
-                return Ok(updatedDevice);
+                return Ok(await _deviceService.CreateLeafDevice(leafDevice, TokenHelper.GetToken(HttpContext)));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return BadRequest(e);
+                return BadRequest(ex.Message);
             }
         }
 
+        [HttpDelete("edge-device")]
+        [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteEdgeDevice([FromBody] EdgeDeviceModel edgeDevice)
+        {
+            try
+            {
+                return Ok(await _deviceService.DeleteEdgeDevice(edgeDevice, TokenHelper.GetToken(HttpContext)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("leaf-device")]
+        [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteLeafDevice([FromBody] LeafDeviceModel leafDevice)
+        {
+            try
+            {
+                return Ok(await _deviceService.DeleteLeafDevice(leafDevice, TokenHelper.GetToken(HttpContext)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

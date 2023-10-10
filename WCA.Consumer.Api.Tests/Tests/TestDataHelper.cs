@@ -689,5 +689,40 @@ namespace WCA.Customer.Api.Tests
                 }
             };
         }
+
+        public static List<EdgeDeviceModel> CreateEdgeDevices(int count)
+        {
+            var edgeDevices = new List<EdgeDeviceModel>();
+
+            for (int i = 0; i < count; i++)
+            {
+                edgeDevices.Add(new EdgeDeviceModel
+                {
+                    Id = i,
+                    Name = $"test-edge-device-{i}",
+                    SiteId = i,
+                    EdgeEdgedeviceid = $"edge-device-id-{i}"
+                });
+            }
+
+            return edgeDevices;
+        }
+
+        public static List<LeafDeviceModel> CreateLeafDevices(int count)
+        {
+            var leafDevices = new List<LeafDeviceModel>();
+
+            for (int i = 0; i < count; i++)
+            {
+                leafDevices.Add(new LeafDeviceModel
+                {
+                    Id = i,
+                    Name = $"test-leaf-device-{i}",
+                    EdgeLeafdeviceid = $"leaf-device-id-{i}"
+                });
+            }
+
+            return leafDevices;
+        }
     }
 }

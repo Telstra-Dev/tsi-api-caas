@@ -24,5 +24,16 @@ namespace WCA.Consumer.Api.Services.Contracts
         public Task<Gateway> UpdateEdgeDevice(string id, Gateway device);
 
         public Task<IList<Device>> GetLeafDevicesForGateway(string deviceId);
+
+        public Task<List<EdgeDeviceModel>> GetEdgeDevices(string token);
+        public Task<List<LeafDeviceModel>> GetLeafDevices(string token);
+        public Task<EdgeDeviceModel> GetEdgeDevice(string deviceId, string token);
+        public Task<LeafDeviceModel> GetLeafDevice(string deviceId, string token);
+        public Task<EdgeDeviceModel> UpdateTsiEdgeDevice(EdgeDeviceModel edgeDevice, string token);
+        public Task<LeafDeviceModel> UpdateLeafDevice(LeafDeviceModel leafDevice, string token);
+        public Task<EdgeDeviceModel> CreateEdgeDevice(EdgeDeviceModel edgeDevice, string token);
+        public Task<LeafDeviceModel> CreateLeafDevice(LeafDeviceModel edgeDevice, string token);
+        public Task<EdgeDeviceModel> DeleteEdgeDevice(EdgeDeviceModel edgeDevice, string token);
+        public Task<LeafDeviceModel> DeleteLeafDevice(LeafDeviceModel edgeDevice, string token);
     }
 }

@@ -10,7 +10,7 @@ using WCA.Consumer.Api.Services.Contracts;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("tag-manager")]
     public class TagManagerController : BaseController
     {
         readonly ITagManagerService _tagManagerService;

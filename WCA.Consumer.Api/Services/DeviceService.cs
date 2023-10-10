@@ -12,6 +12,7 @@ using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Threading;
+using WCA.Consumer.Api.Helpers;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -291,5 +292,201 @@ namespace WCA.Consumer.Api.Services
             return devices;
         }
 
+        public async Task<List<EdgeDeviceModel>> GetEdgeDevices(string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevices?email={userEmail}");
+                
+                var response = await _httpClient.SendAsync<List<EdgeDeviceModel>>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(GetEdgeDevices)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<List<LeafDeviceModel>> GetLeafDevices(string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevices?email={userEmail}");
+
+                var response = await _httpClient.SendAsync<List<LeafDeviceModel>>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(GetLeafDevices)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<EdgeDeviceModel> GetEdgeDevice(string deviceId, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice/{deviceId}?email={userEmail}");
+                var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(GetEdgeDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<LeafDeviceModel> GetLeafDevice(string deviceId, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice/{deviceId}?email={userEmail}");
+                var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(GetLeafDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<EdgeDeviceModel> UpdateTsiEdgeDevice(EdgeDeviceModel edgeDevice, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Put,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={userEmail}");
+                request.Content = new StringContent(JsonConvert.SerializeObject(edgeDevice), Encoding.UTF8, "application/json");
+                var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(UpdateTsiEdgeDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<LeafDeviceModel> UpdateLeafDevice(LeafDeviceModel leafDevice, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Put,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={userEmail}");
+                request.Content = new StringContent(JsonConvert.SerializeObject(leafDevice), Encoding.UTF8, "application/json");
+                var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(UpdateLeafDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<EdgeDeviceModel> CreateEdgeDevice(EdgeDeviceModel edgeDevice, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Post,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={userEmail}");
+                request.Content = new StringContent(JsonConvert.SerializeObject(edgeDevice), Encoding.UTF8, "application/json");
+                var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(CreateEdgeDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<LeafDeviceModel> CreateLeafDevice(LeafDeviceModel leafDevice, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Post,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={userEmail}");
+                request.Content = new StringContent(JsonConvert.SerializeObject(leafDevice), Encoding.UTF8, "application/json");
+                var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(CreateLeafDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<EdgeDeviceModel> DeleteEdgeDevice(EdgeDeviceModel edgeDevice, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Delete,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={userEmail}");
+                request.Content = new StringContent(JsonConvert.SerializeObject(edgeDevice), Encoding.UTF8, "application/json");
+                var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(CreateEdgeDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        public async Task<LeafDeviceModel> DeleteLeafDevice(LeafDeviceModel leafDevice, string token)
+        {
+            try
+            {
+                var userEmail = GetUserEmail(token);
+                var request = new HttpRequestMessage(HttpMethod.Delete,
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={userEmail}");
+                request.Content = new StringContent(JsonConvert.SerializeObject(leafDevice), Encoding.UTF8, "application/json");
+                var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errMsg = $"{nameof(CreateLeafDevice)}: {ex.Message}";
+                _logger.LogError(errMsg);
+                throw new Exception(errMsg);
+            }
+        }
+
+        private string GetUserEmail(string token)
+        {
+            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
+
+            return !string.IsNullOrEmpty(emailFromToken)
+                    ? emailFromToken
+                    : throw new Exception("Invalid claim from token.");
+        }
     }
 }

@@ -9,7 +9,7 @@ using WCA.Consumer.Api.Services.Contracts;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("device-management")]
     public class DeviceManagementController : BaseController
     {
         readonly IDeviceManagementService _deviceManagementService;
@@ -19,7 +19,7 @@ namespace WCA.Consumer.Api.Controllers
             _deviceManagementService = deviceManagementService;
         }
 
-        [HttpGet("rtspFeed")]
+        [HttpGet("rtsp-feed")]
         [ProducesResponseType(typeof(RtspFeedModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

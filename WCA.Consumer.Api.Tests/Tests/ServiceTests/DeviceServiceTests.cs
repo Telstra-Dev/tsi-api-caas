@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -296,6 +297,211 @@ namespace WCA.Customer.Api.Tests
             var exception = await Assert.ThrowsAsync<Exception>(() =>
                 deviceService.CreateEdgeDevice(myGateway));
             Assert.Equal("Error saving an edge device. NotFound Response code from downstream: ", exception.Message);
+        }
+
+        // TSI Test Cases
+
+        [Fact(DisplayName = "Get Edge Devices")]
+        public async void GetEdgeDevices_Success()
+        {
+            var edgeDevices = TestDataHelper.CreateEdgeDevices(3);
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x => 
+                                    x.SendAsync<List<EdgeDeviceModel>>(It.IsAny<HttpRequestMessage>(),
+                                                                        It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(edgeDevices);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.GetEdgeDevices(TestDataHelper.GenerateJwtToken());
+
+            Assert.Equal(typeof(List<EdgeDeviceModel>), result.GetType());
+            Assert.Equal(edgeDevices.Count, result.Count);
+            Assert.Equal(edgeDevices.ElementAt(1).EdgeEdgedeviceid, result.ElementAt(1).EdgeEdgedeviceid);
+        }
+
+        [Fact(DisplayName = "Get Leaf Devices")]
+        public async void GetLeafDevices_Success()
+        {
+            var leafDevices = TestDataHelper.CreateLeafDevices(3);
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<List<LeafDeviceModel>>(It.IsAny<HttpRequestMessage>(),
+                                                                        It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(leafDevices);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.GetLeafDevices(TestDataHelper.GenerateJwtToken());
+
+            Assert.Equal(typeof(List<LeafDeviceModel>), result.GetType());
+            Assert.Equal(leafDevices.Count, result.Count);
+            Assert.Equal(leafDevices.ElementAt(1).EdgeLeafdeviceid, result.ElementAt(1).EdgeLeafdeviceid);
+        }
+
+        [Fact(DisplayName = "Get Edge Device by Id")]
+        public async void GetEdgeDeviceById_Success()
+        {
+            var edgeDevices = TestDataHelper.CreateEdgeDevices(3);
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<EdgeDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                        It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(edgeDevices.ElementAt(1));
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.GetEdgeDevice(edgeDevices.ElementAt(1).EdgeEdgedeviceid, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
+            Assert.Equal(edgeDevices.ElementAt(1).Id, result.Id);
+            Assert.Equal(edgeDevices.ElementAt(1).Name, result.Name);
+            Assert.Equal(edgeDevices.ElementAt(1).SiteId, result.SiteId);
+            Assert.Equal(edgeDevices.ElementAt(1).EdgeEdgedeviceid, result.EdgeEdgedeviceid);
+        }
+
+        [Fact(DisplayName = "Get Leaf Device by Id")]
+        public async void GetLeafDeviceById_Success()
+        {
+            var leafDevices = TestDataHelper.CreateLeafDevices(3);
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<LeafDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                        It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(leafDevices.ElementAt(1));
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.GetLeafDevice(leafDevices.ElementAt(1).EdgeLeafdeviceid, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(LeafDeviceModel), result.GetType());
+            Assert.Equal(leafDevices.ElementAt(1).Id, result.Id);
+            Assert.Equal(leafDevices.ElementAt(1).Name, result.Name);
+            Assert.Equal(leafDevices.ElementAt(1).EdgeLeafdeviceid, result.EdgeLeafdeviceid);
+        }
+
+        [Fact(DisplayName = "Update Edge Device")]
+        public async void UpdateEdgeDevice_Success()
+        {
+            var edgeDevice = TestDataHelper.CreateEdgeDevices(1)[0];
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<EdgeDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                    It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(edgeDevice);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.UpdateTsiEdgeDevice(edgeDevice, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
+            Assert.Equal(edgeDevice.Id, result.Id);
+            Assert.Equal(edgeDevice.Name, result.Name);
+            Assert.Equal(edgeDevice.EdgeEdgedeviceid, result.EdgeEdgedeviceid);
+        }
+
+        [Fact(DisplayName = "Update Leaf Device")]
+        public async void UpdateLeafDevice_Success()
+        {
+            var leafDevice = TestDataHelper.CreateLeafDevices(1)[0];
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<LeafDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                    It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(leafDevice);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.UpdateLeafDevice(leafDevice, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(LeafDeviceModel), result.GetType());
+            Assert.Equal(leafDevice.Name, result.Name);
+            Assert.Equal(leafDevice.EdgeLeafdeviceid, leafDevice.EdgeLeafdeviceid);
+        }
+
+        [Fact(DisplayName = "Create Edge Device")]
+        public async void CreateTsiEdgeDevice_Success()
+        {
+            var edgeDevice = TestDataHelper.CreateEdgeDevices(1)[0];
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<EdgeDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                    It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(edgeDevice);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.CreateEdgeDevice(edgeDevice, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
+            Assert.Equal(edgeDevice.Id, result.Id);
+            Assert.Equal(edgeDevice.Name, result.Name);
+            Assert.Equal(edgeDevice.EdgeEdgedeviceid, result.EdgeEdgedeviceid);
+        }
+
+        [Fact(DisplayName = "Delete Edge Device")]
+        public async void DeleteEdgeDevice_Success()
+        {
+            var edgeDevice = TestDataHelper.CreateEdgeDevices(1)[0];
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<EdgeDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                    It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(edgeDevice);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.DeleteEdgeDevice(edgeDevice, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
+            Assert.Equal(edgeDevice.Id, result.Id);
+            Assert.Equal(edgeDevice.Name, result.Name);
+            Assert.Equal(edgeDevice.EdgeEdgedeviceid, result.EdgeEdgedeviceid);
+        }
+
+        [Fact(DisplayName = "Create Leaf Device")]
+        public async void CreateLeafDevice_Success()
+        {
+            var leafDevice = TestDataHelper.CreateLeafDevices(1)[0];
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<LeafDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                    It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(leafDevice);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.CreateLeafDevice(leafDevice, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(LeafDeviceModel), result.GetType());
+            Assert.Equal(leafDevice.Name, result.Name);
+            Assert.Equal(leafDevice.EdgeLeafdeviceid, leafDevice.EdgeLeafdeviceid);
+        }
+
+        [Fact(DisplayName = "Delete Leaf Device")]
+        public async void DeleteLeafDevice_Success()
+        {
+            var leafDevice = TestDataHelper.CreateLeafDevices(1)[0];
+            var httpClientMock = new Mock<IRestClient>();
+            httpClientMock.Setup(x =>
+                                    x.SendAsync<LeafDeviceModel>(It.IsAny<HttpRequestMessage>(),
+                                                                    It.IsAny<CancellationToken>()))
+                                    .ReturnsAsync(leafDevice);
+
+            var deviceService = GetDeviceService(httpClientMock);
+            var result = await deviceService.DeleteLeafDevice(leafDevice, TestDataHelper.GenerateJwtToken());
+
+            Assert.NotNull(result);
+            Assert.Equal(typeof(LeafDeviceModel), result.GetType());
+            Assert.Equal(leafDevice.Name, result.Name);
+            Assert.Equal(leafDevice.EdgeLeafdeviceid, leafDevice.EdgeLeafdeviceid);
+        }
+
+        private DeviceService GetDeviceService(Mock<IRestClient> httpClientMock)
+        {
+            var appSettings = TestDataHelper.CreateAppSettings();
+            var mapperMock = TestDataHelper.CreateMockMapper();
+            var loggerMock = new Mock<ILogger<OrganisationService>>();
+
+            return new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
         }
     }
 }
