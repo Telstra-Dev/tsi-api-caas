@@ -33,7 +33,7 @@ namespace WCA.Customer.Api.Tests
             SiteService siteService = new SiteService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                siteService.GetSitesForCustomer(customerId));
+                siteService.GetSitesForCustomer("fake.user.email@example.com", customerId));
             Assert.Contains("NotFound, Error: sth wrong", exception.Message);
         }
 
@@ -55,7 +55,7 @@ namespace WCA.Customer.Api.Tests
             SiteService siteService = new SiteService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                siteService.GetSite(siteId, customerId));
+                siteService.GetSite("fake.user.email@example.com", siteId, customerId));
             Assert.Contains("Error code: NotFound, Error: sth wrong", exception.Message);
         }
     }

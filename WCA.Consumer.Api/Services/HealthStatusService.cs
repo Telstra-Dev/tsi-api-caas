@@ -47,43 +47,65 @@ namespace WCA.Consumer.Api.Services
             _deviceRecentlyOnlineMaxMinutes = _appSettings.DeviceRecentlyOnlineMaxMinutes;
             _deviceRecentlySentTelemetryMaxMinutes = _appSettings.DeviceRecentlySentTelemetryMaxMinutes;
         }
-        public async Task<HealthStatusModel> GetHealthStatusFromSiteId(string siteId)
+        public async Task<HealthStatusModel> GetHealthStatusFromSiteId(string authorisationEmail, string siteId)
         {
-            var siteModel = await _siteService.GetSite(siteId, null);
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            var siteModel = await _siteService.GetSite(authorisationEmail, siteId, null);
             if (siteModel == null)
             {
                 return null;
             }
             var site = _mapper.Map<Site>(siteModel);
 
-            return await GetSiteHealthStatus(site);
+            return await GetSiteHealthStatus(authorisationEmail, site);
         }
 
-        public async Task<HealthStatusModel> GetSiteHealthStatus(Site site)
+        public async Task<HealthStatusModel> GetSiteHealthStatus(string authorisationEmail, Site site)
         {
-            var siteStatus = await GetSiteStatus(site.SiteId);
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            var siteStatus = await GetSiteStatus(authorisationEmail, site.SiteId);
             var siteHealth = siteStatus.GetHealthStatus();
 
             return siteHealth;
         }
 
-        public async Task<HealthStatusModel> GetHealthStatusFromDeviceId(string deviceId)
+        public async Task<HealthStatusModel> GetHealthStatusFromDeviceId(string authorisationEmail, string deviceId)
         {
-            var deviceModel = await _deviceService.GetDevice(deviceId, null);
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            var deviceModel = await _deviceService.GetDevice(authorisationEmail, deviceId, null);
             if (deviceModel == null)
             {
                 return null;
             }
             var device = _mapper.Map<Device>(deviceModel);
 
-            return await GetDeviceHealthStatus(device);
+            return await GetDeviceHealthStatus(authorisationEmail, device);
         }
 
-        public async Task<HealthStatusModel> GetDeviceHealthStatus(Device device)
+        public async Task<HealthStatusModel> GetDeviceHealthStatus(string authorisationEmail, Device device)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             if (device.Type == DeviceType.gateway.ToString())
             {
-                return await GetEdgeDeviceHealthStatus(device);
+                return await GetEdgeDeviceHealthStatus(authorisationEmail, device);
             }
             else
             {
@@ -91,7 +113,7 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        private async Task<HealthStatusModel> GetEdgeDeviceHealthStatus(Device device)
+        private async Task<HealthStatusModel> GetEdgeDeviceHealthStatus(string authorisationEmail, Device device)
         {
             // Check cache
             var cacheKey = $"{nameof(GetEdgeDeviceHealthStatus)}-{device.DeviceId}";
@@ -101,7 +123,7 @@ namespace WCA.Consumer.Api.Services
                 return cacheValue;
             }
 
-            var edgeDeviceStatus = await GetEdgeDeviceStatus(device);
+            var edgeDeviceStatus = await GetEdgeDeviceStatus(authorisationEmail, device);
             var edgeDeviceHealth = edgeDeviceStatus.GetHealthStatus();
 
             _ = Task.Run(() =>
@@ -140,8 +162,15 @@ namespace WCA.Consumer.Api.Services
         }
 
         // public TenantOverview GetTenantHealthStatus(TenantOverview overview)
-        public async Task<TenantOverview> GetTenantHealthStatus(TenantOverview overview)
+        public async Task<TenantOverview> GetTenantHealthStatus(string authorisationEmail, TenantOverview overview)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             foreach (var site in overview.Sites)
             {
                 var edgeDevicesStatus = new List<EdgeDeviceStatus>();
@@ -220,13 +249,13 @@ namespace WCA.Consumer.Api.Services
             return leafDeviceStatus;
         }
 
-        private async Task<EdgeDeviceStatus> GetEdgeDeviceStatus(Device edgeDevice)
+        private async Task<EdgeDeviceStatus> GetEdgeDeviceStatus(string authorisationEmail, Device edgeDevice)
         {
             var edgeDeviceLastHealthReadingTimestamp = await GetDeviceLastOnlineTimestamp(edgeDevice.EdgeDeviceId, "edgedevice") ?? new DateTime().ToString();
             var edgeDeviceIsOnline = EdgeDeviceStatus.CheckEdgeDeviceRecentlyOnline(edgeDeviceLastHealthReadingTimestamp, _deviceRecentlyOnlineMaxMinutes);
 
             // Check leaf devices
-            var leafDevices = await _deviceService.GetLeafDevicesForGateway(edgeDevice.EdgeDeviceId);
+            var leafDevices = await _deviceService.GetLeafDevicesForGateway(authorisationEmail, edgeDevice.EdgeDeviceId);
             var leafDevicesStatus = new List<LeafDeviceStatus>();
 
             foreach (var leafDevice in leafDevices)
@@ -246,9 +275,9 @@ namespace WCA.Consumer.Api.Services
             return edgeDeviceStatus;
         }
 
-        private async Task<SiteStatus> GetSiteStatus(string siteId)
+        private async Task<SiteStatus> GetSiteStatus(string authorisationEmail, string siteId)
         {
-            var edgeDevices = (await _deviceService.GetDevices(null, siteId))
+            var edgeDevices = (await _deviceService.GetDevices(authorisationEmail, null, siteId))
                 .Cast<DeviceModel>()
                 .Where(d => d.Type == DeviceType.gateway)
                 .Select(d => _mapper.Map<Device>(d));
@@ -256,7 +285,7 @@ namespace WCA.Consumer.Api.Services
 
             foreach (var edgeDevice in edgeDevices)
             {
-                var edgeDeviceStatus = await GetEdgeDeviceStatus(edgeDevice);
+                var edgeDeviceStatus = await GetEdgeDeviceStatus(authorisationEmail, edgeDevice);
                 edgeDevicesStatus.Add(edgeDeviceStatus);
             }
 
@@ -268,6 +297,7 @@ namespace WCA.Consumer.Api.Services
             return siteStatus;
         }
 
+        // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
         private async Task<string?> GetDeviceLastOnlineTimestamp(string deviceId, string type)
         {
             try
@@ -287,6 +317,7 @@ namespace WCA.Consumer.Api.Services
             return null;
         }
 
+        // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
         private async Task<long?> GetLeafDeviceLastOnlineTimestamp(string leafDeviceId, string edgeDeviceId)
         {
             try
@@ -307,6 +338,7 @@ namespace WCA.Consumer.Api.Services
             return null;
         }
 
+        // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
         private async Task<bool> GetLeafDeviceRequiresConfiguration(string leafDeviceId, string edgeDeviceId)
         {
             try

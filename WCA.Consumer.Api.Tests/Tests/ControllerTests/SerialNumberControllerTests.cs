@@ -18,10 +18,10 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             var serialNumber = TestDataHelper.CreateSerialNumberModel();
-            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>())).ReturnsAsync(serialNumber);
+            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(serialNumber);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = await controller.GetSerialNumbers(serialNumber.Value, null);
+            var result = await controller.GetSerialNumbers("fake.user.email@example.com", serialNumber.Value, null);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -34,10 +34,10 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             SerialNumberModel serialNumber = null;
-            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>())).ReturnsAsync(serialNumber);
+            serviceMock.Setup(m => m.GetSerialNumberByValue(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(serialNumber);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = await controller.GetSerialNumbers("non-existent", null);
+            var result = await controller.GetSerialNumbers("fake.user.email@example.com", "non-existent", null);
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
@@ -49,11 +49,11 @@ namespace WCA.Customer.Api.Tests
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             var serialNumbers = TestDataHelper.CreateSerialNumberModels(1);
             var serialNumber = serialNumbers.First();
-            serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
+            serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
                 .ReturnsAsync(serialNumbers);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = await controller.GetSerialNumbers(null, serialNumber.Value);
+            var result = await controller.GetSerialNumbers("fake.user.email@example.com", null, serialNumber.Value);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -68,11 +68,11 @@ namespace WCA.Customer.Api.Tests
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
             var serialNumbers = TestDataHelper.CreateSerialNumberModels(1);
             var serialNumber = serialNumbers.First();
-            serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
+            serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
                 .ReturnsAsync(serialNumbers);
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = await controller.GetSerialNumbers(null, serialNumber.Value.Substring(0, 10));
+            var result = await controller.GetSerialNumbers("fake.user.email@example.com", null, serialNumber.Value.Substring(0, 10));
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -88,11 +88,11 @@ namespace WCA.Customer.Api.Tests
         public async Task GetSerialNumbers_Filter_NonExistent()
         {
             var serviceMock = new Mock<ISerialNumberService>(MockBehavior.Strict);
-            serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
+            serviceMock.Setup(m => m.GetSerialNumbersByFilter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<uint?>()))
                 .ReturnsAsync(new List<SerialNumberModel>());
 
             var controller = new SerialNumberController(serviceMock.Object);
-            var result = await controller.GetSerialNumbers(null, "non-existent");
+            var result = await controller.GetSerialNumbers("fake.user.email@example.com", null, "non-existent");
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
         }

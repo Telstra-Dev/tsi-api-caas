@@ -21,10 +21,10 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<ISiteService>(MockBehavior.Strict);
             var customerId = "customer-id";
-            serviceMock.Setup(m => m.GetSitesForCustomer(It.IsAny<string>())).Returns(Task.FromResult<IList<SiteModel>>(null));
+            serviceMock.Setup(m => m.GetSitesForCustomer(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult<IList<SiteModel>>(null));
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
+            // httpContext.Request.Headers["X-CUsername"] = "fake.user.email@example.com"; // TODO: check if this injection is actually required.
 
             var controller = new SiteController(serviceMock.Object)
             {
@@ -34,7 +34,7 @@ namespace WCA.Customer.Api.Tests
                 }
             };
 
-            var result = await controller.GetSites(customerId);
+            var result = await controller.GetSites("fake.user.email@example.com", customerId);
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);

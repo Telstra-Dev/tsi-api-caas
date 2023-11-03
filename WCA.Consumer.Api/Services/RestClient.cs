@@ -19,7 +19,7 @@ namespace WCA.Consumer.Api.Services
 
         public RestClient(IHttpClientFactory clientFactory, ILogger<RestClient> logger)
         {
-            _httpClient = clientFactory.CreateClient(nameof(CustomerService));
+            _httpClient = clientFactory.CreateClient(nameof(RestClient));
             _logger = logger;
 
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

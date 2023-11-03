@@ -40,21 +40,25 @@ namespace WCA.Consumer.Api.Services
             _healthStatusService = healthStatusService;
         }
 
-        public async Task<TenantOverview> GetOrganisationOverview(string token, bool includeHealthStatus)
+        public async Task<TenantOverview> GetOrganisationOverview(
+            string authorisationEmail,
+            bool includeHealthStatus
+        )
         {
-            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-            if (string.IsNullOrEmpty(emailFromToken))
-                throw new NullReferenceException("Invalid claim from token.");
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
 
             var overview = new TenantOverview();
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview?email={emailFromToken}&withHealthStatus={includeHealthStatus}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview?email={authorisationEmail}&withHealthStatus={includeHealthStatus}");
                 overview = await _httpClient.SendAsync<TenantOverview>(request, CancellationToken.None);
             }
             catch (Exception ex)
             {
-                var errMsg = $"Fail to get tenant overview data from downstream service for user {emailFromToken}. With health status is {includeHealthStatus}.";
+                var errMsg = $"Fail to get tenant overview data from downstream service for user {authorisationEmail}. With health status is {includeHealthStatus}.";
                 _logger.LogError($"{errMsg} System message: {ex.Message}");
                 throw new Exception(errMsg);
             }
@@ -63,21 +67,32 @@ namespace WCA.Consumer.Api.Services
             {
                 if (includeHealthStatus && overview != null && overview.Sites.Count > 0)
                 {
-                    overview = await _healthStatusService.GetTenantHealthStatus(overview);
+                    overview = await _healthStatusService.GetTenantHealthStatus(authorisationEmail, overview);
                 }
 
                 return overview;
             }
             catch (Exception ex)
             {
-                var errMsg = $"Fail to generate tenant overview with health status for user {emailFromToken}";
+                var errMsg = $"Fail to generate tenant overview with health status for user {authorisationEmail}";
                 _logger.LogError($"{errMsg} System message: {ex.Message}");
                 throw new Exception(errMsg);
             }
         }
 
-        public async Task<OrganisationModel> GetOrganisation(string customerId, bool includeChildren)
+        public async Task<OrganisationModel> GetOrganisation(
+            string authorisationEmail,
+            string customerId,
+            bool includeChildren
+        )
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             OrganisationModel foundMappedOrg = null;
             try
             {
@@ -94,8 +109,18 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<OrganisationModel> CreateOrganisation(OrganisationModel newOrg)
+        public async Task<OrganisationModel> CreateOrganisation(
+            string authorisationEmail,
+            OrganisationModel newOrg
+        )
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             var savedOrg = new OrganisationModel();
             try
             {
@@ -112,14 +137,37 @@ namespace WCA.Consumer.Api.Services
         }
 
         //TO DO: Fake function
-        public OrganisationModel UpdateOrganisation(string id, OrganisationModel org)
+        public OrganisationModel UpdateOrganisation(
+            string authorisationEmail,
+            string id,
+            OrganisationModel org
+        )
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
+            // TODO: write implementation?
+
             return org;
         }
 
         //TO DO: Fake function
-        public OrganisationModel DeleteOrganisation(string id)
+        public OrganisationModel DeleteOrganisation(
+            string authorisationEmail,
+            string id
+        )
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             return new OrganisationModel
             {
                 CustomerId = "939d3cd5-38e7-4fc6-bbb7-802d27278f1e",

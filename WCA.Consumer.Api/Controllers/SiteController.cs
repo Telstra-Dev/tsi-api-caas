@@ -31,21 +31,24 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSites([FromQuery] string customerId)
+        public async Task<IActionResult> GetSites(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromQuery] string customerId
+        )
         {
             try
             {
                 if (string.IsNullOrEmpty(customerId))
                 {
                     //data from flexi DB
-                    var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-                    var sites = await _siteService.GetSitesFromToken(token);
+                    var sites = await _siteService.GetSites(authorisationEmail);
 
                     return Ok(sites);
                 }
                 else
                 {
-                    var newSite = await _siteService.GetSitesForCustomer(customerId);
+                    // TODO (@Jason): check the following path - this doesn't seem to make sense from authorisation perspective; we should remove once integration points are confirmed.
+                    var newSite = await _siteService.GetSitesForCustomer(authorisationEmail, customerId);
                     if (newSite?.Count > 0)
                         return Ok(newSite);
                     else
@@ -66,20 +69,22 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSite([FromRoute] string siteId, [FromQuery] bool telemetryProperties = false)
+        public async Task<IActionResult> GetSite(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string siteId,
+            [FromQuery] bool telemetryProperties = false
+        )
         {
             try
             {
-                var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-
                 if (telemetryProperties)
                 {   
-                    var result = await _siteService.GetSiteTelProperties(token, siteId);
+                    var result = await _siteService.GetSiteTelProperties(authorisationEmail, siteId);
                     return Ok(result);
                 }
                 else
                 {
-                    return Ok(await _siteService.GetSiteById(siteId, token));
+                    return Ok(await _siteService.GetSiteById(authorisationEmail, siteId));
                 }
             }
             catch (Exception e)
@@ -96,11 +101,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateSite([FromBody] SiteModel site)
+        public async Task<IActionResult> CreateSite(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] SiteModel site
+        )
         {
             try
             {
-                return Ok(await _siteService.CreateSite(site));
+                return Ok(await _siteService.CreateSite(authorisationEmail, site));
             }
             catch (Exception e)
             {
@@ -116,8 +124,11 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPut("sites/{siteId}")]
         [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateSite([FromRoute] string siteId,
-                                [FromBody] SiteModel site)
+        public async Task<IActionResult> UpdateSite(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string siteId,
+            [FromBody] SiteModel site
+        )
         {
             try
             {
@@ -125,7 +136,7 @@ namespace WCA.Consumer.Api.Controllers
                 {
                     site.SiteId = siteId;
                 }
-                var updatedSite = await _siteService.UpdateSite(siteId, site);
+                var updatedSite = await _siteService.UpdateSite(authorisationEmail, siteId, site);
 
                 return Ok(updatedSite);
             }
@@ -143,12 +154,14 @@ namespace WCA.Consumer.Api.Controllers
         [HttpDelete("sites/{siteId}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> DeleteSite([FromRoute] string siteId)
+        public async Task<IActionResult> DeleteSite(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string siteId
+        )
         {
             try
             {
-                var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-                var updatedSite = await _siteService.DeleteSite(siteId, token);
+                var updatedSite = await _siteService.DeleteSite(authorisationEmail, siteId);
 
                 return Ok(updatedSite);
             }

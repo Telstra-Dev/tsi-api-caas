@@ -24,11 +24,13 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(IList<TagModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetTags()
+        public async Task<IActionResult> GetTags(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail
+        )
         {
             try
             {
-                return Ok(await _tagManagerService.GetTagsAsync(GetToken()));
+                return Ok(await _tagManagerService.GetTagsAsync(authorisationEmail));
             }
             catch (Exception ex)
             {
@@ -40,11 +42,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(IList<TagModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> CreateTags([FromBody] List<CreateTagModel> tags)
+        public async Task<IActionResult> CreateTags(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] List<CreateTagModel> tags
+        )
         {
             try
             {
-                return Ok(await _tagManagerService.CreateTagsAsync(tags, GetToken()));
+                return Ok(await _tagManagerService.CreateTagsAsync(authorisationEmail, tags));
             }
             catch (Exception ex)
             {
@@ -56,21 +61,19 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(TagModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> RenameTag([FromBody] TagModel tag)
+        public async Task<IActionResult> RenameTag(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] TagModel tag
+        )
         {
             try
             {
-                return Ok(await _tagManagerService.RenameTagAsync(tag, GetToken()));
+                return Ok(await _tagManagerService.RenameTagAsync(authorisationEmail, tag));
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        private string GetToken()
-        {
-            return TokenHelper.GetToken(HttpContext);
         }
     }
 }

@@ -93,7 +93,8 @@ namespace Telstra.Core.Api
                 o.Address = new Uri(appSettings.StorageAppGrpc.BaseUri);
             });
 
-            services.AddHttpClient<CustomerService>();
+            // TODO: evaluate if needed in future (customer service deprecated / was experimental for gRPC?)
+            // services.AddHttpClient<CustomerService>();
 
             services.AddGrpcClient<WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient>(o =>
             {

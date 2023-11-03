@@ -30,7 +30,7 @@ namespace WCA.Customer.Api.Tests
 
             var service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, null, null);
 
-            var result = service.GetSerialNumberByValue(serialNumber).Result;
+            var result = service.GetSerialNumberByValue("fake.user.email@example.com", serialNumber).Result;
 
             Assert.Equal(typeof(SerialNumberModel), result.GetType());
             Assert.Equal(result.Value, serialNumber);
@@ -51,7 +51,7 @@ namespace WCA.Customer.Api.Tests
 
             var service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, null, null);
 
-            var result = await service.GetSerialNumberByValue(serialNumber);
+            var result = await service.GetSerialNumberByValue("fake.user.email@example.com", serialNumber);
 
             Assert.Null(result);
         }
@@ -72,11 +72,11 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetGatewayDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetGatewayDevices(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
 
             var service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, deviceServiceMock.Object, null);
 
-            var result = await service.GetSerialNumbersByFilter(serialNumber);
+            var result = await service.GetSerialNumbersByFilter("fake.user.email@example.com", serialNumber);
 
             Assert.Equal(typeof(List<SerialNumberModel>), result.GetType());
             var expectedSerialNumbers = result.ToList();
@@ -102,11 +102,11 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetGatewayDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetGatewayDevices(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
 
             var service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, deviceServiceMock.Object, null);
 
-            var result = await service.GetSerialNumbersByFilter(searchFilter);
+            var result = await service.GetSerialNumbersByFilter("fake.user.email@example.com", searchFilter);
 
             Assert.Equal(typeof(List<SerialNumberModel>), result.GetType());
             var expectedSerialNumbers = result.ToList();
@@ -132,11 +132,11 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetGatewayDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetGatewayDevices(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
 
             var service = new SerialNumberService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, deviceServiceMock.Object, null);
 
-            var result = await service.GetSerialNumbersByFilter("non-existent");
+            var result = await service.GetSerialNumbersByFilter("fake.user.email@example.com", "non-existent");
 
             Assert.Null(result);
         }

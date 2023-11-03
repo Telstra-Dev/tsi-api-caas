@@ -33,8 +33,15 @@ namespace WCA.Consumer.Api.Services
             _logger = logger;
         }
 
-        public async Task<ArrayList> GetDevices(string customerId, string siteId)
+        public async Task<ArrayList> GetDevices(string authorisationEmail, string customerId, string siteId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             ArrayList devices = new ArrayList();
             try
             {
@@ -60,8 +67,15 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<IList<Device>> GetGatewayDevices(string customerId, string siteId)
+        public async Task<IList<Device>> GetGatewayDevices(string authorisationEmail, string customerId, string siteId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             var devices = new List<Device>();
             try
             {
@@ -87,8 +101,15 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<DeviceModel> GetDevice(string deviceId, string customerId)
+        public async Task<DeviceModel> GetDevice(string authorisationEmail, string deviceId, string customerId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             DeviceModel foundMappedDevice = null;
             try
             {
@@ -113,8 +134,15 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<DeviceModel> DeleteDevice(string customerId, string deviceId)
+        public async Task<DeviceModel> DeleteDevice(string authorisationEmail, string customerId, string deviceId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             DeviceModel deletedMappedDevice = null;
             try
             {
@@ -147,23 +175,51 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<Camera> CreateCameraDevice(Camera newCamera)
+        public async Task<Camera> CreateCameraDevice(string authorisationEmail, Camera newCamera)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             return await SaveCameraDevice(newCamera);
         }
 
-        public async Task<Camera> UpdateCameraDevice(string id, Camera updateCamera)
+        public async Task<Camera> UpdateCameraDevice(string authorisationEmail, string id, Camera updateCamera)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             return await SaveCameraDevice(updateCamera, true);
         }
 
-        public async Task<Gateway> CreateEdgeDevice(Gateway newGateway)
+        public async Task<Gateway> CreateEdgeDevice(string authorisationEmail, Gateway newGateway)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             return await SaveEdgeDevice(newGateway);
         }
 
-        public async Task<Gateway> UpdateEdgeDevice(string id, Gateway gateway)
+        public async Task<Gateway> UpdateEdgeDevice(string authorisationEmail, string id, Gateway gateway)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             return await SaveEdgeDevice(gateway, true);
         }
 
@@ -255,8 +311,15 @@ namespace WCA.Consumer.Api.Services
             return returnedMappedDevice;
         }
 
-        public async Task<IList<Device>> GetLeafDevicesForGateway(string deviceId)
+        public async Task<IList<Device>> GetLeafDevicesForGateway(string authorisationEmail, string deviceId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             var devices = new List<Device>();
             try
             {
@@ -292,13 +355,17 @@ namespace WCA.Consumer.Api.Services
             return devices;
         }
 
-        public async Task<List<EdgeDeviceModel>> GetEdgeDevices(string token)
+        public async Task<List<EdgeDeviceModel>> GetEdgeDevices(string authorisationEmail)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Get,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevices?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevices?email={authorisationEmail}");
                 
                 var response = await _httpClient.SendAsync<List<EdgeDeviceModel>>(request, CancellationToken.None);
                 return response;
@@ -311,13 +378,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<List<LeafDeviceModel>> GetLeafDevices(string token)
+        public async Task<List<LeafDeviceModel>> GetLeafDevices(string authorisationEmail)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Get,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevices?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevices?email={authorisationEmail}");
 
                 var response = await _httpClient.SendAsync<List<LeafDeviceModel>>(request, CancellationToken.None);
                 return response;
@@ -330,13 +401,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<EdgeDeviceModel> GetEdgeDevice(string deviceId, string token)
+        public async Task<EdgeDeviceModel> GetEdgeDevice(string authorisationEmail, string deviceId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Get,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice/{deviceId}?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice/{deviceId}?email={authorisationEmail}");
                 var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
                 return response;
             }
@@ -348,13 +423,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<LeafDeviceModel> GetLeafDevice(string deviceId, string token)
+        public async Task<LeafDeviceModel> GetLeafDevice(string authorisationEmail, string deviceId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Get,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice/{deviceId}?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice/{deviceId}?email={authorisationEmail}");
                 var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
                 return response;
             }
@@ -366,13 +445,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<EdgeDeviceModel> UpdateTsiEdgeDevice(EdgeDeviceModel edgeDevice, string token)
+        public async Task<EdgeDeviceModel> UpdateTsiEdgeDevice(string authorisationEmail, EdgeDeviceModel edgeDevice)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Put,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(edgeDevice), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
                 return response;
@@ -385,13 +468,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<LeafDeviceModel> UpdateLeafDevice(LeafDeviceModel leafDevice, string token)
+        public async Task<LeafDeviceModel> UpdateLeafDevice(string authorisationEmail, LeafDeviceModel leafDevice)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Put,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(leafDevice), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
                 return response;
@@ -404,13 +491,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<EdgeDeviceModel> CreateEdgeDevice(EdgeDeviceModel edgeDevice, string token)
+        public async Task<EdgeDeviceModel> CreateEdgeDevice(string authorisationEmail, EdgeDeviceModel edgeDevice)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Post,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(edgeDevice), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
                 return response;
@@ -423,13 +514,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<LeafDeviceModel> CreateLeafDevice(LeafDeviceModel leafDevice, string token)
+        public async Task<LeafDeviceModel> CreateLeafDevice(string authorisationEmail, LeafDeviceModel leafDevice)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Post,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(leafDevice), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
                 return response;
@@ -442,13 +537,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<EdgeDeviceModel> DeleteEdgeDevice(EdgeDeviceModel edgeDevice, string token)
+        public async Task<EdgeDeviceModel> DeleteEdgeDevice(string authorisationEmail, EdgeDeviceModel edgeDevice)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Delete,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/edgedevice?email={authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(edgeDevice), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendAsync<EdgeDeviceModel>(request, CancellationToken.None);
                 return response;
@@ -461,13 +560,17 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<LeafDeviceModel> DeleteLeafDevice(LeafDeviceModel leafDevice, string token)
+        public async Task<LeafDeviceModel> DeleteLeafDevice(string authorisationEmail, LeafDeviceModel leafDevice)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
                 var request = new HttpRequestMessage(HttpMethod.Delete,
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={userEmail}");
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/devices/leafdevice?email={authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(leafDevice), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendAsync<LeafDeviceModel>(request, CancellationToken.None);
                 return response;
@@ -478,15 +581,6 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogError(errMsg);
                 throw new Exception(errMsg);
             }
-        }
-
-        private string GetUserEmail(string token)
-        {
-            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-
-            return !string.IsNullOrEmpty(emailFromToken)
-                    ? emailFromToken
-                    : throw new Exception("Invalid claim from token.");
         }
     }
 }

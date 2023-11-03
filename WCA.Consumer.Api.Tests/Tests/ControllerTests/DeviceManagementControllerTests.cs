@@ -22,7 +22,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
                                     .ReturnsAsync(imageResponse);
 
             var controller = GetController(serviceMock);
-            var result = await controller.GetRtspFeed("", "");
+            var result = await controller.GetRtspFeed("fake.user.email@example.com", "", "");
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -38,7 +38,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
                                     .Throws(new Exception(exceptionMessage));
 
             var controller = GetController(serviceMock);
-            var result = await controller.GetRtspFeed("", "");
+            var result = await controller.GetRtspFeed("fake.user.email@example.com", "", "");
             Assert.Equal(typeof(BadRequestObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.BadRequest, (result as BadRequestObjectResult).StatusCode);
             Assert.Equal(exceptionMessage, (result as BadRequestObjectResult).Value);
@@ -53,7 +53,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
                                     .Throws(new Exception(exceptionMessage));
 
             var controller = GetController(serviceMock);
-            var result = await controller.GetRtspFeed("", "");
+            var result = await controller.GetRtspFeed("fake.user.email@example.com", "", "");
             Assert.Equal(typeof(BadRequestObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.BadRequest, (result as BadRequestObjectResult).StatusCode);
             Assert.Equal(exceptionMessage, (result as BadRequestObjectResult).Value);
@@ -68,7 +68,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
                                     .Throws(new Exception(exceptionMessage));
 
             var controller = GetController(serviceMock);
-            var result = await controller.GetRtspFeed("", "");
+            var result = await controller.GetRtspFeed("fake.user.email@example.com", "", "");
             Assert.Equal(typeof(BadRequestObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.BadRequest, (result as BadRequestObjectResult).StatusCode);
             Assert.Equal(exceptionMessage, (result as BadRequestObjectResult).Value);
@@ -78,7 +78,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
         {
             var controller = new DeviceManagementController(serviceMock.Object);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
-            controller.HttpContext.Request.Headers.Authorization = TestDataHelper.GenerateJwtToken();
+            // controller.HttpContext.Request.Headers["X-CUsername"] = "fake.user.email@example.com"; // TODO: check if this injection is actually required.
             return controller;
         }
     }

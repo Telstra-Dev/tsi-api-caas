@@ -26,11 +26,13 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(List<EdgeDeviceModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetEdgeDevices()
+        public async Task<IActionResult> GetEdgeDevices(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail
+        )
         {
             try
             {
-                return Ok(await _deviceService.GetEdgeDevices(TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.GetEdgeDevices(authorisationEmail));
             }
             catch (Exception ex) 
             {
@@ -42,11 +44,13 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(List<LeafDeviceModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetLeafDevices()
+        public async Task<IActionResult> GetLeafDevices(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail
+        )
         {
             try
             {
-                return Ok(await _deviceService.GetLeafDevices(TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.GetLeafDevices(authorisationEmail));
             }
             catch (Exception ex)
             {
@@ -58,11 +62,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetEdgeDevice([FromRoute] string deviceId)
+        public async Task<IActionResult> GetEdgeDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string deviceId
+        )
         {
             try
             {
-                return Ok(await _deviceService.GetEdgeDevice(deviceId, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.GetEdgeDevice(authorisationEmail, deviceId));
             }
             catch (Exception ex)
             {
@@ -74,11 +81,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetLeafDevice([FromRoute] string deviceId)
+        public async Task<IActionResult> GetLeafDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string deviceId
+        )
         {
             try
             {
-                return Ok(await _deviceService.GetLeafDevice(deviceId, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.GetLeafDevice(authorisationEmail, deviceId));
             }
             catch (Exception ex)
             {
@@ -89,11 +99,14 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPut("edge-device")]
         [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateEdgeDevice([FromBody] EdgeDeviceModel edgeDevice)
+        public async Task<IActionResult> UpdateEdgeDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] EdgeDeviceModel edgeDevice
+        )
         {
             try
             {
-                return Ok(await _deviceService.UpdateTsiEdgeDevice(edgeDevice, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.UpdateTsiEdgeDevice(authorisationEmail, edgeDevice));
             }
             catch (Exception ex)
             {
@@ -104,11 +117,14 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPut("leaf-device")]
         [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateLeafDevice([FromBody] LeafDeviceModel leafDevice)
+        public async Task<IActionResult> UpdateLeafDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] LeafDeviceModel leafDevice
+        )
         {
             try
             {
-                return Ok(await _deviceService.UpdateLeafDevice(leafDevice, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.UpdateLeafDevice(authorisationEmail, leafDevice));
             }
             catch (Exception ex)
             {
@@ -119,11 +135,14 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPost("edge-device")]
         [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CreateEdgeDevice([FromBody] EdgeDeviceModel edgeDevice)
+        public async Task<IActionResult> CreateEdgeDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] EdgeDeviceModel edgeDevice
+        )
         {
             try
             {
-                return Ok(await _deviceService.CreateEdgeDevice(edgeDevice, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.CreateEdgeDevice(authorisationEmail, edgeDevice));
             }
             catch (Exception ex)
             {
@@ -134,11 +153,14 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPost("leaf-device")]
         [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CreateLeafDevice([FromBody] LeafDeviceModel leafDevice)
+        public async Task<IActionResult> CreateLeafDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] LeafDeviceModel leafDevice
+        )
         {
             try
             {
-                return Ok(await _deviceService.CreateLeafDevice(leafDevice, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.CreateLeafDevice(authorisationEmail, leafDevice));
             }
             catch (Exception ex)
             {
@@ -149,11 +171,14 @@ namespace WCA.Consumer.Api.Controllers
         [HttpDelete("edge-device")]
         [ProducesResponseType(typeof(EdgeDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> DeleteEdgeDevice([FromBody] EdgeDeviceModel edgeDevice)
+        public async Task<IActionResult> DeleteEdgeDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] EdgeDeviceModel edgeDevice
+        )
         {
             try
             {
-                return Ok(await _deviceService.DeleteEdgeDevice(edgeDevice, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.DeleteEdgeDevice(authorisationEmail, edgeDevice));
             }
             catch (Exception ex)
             {
@@ -164,11 +189,14 @@ namespace WCA.Consumer.Api.Controllers
         [HttpDelete("leaf-device")]
         [ProducesResponseType(typeof(LeafDeviceModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> DeleteLeafDevice([FromBody] LeafDeviceModel leafDevice)
+        public async Task<IActionResult> DeleteLeafDevice(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] LeafDeviceModel leafDevice
+        )
         {
             try
             {
-                return Ok(await _deviceService.DeleteLeafDevice(leafDevice, TokenHelper.GetToken(HttpContext)));
+                return Ok(await _deviceService.DeleteLeafDevice(authorisationEmail, leafDevice));
             }
             catch (Exception ex)
             {

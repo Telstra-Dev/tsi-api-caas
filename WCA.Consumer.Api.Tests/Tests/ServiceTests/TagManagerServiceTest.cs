@@ -41,7 +41,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ServiceTests
                                                                 loggerMock.Object, 
                                                                 cacheMock.Object);
 
-            var result = await tagManagerServiceMock.GetTagsAsync(TestDataHelper.GenerateJwtToken());
+            var result = await tagManagerServiceMock.GetTagsAsync("fake.user.email@example.com");
 
             Assert.NotNull(result);
             Assert.Equal(tags.Count, result.Count);
@@ -72,7 +72,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ServiceTests
                                                                 loggerMock.Object,
                                                                 cacheMock.Object);
 
-            var result = await tagManagerServiceMock.CreateTagsAsync(createTagPayload, TestDataHelper.GenerateJwtToken());
+            var result = await tagManagerServiceMock.CreateTagsAsync("fake.user.email@example.com", createTagPayload);
 
             Assert.Equal(createTagPayload.Count, result);
         }
@@ -100,7 +100,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ServiceTests
                                                                 loggerMock.Object,
                                                                 cacheMock.Object);
 
-            var result = await tagManagerServiceMock.RenameTagAsync(tags[0], TestDataHelper.GenerateJwtToken());
+            var result = await tagManagerServiceMock.RenameTagAsync("fake.user.email@example.com", tags[0]);
 
             Assert.NotNull(result);
             Assert.Equal(tags[0].Name, result.Name);

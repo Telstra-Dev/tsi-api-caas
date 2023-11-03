@@ -25,12 +25,16 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetHealthStatus([FromQuery] string deviceId, [FromQuery] string siteId)
+        public async Task<IActionResult> GetHealthStatus(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromQuery] string deviceId,
+            [FromQuery] string siteId
+        )
         {
             try {
                 if (deviceId != null)
                 {
-                    var deviceHealth = await this.service.GetHealthStatusFromDeviceId(deviceId);
+                    var deviceHealth = await this.service.GetHealthStatusFromDeviceId(authorisationEmail, deviceId);
                     if (deviceHealth != null)
                         return Ok(deviceHealth);
                     else
@@ -38,7 +42,7 @@ namespace WCA.Consumer.Api.Controllers
                 }
                 else
                 {
-                    var siteHealth = await this.service.GetHealthStatusFromSiteId(siteId);
+                    var siteHealth = await this.service.GetHealthStatusFromSiteId(authorisationEmail, siteId);
                     if (siteHealth != null)
                         return Ok(siteHealth);
                     else

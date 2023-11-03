@@ -29,11 +29,15 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetOrganisation([FromRoute] string customerId,
-                                              [FromQuery] bool includeChildren = true,
-                                              [FromQuery] bool displaySearchTree = true)
+        public async Task<IActionResult> GetOrganisation(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string customerId,
+            [FromQuery] bool includeChildren = true,
+            [FromQuery] bool displaySearchTree = true
+        )
         {
-            return Ok(await _orgService.GetOrganisation(customerId, includeChildren));
+            // TODO (@Jason): check the following path - this doesn't seem to make sense from authorisation perspective; we should remove once integration points are confirmed.
+            return Ok(await _orgService.GetOrganisation(authorisationEmail, customerId, includeChildren));
         }
 
         /// <summary>
@@ -46,12 +50,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetOrganisationOverview([FromQuery] bool includeHealthStatus = false)
+        public async Task<IActionResult> GetOrganisationOverview(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromQuery] bool includeHealthStatus = false
+        )
         {
             try
             {
-                var token = HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", "");
-                return Ok(await _orgService.GetOrganisationOverview(token, includeHealthStatus));
+                return Ok(await _orgService.GetOrganisationOverview(authorisationEmail, includeHealthStatus));
             }
             catch (NullReferenceException e)
             {
@@ -71,11 +77,14 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType(typeof(OrganisationModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateOrganisation([FromBody] OrganisationModel org)
+        public async Task<IActionResult> CreateOrganisation(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromBody] OrganisationModel org
+        )
         {
             try
             {
-                return Ok(await _orgService.CreateOrganisation(org));
+                return Ok(await _orgService.CreateOrganisation(authorisationEmail, org));
             }
             catch (Exception e)
             {
@@ -95,10 +104,13 @@ namespace WCA.Consumer.Api.Controllers
         [HttpPut("organisations/{id}")]
         [ProducesResponseType(typeof(OrganisationModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult UpdateOrganisation([FromRoute] string id,
-                                [FromBody] OrganisationModel org)
+        public IActionResult UpdateOrganisation(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string id,
+            [FromBody] OrganisationModel org
+        )
         {
-            return Ok(_orgService.UpdateOrganisation(id, org));
+            return Ok(_orgService.UpdateOrganisation(authorisationEmail, id, org));
         }
 
         /// <summary>
@@ -109,9 +121,12 @@ namespace WCA.Consumer.Api.Controllers
         [HttpDelete("organisations/{id}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult DeleteOrganisation([FromRoute] string id)
+        public IActionResult DeleteOrganisation(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromRoute] string id
+        )
         {
-            return Ok(_orgService.DeleteOrganisation(id));
+            return Ok(_orgService.DeleteOrganisation(authorisationEmail, id));
         }
     }
 }

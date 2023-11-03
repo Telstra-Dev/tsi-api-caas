@@ -22,7 +22,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
             serviceMock.Setup(m => m.GetTagsAsync(It.IsAny<string>())).Returns(Task.FromResult(tags));
 
             var controller = GetController(serviceMock);
-            var result = await controller.GetTags();
+            var result = await controller.GetTags("fake.user.email@example.com");
             
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -34,11 +34,11 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
         {
             var serviceMock = new Mock<ITagManagerService>(MockBehavior.Strict);
             var tags = TestDataHelper.CreateTags(2);
-            serviceMock.Setup(m => m.CreateTagsAsync(It.IsAny<List<CreateTagModel>>(), It.IsAny<string>()))
+            serviceMock.Setup(m => m.CreateTagsAsync(It.IsAny<string>(), It.IsAny<List<CreateTagModel>>()))
                                     .Returns(Task.FromResult(tags.Count));
 
             var controller = GetController(serviceMock);
-            var result = await controller.CreateTags(new List<CreateTagModel>());
+            var result = await controller.CreateTags("fake.user.email@example.com", new List<CreateTagModel>());
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -50,11 +50,11 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
         {
             var serviceMock = new Mock<ITagManagerService>(MockBehavior.Strict);
             var tags = TestDataHelper.CreateTags(1);
-            serviceMock.Setup(m => m.RenameTagAsync(It.IsAny<TagModel>(), It.IsAny<string>()))
+            serviceMock.Setup(m => m.RenameTagAsync(It.IsAny<string>(), It.IsAny<TagModel>()))
                                     .Returns(Task.FromResult(tags[0]));
 
             var controller = GetController(serviceMock);
-            var result = await controller.RenameTag(new TagModel());
+            var result = await controller.RenameTag("fake.user.email@example.com", new TagModel());
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -65,7 +65,7 @@ namespace WCA.Consumer.Api.Tests.Tests.ControllerTests
         {
             var controller = new TagManagerController(serviceMock.Object);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
-            controller.HttpContext.Request.Headers.Authorization = TestDataHelper.GenerateJwtToken();
+            // controller.HttpContext.Request.Headers["X-CUsername"] = "fake.user.email@example.com"; // TODO: check if this injection is actually required.
             return controller;
         }
     }

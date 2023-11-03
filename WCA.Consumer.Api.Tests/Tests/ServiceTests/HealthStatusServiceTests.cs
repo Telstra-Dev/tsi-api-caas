@@ -64,12 +64,12 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", deviceModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -109,12 +109,12 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", deviceModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -142,13 +142,13 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", deviceModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -176,13 +176,13 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(deviceModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(deviceModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", deviceModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -236,13 +236,13 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(leafDevices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gatewayModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -296,13 +296,13 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(leafDevices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gatewayModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -356,13 +356,13 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(leafDevices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gatewayModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -404,13 +404,13 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(leafDevices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetHealthStatusFromDeviceId(gatewayModel.DeviceId).Result;
+            var result = healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gatewayModel.DeviceId).Result;
 
             var expected = new HealthStatusModel
             {
@@ -441,12 +441,12 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new ArrayList());
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new ArrayList());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -474,12 +474,12 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -510,14 +510,14 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -548,14 +548,14 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -617,14 +617,14 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(leafDevices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -686,14 +686,14 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(leafDevices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -755,14 +755,14 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(leafDevices);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(leafDevices);
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -803,14 +803,14 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(It.IsAny<string>())).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(gatewayModel);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", It.IsAny<string>())).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             var expected = new HealthStatusModel
             {
@@ -1017,24 +1017,24 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
 
-            // var result = healthStatusService.GetSiteHealthStatus(site).Result;
+            // var result = healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result;
 
             // var expected = new HealthStatusModel
             // {
@@ -1051,31 +1051,31 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = null,
                 Action = null
-            }, healthStatusService.GetDeviceHealthStatus(camera1).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera1).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera2).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera2).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera3).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera3).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure camera",
                 Action = "Config in camera menu"
-            }, healthStatusService.GetDeviceHealthStatus(camera4).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera4).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera5).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera5).Result);
 
             // Gateway / edge device checks.
             // var gateway1Model = gatewayModels[0]; // Online
@@ -1089,37 +1089,37 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = "Gateway online",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway1Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway1Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Gateway offline",
                 Action = "Contact support"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway2Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway2Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera(s) offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway3Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway3Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure cameras",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway4Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway4Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway5Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway5Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "No cameras",
                 Action = "Config in gateway menu"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway6Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway6Model.DeviceId).Result);
 
             // Site checks.
             Assert.Equal(new HealthStatusModel
@@ -1127,7 +1127,7 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.RED,
                 Reason = "Devices are offline",
                 Action = "Expand site to review"
-            }, healthStatusService.GetSiteHealthStatus(site).Result);
+            }, healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result);
         }
 
         [Fact]
@@ -1315,19 +1315,19 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
@@ -1338,31 +1338,31 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = null,
                 Action = null
-            }, healthStatusService.GetDeviceHealthStatus(camera1).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera1).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera2).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera2).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera3).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera3).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure camera",
                 Action = "Config in camera menu"
-            }, healthStatusService.GetDeviceHealthStatus(camera4).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera4).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera5).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera5).Result);
 
             // Gateway / edge device checks.
             Assert.Equal(new HealthStatusModel
@@ -1370,37 +1370,37 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = "Gateway online",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway1Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway1Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Gateway offline",
                 Action = "Contact support"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway2Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway2Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera(s) offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway3Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway3Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure cameras",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway4Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway4Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway5Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway5Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "No cameras",
                 Action = "Config in gateway menu"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway6Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway6Model.DeviceId).Result);
 
             // Site checks.
             Assert.Equal(new HealthStatusModel
@@ -1408,7 +1408,7 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.RED,
                 Reason = "Devices are offline",
                 Action = "Expand site to review"
-            }, healthStatusService.GetSiteHealthStatus(site).Result);
+            }, healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result);
         }
 
         [Fact]
@@ -1596,19 +1596,19 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
@@ -1619,31 +1619,31 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = null,
                 Action = null
-            }, healthStatusService.GetDeviceHealthStatus(camera1).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera1).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera2).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera2).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera3).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera3).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure camera",
                 Action = "Config in camera menu"
-            }, healthStatusService.GetDeviceHealthStatus(camera4).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera4).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera5).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera5).Result);
 
             // Gateway / edge device checks.
             Assert.Equal(new HealthStatusModel
@@ -1651,37 +1651,37 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = "Gateway online",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway1Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway1Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Gateway offline",
                 Action = "Contact support"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway2Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway2Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera(s) offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway3Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway3Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure cameras",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway4Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway4Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway5Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway5Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "No cameras",
                 Action = "Config in gateway menu"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway6Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway6Model.DeviceId).Result);
 
             // Site checks.
             Assert.Equal(new HealthStatusModel
@@ -1689,7 +1689,7 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.AMBER,
                 Reason = "Review devices",
                 Action = "Expand site to review"
-            }, healthStatusService.GetSiteHealthStatus(site).Result);
+            }, healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result);
         }
 
         [Fact]
@@ -1877,19 +1877,19 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
@@ -1900,31 +1900,31 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = null,
                 Action = null
-            }, healthStatusService.GetDeviceHealthStatus(camera1).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera1).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera2).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera2).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera3).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera3).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure camera",
                 Action = "Config in camera menu"
-            }, healthStatusService.GetDeviceHealthStatus(camera4).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera4).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera5).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera5).Result);
 
             // Gateway / edge device checks.
             Assert.Equal(new HealthStatusModel
@@ -1932,37 +1932,37 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = "Gateway online",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway1Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway1Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Gateway offline",
                 Action = "Contact support"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway2Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway2Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera(s) offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway3Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway3Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure cameras",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway4Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway4Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway5Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway5Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "No cameras",
                 Action = "Config in gateway menu"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway6Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway6Model.DeviceId).Result);
 
             // Site checks.
             Assert.Equal(new HealthStatusModel
@@ -1970,7 +1970,7 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.AMBER,
                 Reason = "Review devices",
                 Action = "Expand site to review"
-            }, healthStatusService.GetSiteHealthStatus(site).Result);
+            }, healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result);
         }
 
         [Fact]
@@ -2158,19 +2158,19 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
@@ -2181,31 +2181,31 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = null,
                 Action = null
-            }, healthStatusService.GetDeviceHealthStatus(camera1).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera1).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera2).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera2).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera3).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera3).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure camera",
                 Action = "Config in camera menu"
-            }, healthStatusService.GetDeviceHealthStatus(camera4).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera4).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera5).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera5).Result);
 
             // Gateway / edge device checks.
             Assert.Equal(new HealthStatusModel
@@ -2213,37 +2213,37 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = "Gateway online",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway1Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway1Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Gateway offline",
                 Action = "Contact support"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway2Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway2Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera(s) offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway3Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway3Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure cameras",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway4Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway4Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway5Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway5Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "No cameras",
                 Action = "Config in gateway menu"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway6Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway6Model.DeviceId).Result);
 
             // Site checks.
             Assert.Equal(new HealthStatusModel
@@ -2251,7 +2251,7 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.AMBER,
                 Reason = "Review devices",
                 Action = "Expand site to review"
-            }, healthStatusService.GetSiteHealthStatus(site).Result);
+            }, healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result);
         }
 
         [Fact]
@@ -2439,19 +2439,19 @@ namespace WCA.Customer.Api.Tests
             var cacheMock = new Mock<IMemoryCache>();
 
             var deviceServiceMock = new Mock<IDeviceService>(MockBehavior.Strict);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
-            deviceServiceMock.Setup(m => m.GetDevice(gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
-            deviceServiceMock.Setup(m => m.GetDevices(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
-            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway(gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway1Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway1Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway2Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway2Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway3Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway3Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway4Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway4Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway5Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway5Model);
+            deviceServiceMock.Setup(m => m.GetDevice("fake.user.email@example.com", gateway6Model.DeviceId, It.IsAny<string>())).ReturnsAsync(gateway6Model);
+            deviceServiceMock.Setup(m => m.GetDevices("fake.user.email@example.com", It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(devices);
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway1Model.DeviceId)).ReturnsAsync(new List<Device>() { camera1 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway2Model.DeviceId)).ReturnsAsync(new List<Device>() { camera2 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway3Model.DeviceId)).ReturnsAsync(new List<Device>() { camera3 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway4Model.DeviceId)).ReturnsAsync(new List<Device>() { camera4 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway5Model.DeviceId)).ReturnsAsync(new List<Device>() { camera5 });
+            deviceServiceMock.Setup(m => m.GetLeafDevicesForGateway("fake.user.email@example.com", gateway6Model.DeviceId)).ReturnsAsync(new List<Device>());
 
             var healthStatusService = new HealthStatusService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object,
                                                               deviceServiceMock.Object, null, cacheMock.Object);
@@ -2462,31 +2462,31 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = null,
                 Action = null
-            }, healthStatusService.GetDeviceHealthStatus(camera1).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera1).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera2).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera2).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera3).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera3).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure camera",
                 Action = "Config in camera menu"
-            }, healthStatusService.GetDeviceHealthStatus(camera4).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera4).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Contact support"
-            }, healthStatusService.GetDeviceHealthStatus(camera5).Result);
+            }, healthStatusService.GetDeviceHealthStatus("fake.user.email@example.com", camera5).Result);
 
             // Gateway / edge device checks.
             Assert.Equal(new HealthStatusModel
@@ -2494,37 +2494,37 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = "Gateway online",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway1Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway1Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Gateway offline",
                 Action = "Contact support"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway2Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway2Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.RED,
                 Reason = "Camera(s) offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway3Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway3Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Configure cameras",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway4Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway4Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "Data offline",
                 Action = "Expand gateway to review"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway5Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway5Model.DeviceId).Result);
             Assert.Equal(new HealthStatusModel
             {
                 Code = HealthStatusCode.AMBER,
                 Reason = "No cameras",
                 Action = "Config in gateway menu"
-            }, healthStatusService.GetHealthStatusFromDeviceId(gateway6Model.DeviceId).Result);
+            }, healthStatusService.GetHealthStatusFromDeviceId("fake.user.email@example.com", gateway6Model.DeviceId).Result);
 
             // Site checks.
             Assert.Equal(new HealthStatusModel
@@ -2532,7 +2532,7 @@ namespace WCA.Customer.Api.Tests
                 Code = HealthStatusCode.GREEN,
                 Reason = "Site online",
                 Action = "Expand site to review"
-            }, healthStatusService.GetSiteHealthStatus(site).Result);
+            }, healthStatusService.GetSiteHealthStatus("fake.user.email@example.com", site).Result);
         }
     }
 }

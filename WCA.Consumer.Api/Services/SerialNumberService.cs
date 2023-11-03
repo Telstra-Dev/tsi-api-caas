@@ -38,8 +38,15 @@ namespace WCA.Consumer.Api.Services
             _cache = cache;
         }
 
-        public async Task<SerialNumberModel> GetSerialNumberByValue(string value)
+        public async Task<SerialNumberModel> GetSerialNumberByValue(string authorisationEmail, string value)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.EdgeDevicesAppHttp.BaseUri}/search?filter={value}&maxResults=1");
@@ -61,8 +68,15 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<IList<SerialNumberModel>> GetSerialNumbersByFilter(string filter, bool inactiveOnly = false, uint? maxResults = null)
+        public async Task<IList<SerialNumberModel>> GetSerialNumbersByFilter(string authorisationEmail, string filter, bool inactiveOnly = false, uint? maxResults = null)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             IList<SerialNumberModel> serialNumberModels = null;
             try
             {
@@ -84,7 +98,7 @@ namespace WCA.Consumer.Api.Services
                         }
                         else
                         {
-                            activeDevices = await _deviceService.GetGatewayDevices(null, null);
+                            activeDevices = await _deviceService.GetGatewayDevices(authorisationEmail, null, null);
 
                             // Set cache
                             _ = Task.Run(() =>

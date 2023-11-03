@@ -22,11 +22,12 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrganisation = TestDataHelper.CreateOrganisationModel();
-            serviceMock.Setup(m => m.GetOrganisation(It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(myOrganisation));
+            serviceMock.Setup(m => m.GetOrganisation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(myOrganisation));
 
             var controller = new OrganisationController(serviceMock.Object);
 
-            var result = await controller.GetOrganisation(myOrganisation.CustomerId, false);
+            // TODO: add authorisation tests that check against tenant data.
+            var result = await controller.GetOrganisation("fake.user.email@example.com", myOrganisation.CustomerId, false);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -42,7 +43,7 @@ namespace WCA.Customer.Api.Tests
             serviceMock.Setup(m => m.GetOrganisationOverview(It.IsAny<string>(), It.IsAny<bool>())).Returns(Task.FromResult(myTenantOverview));
 
             var httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers["Authorization"] = "Bearer FAKE_TOKEN";
+            // httpContext.Request.Headers["X-CUsername"] = "fake.user.email@example.com"; // TODO: check if this injection is actually required.
 
             var controller = new OrganisationController(serviceMock.Object)
             {
@@ -52,7 +53,7 @@ namespace WCA.Customer.Api.Tests
                 }
             };
 
-            var result = await controller.GetOrganisationOverview();
+            var result = await controller.GetOrganisationOverview("fake.user.email@example.com");
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -67,11 +68,11 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrganisation = TestDataHelper.CreateOrganisationModel();
-            serviceMock.Setup(m => m.CreateOrganisation(It.IsAny<OrganisationModel>())).Returns(Task.FromResult(myOrganisation));
+            serviceMock.Setup(m => m.CreateOrganisation(It.IsAny<string>(), It.IsAny<OrganisationModel>())).Returns(Task.FromResult(myOrganisation));
 
             var controller = new OrganisationController(serviceMock.Object);
 
-            var result = await controller.CreateOrganisation(myOrganisation);
+            var result = await controller.CreateOrganisation("fake.user.email@example.com", myOrganisation);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -84,11 +85,11 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrganisation = TestDataHelper.CreateOrganisationModel();
-            serviceMock.Setup(m => m.UpdateOrganisation(It.IsAny<string>(), It.IsAny<OrganisationModel>())).Returns(myOrganisation);
+            serviceMock.Setup(m => m.UpdateOrganisation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<OrganisationModel>())).Returns(myOrganisation);
 
             var controller = new OrganisationController(serviceMock.Object);
 
-            var result = controller.UpdateOrganisation(myOrganisation.CustomerId, myOrganisation);
+            var result = controller.UpdateOrganisation("fake.user.email@example.com", myOrganisation.CustomerId, myOrganisation);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
@@ -101,11 +102,11 @@ namespace WCA.Customer.Api.Tests
         {
             var serviceMock = new Mock<IOrganisationService>(MockBehavior.Strict);
             var myOrganisation = TestDataHelper.CreateOrganisationModel();
-            serviceMock.Setup(m => m.DeleteOrganisation(It.IsAny<string>())).Returns(myOrganisation);
+            serviceMock.Setup(m => m.DeleteOrganisation(It.IsAny<string>(), It.IsAny<string>())).Returns(myOrganisation);
 
             var controller = new OrganisationController(serviceMock.Object);
 
-            var result = controller.DeleteOrganisation(myOrganisation.CustomerId);
+            var result = controller.DeleteOrganisation("fake.user.email@example.com", myOrganisation.CustomerId);
 
             Assert.Equal(typeof(OkObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);

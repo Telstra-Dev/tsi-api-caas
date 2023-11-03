@@ -50,13 +50,16 @@ namespace WCA.Consumer.Api.Services
             _shortCacheTime = DateTimeOffset.Now.AddSeconds(_appSettings.ShortCacheTime);
         }
 
-        public async Task<List<TagModel>> GetTagsAsync(string token)
+        public async Task<List<TagModel>> GetTagsAsync(string authorisationEmail)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
-
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/tagmanager/{userEmail}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/tagmanager/{authorisationEmail}");
                 var response = await _httpClient.SendWithResponseAsync(request, CancellationToken.None);
                 var reply = await response.Content.ReadAsStringAsync();
 
@@ -78,8 +81,13 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<int> CreateTagsAsync(List<CreateTagModel> tags, string token)
+        public async Task<int> CreateTagsAsync(string authorisationEmail, List<CreateTagModel> tags)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
                 var invalidTag = tags.Where(t => !_validCategories.Contains(t.Category) 
@@ -93,8 +101,7 @@ namespace WCA.Consumer.Api.Services
                     throw new Exception(invalidTagError);
                 }
 
-                var userEmail = GetUserEmail(token);
-                var request = new HttpRequestMessage(HttpMethod.Post, $"{_appSettings.StorageAppHttp.BaseUri}/tagmanager/{userEmail}");
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{_appSettings.StorageAppHttp.BaseUri}/tagmanager/{authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(tags), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendWithResponseAsync(request, CancellationToken.None);
                 var reply = await response.Content.ReadAsStringAsync();
@@ -117,12 +124,16 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<TagModel> RenameTagAsync(TagModel tag, string token)
+        public async Task<TagModel> RenameTagAsync(string authorisationEmail, TagModel tag)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var userEmail = GetUserEmail(token);
-                var request = new HttpRequestMessage(HttpMethod.Put, $"{_appSettings.StorageAppHttp.BaseUri}/tagmanager/{userEmail}");
+                var request = new HttpRequestMessage(HttpMethod.Put, $"{_appSettings.StorageAppHttp.BaseUri}/tagmanager/{authorisationEmail}");
                 request.Content = new StringContent(JsonConvert.SerializeObject(tag), Encoding.UTF8, "application/json");
                 var response = await _httpClient.SendWithResponseAsync(request, CancellationToken.None);
                 var reply = await response.Content.ReadAsStringAsync();
@@ -143,15 +154,6 @@ namespace WCA.Consumer.Api.Services
                 _logger.LogError("RenameTagAsync: " + e.Message);
                 throw new Exception(e.Message);
             }
-        }
-
-        private string GetUserEmail(string token)
-        {
-            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-
-            return !string.IsNullOrEmpty(emailFromToken) 
-                    ? emailFromToken 
-                    : throw new Exception("Invalid claim from token.");
         }
     }
 }

@@ -27,14 +27,20 @@ namespace WCA.Consumer.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSerialNumbers([FromQuery] string value, [FromQuery] string filter, [FromQuery] bool inactiveOnly = false, [FromQuery] uint? maxResults = null)
+        public async Task<IActionResult> GetSerialNumbers(
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
+            [FromQuery] string value,
+            [FromQuery] string filter,
+            [FromQuery] bool inactiveOnly = false,
+            [FromQuery] uint? maxResults = null
+        )
         {
             try
             {
                 // Value query param has priority
                 if (value != null)
                 {
-                    var serialNumber = await _snService.GetSerialNumberByValue(value);
+                    var serialNumber = await _snService.GetSerialNumberByValue(authorisationEmail, value);
                     if (serialNumber == null)
                     {
                         return NotFound(new { message = "No serial numbers could be found with the given criteria" });
@@ -45,7 +51,7 @@ namespace WCA.Consumer.Api.Controllers
                     }
                 }
 
-                var serialNumbers = await _snService.GetSerialNumbersByFilter(filter, inactiveOnly, maxResults);
+                var serialNumbers = await _snService.GetSerialNumbersByFilter(authorisationEmail, filter, inactiveOnly, maxResults);
                 if (serialNumbers == null || serialNumbers.Count == 0)
                 {
                     return NotFound(new { message = "No serial numbers could be found with the given criteria" });

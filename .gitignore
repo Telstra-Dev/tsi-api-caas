@@ -285,6 +285,8 @@ obj/
 /wwwroot/node_modules
 
 # Local app settings
+!appsettings.sample.json
 appsettings.json
+appsettings.*.json
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,aspnetcore

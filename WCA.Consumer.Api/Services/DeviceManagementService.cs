@@ -23,8 +23,6 @@ namespace WCA.Consumer.Api.Services
 
         private IMemoryCache _cache { get; }
         private DateTimeOffset _shortCacheTime;
-
-        private readonly string _errInvalidClaim = "Invalid claim from token.";
         private readonly string _errUnauthorizedUser = "User not authorized to access device!";
         private readonly string _errNoAccessToken = "Device Management access token not received!";
 
@@ -41,23 +39,25 @@ namespace WCA.Consumer.Api.Services
             _shortCacheTime = DateTimeOffset.Now.AddSeconds(_appSettings.ShortCacheTime);
         }
 
-        public async Task<RtspFeedModel> GetRtspFeed(string token, string edgeDeviceId, string leafDeviceId)
+        public async Task<RtspFeedModel> GetRtspFeed(string authorisationEmail, string edgeDeviceId, string leafDeviceId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
                 bool isLeafDeviceMapped = false;
                 var accessToken = string.Empty;
 
-                var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token) 
-                                        ?? throw new Exception(_errInvalidClaim);
-
-                var cacheKeyLeafDeviceMapped = $"{nameof(IsLeafDeviceMapped)}-{emailFromToken}-{edgeDeviceId}-{leafDeviceId}";
-                var cacheKeyAccessToken = $"{nameof(GetAccessToken)}-{emailFromToken}-{edgeDeviceId}-{leafDeviceId}";
+                var cacheKeyLeafDeviceMapped = $"{nameof(IsLeafDeviceMapped)}-{authorisationEmail}-{edgeDeviceId}-{leafDeviceId}";
+                var cacheKeyAccessToken = $"{nameof(GetAccessToken)}-{authorisationEmail}-{edgeDeviceId}-{leafDeviceId}";
                 var cachedValue = _cache.Get(cacheKeyLeafDeviceMapped);
 
                 if (cachedValue == null)
                 {
-                    var tenantOverview = await GetTenantOverview(emailFromToken);
+                    var tenantOverview = await GetTenantOverview(authorisationEmail);
                     isLeafDeviceMapped = IsLeafDeviceMapped(tenantOverview, edgeDeviceId, leafDeviceId);
                     accessToken = await GetAccessToken();
 
@@ -88,12 +88,12 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        private async Task<TenantOverview> GetTenantOverview(string emailFromToken)
+        private async Task<TenantOverview> GetTenantOverview(string authorisationEmail)
         {
             try
             {
                 var tenantOvervireRequest = new HttpRequestMessage(HttpMethod.Get,
-                        $"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview?email={emailFromToken}&withHealthStatus=false");
+                        $"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview?email={authorisationEmail}&withHealthStatus=false");
                 var tenantOverview = await _httpClient.SendAsync<TenantOverview>(tenantOvervireRequest,
                                                 CancellationToken.None) ?? throw new Exception("User not found!");
 
@@ -136,6 +136,7 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
+        // TODO: consider moving into separate IoT-SC client (similar to previous approach).
         private async Task<string> GetAccessToken()
         {
             try

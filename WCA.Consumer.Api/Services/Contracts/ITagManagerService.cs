@@ -6,8 +6,8 @@ namespace WCA.Consumer.Api.Services.Contracts
 {
     public interface ITagManagerService
     {
-        public Task<List<TagModel>> GetTagsAsync(string token);
-        public Task<int> CreateTagsAsync(List<CreateTagModel> tags, string token);
-        public Task<TagModel> RenameTagAsync(TagModel tag, string token);
+        public Task<List<TagModel>> GetTagsAsync(string authorisationEmail);
+        public Task<int> CreateTagsAsync(string authorisationEmail, List<CreateTagModel> tags);
+        public Task<TagModel> RenameTagAsync(string authorisationEmail, TagModel tag);
     }
 }

@@ -42,7 +42,7 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = await deviceService.GetDevices(customerId, siteId);
+            var result = await deviceService.GetDevices("fake.user.email@example.com", customerId, siteId);
 
             Assert.Equal(typeof(ArrayList), result.GetType());
             var resultGateway = (Gateway)result[0];
@@ -72,7 +72,7 @@ namespace WCA.Customer.Api.Tests
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                deviceService.GetDevices(customerId, siteId));
+                deviceService.GetDevices("fake.user.email@example.com", customerId, siteId));
             Assert.Equal(errMsg, exception.Message);
         }
 
@@ -93,7 +93,7 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var resultGateway = await deviceService.GetDevice(myGateway.DeviceId, customerId);
+            var resultGateway = await deviceService.GetDevice("fake.user.email@example.com", myGateway.DeviceId, customerId);
 
             Assert.Equal(typeof(Gateway), resultGateway.GetType());
             Assert.Equal(resultGateway.DeviceId, myGateway?.DeviceId);
@@ -115,7 +115,7 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
-            var result = await deviceService.GetDevice(deviceIdGateway, customerId);
+            var result = await deviceService.GetDevice("fake.user.email@example.com", deviceIdGateway, customerId);
 
             Assert.Null(result);
         }
@@ -138,7 +138,7 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var resultGateway = await deviceService.DeleteDevice(customerId, myGateway.DeviceId);
+            var resultGateway = await deviceService.DeleteDevice("fake.user.email@example.com", customerId, myGateway.DeviceId);
 
             Assert.Equal(typeof(Gateway), resultGateway.GetType());
             Assert.Equal(resultGateway.DeviceId, myGateway?.DeviceId);
@@ -162,7 +162,7 @@ namespace WCA.Customer.Api.Tests
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                deviceService.DeleteDevice(customerId, deviceIdGateway));
+                deviceService.DeleteDevice("fake.user.email@example.com", customerId, deviceIdGateway));
             Assert.Equal("Error deleting a device. NotFound Response code from downstream: ", exception.Message);
         }
 
@@ -182,7 +182,7 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = await deviceService.CreateCameraDevice(myCamera);
+            var result = await deviceService.CreateCameraDevice("fake.user.email@example.com", myCamera);
 
             Assert.Equal(typeof(Camera), result.GetType());
             Assert.Equal(result.DeviceId, myCamera?.DeviceId);
@@ -205,7 +205,7 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = await deviceService.UpdateCameraDevice(myCamera.DeviceId, myCamera);
+            var result = await deviceService.UpdateCameraDevice("fake.user.email@example.com", myCamera.DeviceId, myCamera);
 
             Assert.Equal(typeof(Camera), result.GetType());
             Assert.Equal(result.DeviceId, myCamera?.DeviceId);
@@ -229,7 +229,7 @@ namespace WCA.Customer.Api.Tests
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                deviceService.CreateCameraDevice(myCamera));
+                deviceService.CreateCameraDevice("fake.user.email@example.com", myCamera));
             Assert.Equal("Error creating an edge device. NotFound Response code from downstream: ", exception.Message);
         }
 
@@ -249,7 +249,7 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = await deviceService.CreateEdgeDevice(myGateway);
+            var result = await deviceService.CreateEdgeDevice("fake.user.email@example.com", myGateway);
 
             Assert.Equal(typeof(Gateway), result.GetType());
             Assert.Equal(result.DeviceId, myGateway?.DeviceId);
@@ -272,7 +272,7 @@ namespace WCA.Customer.Api.Tests
 
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
-            var result = await deviceService.UpdateEdgeDevice(myGateway.DeviceId, myGateway);
+            var result = await deviceService.UpdateEdgeDevice("fake.user.email@example.com", myGateway.DeviceId, myGateway);
 
             Assert.Equal(typeof(Gateway), result.GetType());
             Assert.Equal(result.DeviceId, myGateway?.DeviceId);
@@ -295,7 +295,7 @@ namespace WCA.Customer.Api.Tests
             DeviceService deviceService = new DeviceService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                deviceService.CreateEdgeDevice(myGateway));
+                deviceService.CreateEdgeDevice("fake.user.email@example.com", myGateway));
             Assert.Equal("Error saving an edge device. NotFound Response code from downstream: ", exception.Message);
         }
 
@@ -312,7 +312,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(edgeDevices);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.GetEdgeDevices(TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.GetEdgeDevices("fake.user.email@example.com");
 
             Assert.Equal(typeof(List<EdgeDeviceModel>), result.GetType());
             Assert.Equal(edgeDevices.Count, result.Count);
@@ -330,7 +330,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(leafDevices);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.GetLeafDevices(TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.GetLeafDevices("fake.user.email@example.com");
 
             Assert.Equal(typeof(List<LeafDeviceModel>), result.GetType());
             Assert.Equal(leafDevices.Count, result.Count);
@@ -348,7 +348,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(edgeDevices.ElementAt(1));
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.GetEdgeDevice(edgeDevices.ElementAt(1).EdgeEdgedeviceid, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.GetEdgeDevice("fake.user.email@example.com", edgeDevices.ElementAt(1).EdgeEdgedeviceid);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
@@ -369,7 +369,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(leafDevices.ElementAt(1));
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.GetLeafDevice(leafDevices.ElementAt(1).EdgeLeafdeviceid, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.GetLeafDevice("fake.user.email@example.com", leafDevices.ElementAt(1).EdgeLeafdeviceid);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(LeafDeviceModel), result.GetType());
@@ -389,7 +389,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(edgeDevice);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.UpdateTsiEdgeDevice(edgeDevice, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.UpdateTsiEdgeDevice("fake.user.email@example.com", edgeDevice);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
@@ -409,7 +409,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(leafDevice);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.UpdateLeafDevice(leafDevice, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.UpdateLeafDevice("fake.user.email@example.com", leafDevice);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(LeafDeviceModel), result.GetType());
@@ -428,7 +428,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(edgeDevice);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.CreateEdgeDevice(edgeDevice, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.CreateEdgeDevice("fake.user.email@example.com", edgeDevice);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
@@ -448,7 +448,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(edgeDevice);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.DeleteEdgeDevice(edgeDevice, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.DeleteEdgeDevice("fake.user.email@example.com", edgeDevice);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(EdgeDeviceModel), result.GetType());
@@ -468,7 +468,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(leafDevice);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.CreateLeafDevice(leafDevice, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.CreateLeafDevice("fake.user.email@example.com", leafDevice);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(LeafDeviceModel), result.GetType());
@@ -487,7 +487,7 @@ namespace WCA.Customer.Api.Tests
                                     .ReturnsAsync(leafDevice);
 
             var deviceService = GetDeviceService(httpClientMock);
-            var result = await deviceService.DeleteLeafDevice(leafDevice, TestDataHelper.GenerateJwtToken());
+            var result = await deviceService.DeleteLeafDevice("fake.user.email@example.com", leafDevice);
 
             Assert.NotNull(result);
             Assert.Equal(typeof(LeafDeviceModel), result.GetType());

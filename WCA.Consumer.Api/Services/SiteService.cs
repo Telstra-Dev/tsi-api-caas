@@ -32,15 +32,16 @@ namespace WCA.Consumer.Api.Services
             _logger = logger;
         }
 
-        public async Task<IList<SiteModel>> GetSitesFromToken(string token)
+        public async Task<IList<SiteModel>> GetSites(string authorisationEmail)
         {
-            var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-            if (string.IsNullOrEmpty(emailFromToken))
-                throw new NullReferenceException("Invalid claim from token.");
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
 
             try
             {
-                var foundSites = await _httpClient.GetAsync<IList<SiteNameModel>>($"{_appSettings.StorageAppHttp.BaseUri}/sites/names?email={emailFromToken}", CancellationToken.None);
+                var foundSites = await _httpClient.GetAsync<IList<SiteNameModel>>($"{_appSettings.StorageAppHttp.BaseUri}/sites/names?email={authorisationEmail}", CancellationToken.None);
 
                 return foundSites.Select(x => new SiteModel 
                 { 
@@ -70,8 +71,14 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<IList<SiteModel>> GetSitesForCustomer(string customerId)
+        // TODO: consider removing this API - doesn't appear compatible with auth strategy.
+        public async Task<IList<SiteModel>> GetSitesForCustomer(string authorisationEmail, string customerId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             IList<Site> sites = new List<Site>();
             IList<SiteModel> foundMappedSites = null;
             try
@@ -89,15 +96,16 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<SiteTelemetryProperty> GetSiteTelProperties(string token, string siteId)
+        public async Task<SiteTelemetryProperty> GetSiteTelProperties(string authorisationEmail, string siteId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-                if (string.IsNullOrEmpty(emailFromToken))
-                    throw new NullReferenceException("Invalid claim from token.");
-
-                var downstreamResult = await _httpClient.GetAsync<SiteTelemetryProperty>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}/locations?email={emailFromToken}", CancellationToken.None);
+                var downstreamResult = await _httpClient.GetAsync<SiteTelemetryProperty>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}/locations?email={authorisationEmail}", CancellationToken.None);
 
                 return downstreamResult;
 
@@ -109,8 +117,14 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<SiteModel> GetSite(string siteId, string customerId)
+        // TODO: consider removing this API - doesn't appear compatible with auth strategy.
+        public async Task<SiteModel> GetSite(string authorisationEmail, string siteId, string customerId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             IList<Site> sites = new List<Site>();
             SiteModel foundMappedSite = null;
             try
@@ -132,17 +146,18 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<SiteModel> GetSiteById(string siteId, string token)
+        public async Task<SiteModel> GetSiteById(string authorisationEmail, string siteId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-                if (string.IsNullOrEmpty(emailFromToken))
-                    throw new NullReferenceException("Invalid claim from token.");
-
                 SiteModel foundMappedSite = null;
                 var foundSite = await _httpClient.GetAsync<SiteNameModel>(
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}?email={emailFromToken}",
+                                                    $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}?email={authorisationEmail}",
                                                     CancellationToken.None);
                 if (foundSite != null)
                 {
@@ -177,26 +192,41 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<bool> CreateSite(SiteModel newSite)
+        public async Task<bool> CreateSite(string authorisationEmail, SiteModel newSite)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             return await SaveSite(newSite);
         }
 
-        public async Task<bool> UpdateSite(string siteId, SiteModel updateSite)
+        public async Task<bool> UpdateSite(string authorisationEmail, string siteId, SiteModel updateSite)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
+            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
+
             return await SaveSite(updateSite, true);
         }
 
-        public async Task<bool> DeleteSite(string siteId, string token)
+        public async Task<bool> DeleteSite(string authorisationEmail, string siteId)
         {
+            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            {
+                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+            }
+
             try
             {
-                var emailFromToken = TokenClaimsHelper.GetEmailFromToken(token);
-                if (string.IsNullOrEmpty(emailFromToken))
-                    throw new NullReferenceException("Invalid claim from token.");
-
                 var deletedSite = await _httpClient.DeleteAsync<bool>(
-                                                        $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}?email={emailFromToken}",
+                                                        $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}?email={authorisationEmail}",
                                                         CancellationToken.None);
 
                 return deletedSite;

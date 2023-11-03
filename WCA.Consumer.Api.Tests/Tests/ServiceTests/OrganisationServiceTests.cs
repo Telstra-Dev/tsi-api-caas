@@ -183,7 +183,7 @@ namespace WCA.Customer.Api.Tests
 
             var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
-            var result = await organisationService.GetOrganisation(myOrganisations.First().CustomerId, false);
+            var result = await organisationService.GetOrganisation("fake.user.email@example.com", myOrganisations.First().CustomerId, false);
 
             Assert.Equal(typeof(OrganisationModel), result.GetType());
             Assert.Equal(result.Id, myOrganisations.First().CustomerId);
@@ -206,7 +206,7 @@ namespace WCA.Customer.Api.Tests
             var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                organisationService.GetOrganisation(customerId, false));
+                organisationService.GetOrganisation("fake.user.email@example.com", customerId, false));
             Assert.Contains("Error code: NotFound", exception.Message);
         }
 
@@ -225,7 +225,7 @@ namespace WCA.Customer.Api.Tests
 
             var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
-            var result = await organisationService.CreateOrganisation(myOrganisationModel);
+            var result = await organisationService.CreateOrganisation("fake.user.email@example.com", myOrganisationModel);
 
             Assert.Equal(typeof(OrganisationModel), result.GetType());
             Assert.Equal(result.CustomerId, myOrganisationModel?.CustomerId);
@@ -248,7 +248,7 @@ namespace WCA.Customer.Api.Tests
             var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
-                organisationService.CreateOrganisation(myOrganisationModel));
+                organisationService.CreateOrganisation("fake.user.email@example.com", myOrganisationModel));
             Assert.Contains("Error code: NotFound", exception.Message);
         }
 
