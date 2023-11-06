@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "tsi-caas.fullname" . }}-default-deny-ingress
+  namespace: {{ .Values.namespace.name }}
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "tsi-caas.fullname" . }}-allow-all-intra-namespace-ingress
+  namespace: {{ .Values.namespace.name }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress    
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: In
+              values: ["fe-api", {{ .Values.namespace.name }}, "ingress-nginx", "protocol-gateway-smart-sensor", "protocol-gateway-wombat-internal"]
