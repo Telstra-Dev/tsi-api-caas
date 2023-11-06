@@ -1,0 +1,57 @@
+parameters:
+  - name: RepositoryName
+    type: string
+  - name: AcrEnvironment
+    type: string
+  - name: SourceCodeRepoName
+    type: string
+  - name: ENV
+    type: string
+  - name: ARMSubscription
+    type: string
+  - name: ACRServiceConnection
+    type: string
+
+steps:
+
+- task: Docker@2
+  displayName: Login to ACR
+  inputs:
+      command: login
+      containerRegistry: ${{ parameters.ACRServiceConnection }}
+
+#task for azure hosted agent
+- task: AzureCLI@2
+  displayName: whitelisting agent IP in ACR
+  condition: ne('${{ parameters.ARMSubscription }}', '')
+  inputs:
+      azureSubscription: ${{ parameters.ARMSubscription }}
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+          # Open firewall on ACR for IP of current agent
+          $agentIp = (New-Object net.webclient).downloadstring("http://checkip.dyndns.com") -replace "[^\d\.]"
+          az acr network-rule add -n '${{ parameters.AcrEnvironment }}' --ip-address $agentIp
+
+- powershell: |
+   Start-Sleep -Seconds 120  
+  displayName: 'Wait time 120 seconds'
+          
+- bash: |
+   docker build -t ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:$(Build.BuildNumber) -t ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:latest .
+   # Push docker image
+   docker push ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:latest
+   docker push ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:$(Build.BuildNumber)
+  displayName: 'Build and Push docker image to ACR'
+
+- task: AzureCLI@2
+  displayName: removing whitelisted agent IP from ACR
+  condition: and(always(), ne('${{ parameters.ARMSubscription }}', ''))
+  inputs:
+      azureSubscription: ${{ parameters.ARMSubscription }}
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+          # Open firewall on ACR for IP of current agent
+          $agentIp = (New-Object net.webclient).downloadstring("http://checkip.dyndns.com") -replace "[^\d\.]"
+          az acr network-rule remove -n '${{ parameters.AcrEnvironment }}' --ip-address $agentIp
