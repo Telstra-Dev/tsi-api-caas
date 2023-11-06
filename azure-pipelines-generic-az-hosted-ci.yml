@@ -1,0 +1,49 @@
+#To take Input from user on the environment to deploy
+parameters:
+  - name: env
+    displayName: Checking Env name
+    type: string
+    default: non-prod
+    values:
+      - non-prod
+      - prod
+
+  - name: SourceCodeRepoName
+    displayName: Source Code Repo
+    type: string
+
+  - name: RepositoryName
+    displayName: Source Code Repo
+    type: string
+
+  - name: ACREnvironmentType
+    displayName: Choose ACR environment type
+    type: string
+
+  - name: ProjPath
+    type: string
+    default: ''
+
+  - name: ARMSubscription
+    type: string
+    default: ''
+
+  - name: ACRServiceConnection
+    type: string
+    default: ''
+
+steps:
+  - template: azure-build-az-hosted-acr-steps.yml
+    parameters:
+      RepositoryName: ${{parameters.RepositoryName}}
+      AcrEnvironment: ${{parameters.ACREnvironmentType}}
+      SourceCodeRepoName: ${{parameters.SourceCodeRepoName}}
+      ENV: ${{parameters.env}}
+      ARMSubscription: ${{parameters.ARMSubscription}}
+      ACRServiceConnection: ${{parameters.ACRServiceConnection}}
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Pipeline App Artifact'
+    inputs:
+      artifactName: 'drop'
+      targetPath: '$(System.DefaultWorkingDirectory)'
