@@ -3,41 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{ include "tsi-caas.fullname" . }}-configmaps
 data:
-  FUNCTIONS_WORKER_RUNTIME: {{ .Values.config.FUNCTIONS_WORKER_RUNTIME | quote }}
-  COSMOSDB_DATABASE_NAME: {{ .Values.config.COSMOSDB_DATABASE_NAME | quote }}
-  COSMOSDB_COLLECTION_IoT_APPLICATION_SUBSCRIPTION: {{ .Values.config.COSMOSDB_COLLECTION_IoT_APPLICATION_SUBSCRIPTION | quote }}
-  COSMOSDB_COLLECTION_PRODUCT_VERTICAL_TENANCY: {{ .Values.config.COSMOSDB_COLLECTION_PRODUCT_VERTICAL_TENANCY | quote }}
-  APPINSIGHTS_INSTRUMENTATIONKEY: {{ .Values.config.APPINSIGHTS_INSTRUMENTATIONKEY | quote }}
-  OKAPI_MICROAUTH_JWKS_URL: {{ .Values.config.OKAPI_MICROAUTH_JWKS_URL | quote }}
-  OKAPI_PAYLOAD_AUD: {{ .Values.config.OKAPI_PAYLOAD_AUD | quote }}
-  OKAPI_PAYLOAD_ISS: {{ .Values.config.OKAPI_PAYLOAD_ISS | quote }}
-  CAIMAN_MICROAUTH_JWKS_URL: {{ .Values.config.CAIMAN_MICROAUTH_JWKS_URL | quote }}
-  CAIMAN_PAYLOAD_AUD: {{ .Values.config.CAIMAN_PAYLOAD_AUD | quote }}
-  CAIMAN_PAYLOAD_ISS: {{ .Values.config.CAIMAN_PAYLOAD_ISS | quote }}
-  AZURE_OUTPUT_CONTAINER_NAME: {{ .Values.config.AZURE_OUTPUT_CONTAINER_NAME | quote }}
-  AZURE_STORAGE_NAME: {{ .Values.config.AZURE_STORAGE_NAME | quote }}
-  AZURE_OUTPUT_CONTAINER_PERMISSIONS: {{ .Values.config.AZURE_OUTPUT_CONTAINER_PERMISSIONS | quote }}            
-  AzureFunctionsJobHost__functions__0: {{ .Values.config.AzureFunctionsJobHost__functions__0 | quote }}   
-  CIDN_HEADER_KEY: {{ .Values.config.CIDN_HEADER_KEY | quote }}   
-  APP_ID_HEADER_KEY: {{ .Values.config.APP_ID_HEADER_KEY | quote }}            
-  PAGE_SIZE: {{ .Values.config.PAGE_SIZE | quote }}   
-  ImportDeviceMaxCount: {{ .Values.config.ImportDeviceMaxCount | quote }}  
-  ImportBatchSize: {{ .Values.config.ImportBatchSize | quote }}            
-  COSMOSDB_COLLECTION_DEVICE: {{ .Values.config.COSMOSDB_COLLECTION_DEVICE | quote }}   
-  COSMOSDB_COLLECTION_DEVICE_TEMPLATES: {{ .Values.config.COSMOSDB_COLLECTION_DEVICE_TEMPLATES | quote }}    
-  COSMOSDB_COLLECTION_PROTOCOL_MAPPINGS: {{ .Values.config.COSMOSDB_COLLECTION_PROTOCOL_MAPPINGS | quote }}
-  COSMOSDB_COLLECTION_FIRMWARE_UPGRADE: {{ .Values.config.COSMOSDB_COLLECTION_FIRMWARE_UPGRADE | quote }}
-  COSMOSDB_COLLECTION_ACTION_DECORATOR: {{ .Values.config.COSMOSDB_COLLECTION_ACTION_DECORATOR | quote }}  
-  COSMOSDB_COLLECTION_AUDIT_TRIAL: {{ .Values.config.COSMOSDB_COLLECTION_AUDIT_TRIAL | quote }} 
-  ENABLE_AUDIT_TRIAL: {{ .Values.config.ENABLE_AUDIT_TRIAL | quote }}
-  IOTSC_PAYLOAD_ISS: {{ .Values.config.IOTSC_PAYLOAD_ISS | quote }}
-  IOTSC_PAYLOAD_AUD: {{ .Values.config.IOTSC_PAYLOAD_AUD | quote }}
-  IOTSC_PUBLIC_API_KEY: {{ .Values.config.IOTSC_PUBLIC_API_KEY | quote }}
-  BUILD_VERSION: {{ .Values.image.tag | quote }}
-  COSMOSDB_COLLECTION_DEVICE_TEMPLATE_SETTINGS: {{.Values.config.COSMOSDB_COLLECTION_DEVICE_TEMPLATE_SETTINGS | quote}}
-  HOST_ENVIRONMENT: {{ .Values.config.HOST_ENVIRONMENT | quote }}
-  HOST_PORT: {{.Values.config.HOST_PORT | quote}}
-  REQUEST_DEVICE_GROUP_IDS_MAX_COUNT: {{.Values.config.REQUEST_DEVICE_GROUP_IDS_MAX_COUNT | quote }}
-  COSMOSDB_COLLECTION_DEVICE_GROUP: {{.Values.config.COSMOSDB_COLLECTION_DEVICE_GROUP | quote }}
-  LOGGER_LEVEL: {{.Values.config.LOGGER_LEVEL | quote }}
-  AUTH_FLOWS_CONFIG: {{.Values.config.AUTH_FLOWS_CONFIG | quote}}
+  BASE-URI: {{ .Values.config.BASE-URI | quote }}
