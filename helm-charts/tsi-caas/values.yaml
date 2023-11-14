@@ -24,10 +24,10 @@ serviceAccount:
   name: ""
 
 secrets:
-  APP-INSIGHTS-CONNECTION-STRING: 'nil'
+  APP_INSIGHTS_CONNECTION_STRING: 'nil'
 
 config:
-  BASE-URI: 'nil'
+  BASE_URI: 'nil'
 
 
 podAnnotations: 
