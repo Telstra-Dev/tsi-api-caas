@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{ include "tsi-caas.fullname" . }}-configmaps
 data:
-  BASE-URI: {{ .Values.config.BASE-URI | quote }}
+  BASE_URI: {{ .Values.config.BASE_URI | quote }}
