@@ -32,14 +32,6 @@ data:
         "Policy": "B2C_1A_signup_signin_myworkplace_admin_app",
         "KeyInApplicationSettings": "AzureAd"
       },
-      # "AzureMapsAuthCredentials": {
-      #   "MsClientId": "{{msClientId}}",
-      #   "AuthUri": "https://login.microsoftonline.com/{{tenantId}}/oauth2/token",
-      #   "ClientId": "{{clientId}}",
-      #   "ClientSecret": "{{clientSecret}}",
-      #   "GrantType": "{{grantType}}",
-      #   "Resource": "{{resource}}"
-      # },
       "StorageAppGrpc": {
         "BaseUri": "http://localhost:7565"
       },
