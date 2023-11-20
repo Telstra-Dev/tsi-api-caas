@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
@@ -103,4 +103,4 @@ namespace Telstra.Core.Api
             services.AddSwaggerGenNewtonsoftSupport();
         }
     }
-}
+}*/
