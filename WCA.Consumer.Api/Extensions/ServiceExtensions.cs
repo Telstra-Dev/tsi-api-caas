@@ -40,10 +40,10 @@ namespace Telstra.Core.Api
         public static void AddAuth(this IServiceCollection services, IConfiguration configuration, AppSettings appSettings)
         {
             
-            /*services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApi(configuration, appSettings.AzureAd.KeyInApplicationSettings)
                     .EnableTokenAcquisitionToCallDownstreamApi()
-                    .AddInMemoryTokenCaches();*/
+                    .AddInMemoryTokenCaches();
 
             /*services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
