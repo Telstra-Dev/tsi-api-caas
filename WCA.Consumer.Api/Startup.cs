@@ -121,8 +121,8 @@ namespace Telstra.Core.Api
 
             }
 
-            app.UseSwagger(c => c.ConfigureSwaggerBehindProxy());
-            app.UseSwaggerUI(c => c.ConfigureSwaggerOptions(this.appSettings));
+            //app.UseSwagger(c => c.ConfigureSwaggerBehindProxy());
+            //app.UseSwaggerUI(c => c.ConfigureSwaggerOptions(this.appSettings));
             app.RegisterGlobalExceptionHandler(loggerFactory, env.IsProduction());
             app.UseResponseCompression();
 
