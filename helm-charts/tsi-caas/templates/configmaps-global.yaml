@@ -1,6 +1,70 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "tsi-caas.fullname" . }}-configmaps
+  name: {{ include "tsi-caas.fullname" . }}-appsettings
 data:
-  BASE_URI: {{ .Values.config.BASE_URI | quote }}
+  appsettings.json: |+
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "AllowedHosts": "*",
+      "ports": {
+        "http": 7562,
+        "https": 7563
+      },
+      "certificate": {
+        "path": "NA",
+        "password": ""
+      },
+      "UseAd": false,
+      "ShortCacheTime": 60,
+      "StaticPaths": [ "assets", "logs" ],
+      "Storage": {
+        "MyDb": {
+          "Name": "db1",
+          "UseInMemory": false,
+          "host": "localhost",
+          "port": 5432,
+          "username": "dbuser",
+          "password": "password",
+          "ConnectionStringTemplate": "Host={{host}};Port={{port}};Database={{database}};Username={{username}};Password={{password}};Ssl Mode=Prefer;Trust Server Certificate=true",
+          "MigrationsAssemblyName": "Telstra.Core.Data",
+          "DatabaseName": "mydb",
+          "Schema": "public"
+        }
+      },
+      "AzureAd": {
+        "ClientId": "667e71e1-93e1-4464-891e-42fc50f6b79a",
+        "Instance": "https://telstrasmartspacesb2cdev.b2clogin.com/",
+        "TenantId": "telstrasmartspacesb2cdev.onmicrosoft.com",
+        "Policy": "B2C_1A_signup_signin_myworkplace_admin_app",
+        "KeyInApplicationSettings": "AzureAd"
+      },
+      "AzureMapsAuthCredentials": {
+        "MsClientId": "{{msClientId}}",
+        "AuthUri": "https://login.microsoftonline.com/{{tenantId}}/oauth2/token",
+        "ClientId": "{{clientId}}",
+        "ClientSecret": "{{clientSecret}}",
+        "GrantType": "{{grantType}}",
+        "Resource": "{{resource}}"
+      },
+      "StorageAppGrpc": {
+        "BaseUri": "http://localhost:7565"
+      },
+      "StorageAppHttp": {
+        "BaseUri": "{{ .Values.config.BASE_URI }}"
+      },
+      "DeviceManagementCredentials": {
+        "BaseUri": "",
+        "AccessTokenUri": "",
+        "RtspFeedUri": "",
+        "ClientId": "",
+        "ClientSecret": "",
+        "GrantType": ""
+      }
+    }
