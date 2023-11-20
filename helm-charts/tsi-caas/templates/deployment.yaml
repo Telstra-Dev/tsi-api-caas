@@ -29,26 +29,35 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          env:
-          - name: AzureFunctionsJobHost__functions__0
-            value: devices
-          - name: AzureWebJobsSecretStorageType
-            value: kubernetes
-          - name: WEBSITES_PORT
-            value: "8080"
-          - name: ASPNETCORE_URLS
-            value: "http://*:8080"                    
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-          - secretRef:
-              name: {{ include "tsi-caas.fullname" . }}-secrets
-          - configMapRef:
-              name: {{ include "tsi-caas.fullname" . }}-configmaps                      
+          imagePullPolicy: {{ .Values.image.pullPolicy }}         
+          volumeMounts:
+          - name: {{ include "tsi-caas.fullname" . }}-appsettings
+            mountPath: /app/appsettings.json
+            subPath: appsettings.json
+            readOnly: true        
+          ports:
+            - name: mqttport
+              containerPort: 1883
+              protocol: TCP
+            - name: mqtttlsport
+              containerPort: 8883
+              protocol: TCP
+            - name: http
+              containerPort: 8041
+              protocol: TCP
+            - name: https
+              containerPort: 44341
+              protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: {{ include "tsi-caas.fullname" . }}-appsettings      
+        configMap:
+          defaultMode: 420
+          name: {{ include "tsi-caas.fullname" . }}-appsettings          
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
