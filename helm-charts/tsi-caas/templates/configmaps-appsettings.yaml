@@ -24,19 +24,6 @@ data:
       "UseAd": false,
       "ShortCacheTime": 60,
       "StaticPaths": [ "assets", "logs" ]
-      # "Storage": {
-      #   "MyDb": {
-      #     "Name": "db1",
-      #     "UseInMemory": false,
-      #     "host": "localhost",
-      #     "port": 5432,
-      #     "username": "dbuser",
-      #     "password": "password",
-      #     "ConnectionStringTemplate": "Host={{host}};Port={{port}};Database={{database}};Username={{username}};Password={{password}};Ssl Mode=Prefer;Trust Server Certificate=true",
-      #     "MigrationsAssemblyName": "Telstra.Core.Data",
-      #     "DatabaseName": "mydb",
-      #     "Schema": "public"
-      #   }
       },
       "AzureAd": {
         "ClientId": "667e71e1-93e1-4464-891e-42fc50f6b79a",
