@@ -23,7 +23,7 @@ data:
       },
       "UseAd": false,
       "ShortCacheTime": 60,
-      "StaticPaths": [ "assets", "logs" ],
+      "StaticPaths": [ "assets", "logs" ]
       # "Storage": {
       #   "MyDb": {
       #     "Name": "db1",
