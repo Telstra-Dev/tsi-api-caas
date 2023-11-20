@@ -50,13 +50,13 @@ namespace Telstra.Core.Api
                 };
             });
         }
-        /*public static void ConfigureSwaggerOptions(this SwaggerUIOptions options, AppSettings appSettings)
+        public static void ConfigureSwaggerOptions(this SwaggerUIOptions options, AppSettings appSettings)
         {
             options.RoutePrefix = "swagger";
             options.SwaggerEndpoint("1.0/swagger.yaml", "WCA.Consumer.Api v1.0");
             options.OAuthClientId(appSettings.AzureAd.ClientId);
             options.OAuthUsePkce();
-        }*/
+        }
 
         public static void AddSwagger(this IServiceCollection services, AppSettings appSettings)
         {
