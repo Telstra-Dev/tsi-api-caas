@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}         
           volumeMounts:
           - name: {{ include "tsi-caas.fullname" . }}-appsettings
-            mountPath: /app/appsettings.json
+            mountPath: /App/appsettings.json
             subPath: appsettings.json
             readOnly: true        
           ports:
