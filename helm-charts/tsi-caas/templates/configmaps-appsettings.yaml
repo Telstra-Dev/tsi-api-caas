@@ -22,8 +22,7 @@ data:
         "password": ""
       },
       "UseAd": false,
-      "ShortCacheTime": 60,
-      "StaticPaths": [ "assets", "logs" ],
+      "ShortCacheTime": 60
       },
       "AzureAd": {
         "ClientId": "667e71e1-93e1-4464-891e-42fc50f6b79a",
