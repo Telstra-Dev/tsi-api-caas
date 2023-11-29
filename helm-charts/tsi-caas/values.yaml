@@ -52,11 +52,11 @@ ingress:
   annotations: 
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /caas
   hosts:
     - host: 'feapi.test.tsi.in.telstra.com.au'
       paths:
-        - path: /
+        - path: /caas
           pathType: Prefix
   tls:
     - secretName: aks-ingress-tls
