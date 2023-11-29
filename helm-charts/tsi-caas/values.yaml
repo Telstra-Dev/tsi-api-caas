@@ -48,7 +48,7 @@ service:
   targethttpport: 8080
 ingress:
   enabled: true
-  className: "nginx"
+  className: "nginx-tsi"
   annotations: 
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
