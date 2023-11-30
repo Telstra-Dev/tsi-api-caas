@@ -13,6 +13,11 @@ RUN dotnet publish WCA.Consumer.Api -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-jammy
 WORKDIR /App
 COPY --from=build-env /App/out .
+
+RUN apt update
+
+RUN apt install curl -y
+
 ENV PORT=8080
 EXPOSE $PORT
 ENV ASPNETCORE_ENVIRONMENT=Production
