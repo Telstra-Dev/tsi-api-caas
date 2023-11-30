@@ -34,11 +34,7 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "tsi-caas.labels" -}}
-helm.sh/chart: {{ include "tsi-caas.chart" . }}
-{{ include "tsi-caas.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/name: tsi-api
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -46,8 +42,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "tsi-caas.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "tsi-caas.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/name: tsi-api
 {{- end }}
 
 {{/*
