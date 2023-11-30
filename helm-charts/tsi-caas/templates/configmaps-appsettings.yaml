@@ -13,10 +13,6 @@ data:
         }
       },
       "AllowedHosts": "*",
-      "ports": {
-        "http": 7562,
-        "https": 7563
-      },
       "certificate": {
         "path": "NA",
         "password": ""
