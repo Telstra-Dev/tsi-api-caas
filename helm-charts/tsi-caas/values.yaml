@@ -89,4 +89,4 @@ tolerations: []
 affinity: {}
 
 namespace:
-  name: "tsi-api"
+  name: "tsi-api-caas"
