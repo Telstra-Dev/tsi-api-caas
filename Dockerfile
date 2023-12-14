@@ -18,9 +18,9 @@ RUN apt update
 
 RUN apt install curl -y
 
-ENV PORT=8080
+
 ENV WCA_ports__http=8080
 ENV WCA_ports__https=8081
-EXPOSE $PORT
+EXPOSE 8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENTRYPOINT ./WCA.Consumer.Api 
