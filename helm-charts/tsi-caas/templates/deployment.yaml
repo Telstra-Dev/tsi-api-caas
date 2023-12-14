@@ -39,17 +39,11 @@ spec:
             subPath: appsettings.json
             readOnly: true        
           ports:
-            - name: mqttport
-              containerPort: 1883
-              protocol: TCP
-            - name: mqtttlsport
-              containerPort: 8883
-              protocol: TCP
             - name: http
-              containerPort: 8041
+              containerPort: 8080
               protocol: TCP
             - name: https
-              containerPort: 44341
+              containerPort: 443
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
