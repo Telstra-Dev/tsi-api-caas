@@ -16,7 +16,7 @@ COPY --from=build-env /App/out .
 
 RUN apt update
 
-RUN apt install curl -y
+RUN apt install curl telnet -y 
 
 
 ENV WCA_ports__http=8080
