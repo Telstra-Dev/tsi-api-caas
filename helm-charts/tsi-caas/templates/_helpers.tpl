@@ -60,3 +60,19 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+gettting active deployment color
+*/}}
+{{- define "deployment.nextdeployment" -}}
+{{- $name := default "blue" }}
+{{- range $index, $service := (lookup "apps/v1" "Deployment" .Release.Name "").items }}
+{{- if (eq "true" $service.metadata.labels.beta) }}
+{{- $name = $service.metadata.name }}
+{{- end }}
+{{- if (eq "blue" $name) }}
+{{- $name = "green" }}
+{{- end }}
+{{- end }}
+{{- $name | toString | quote }}
+{{- end }}

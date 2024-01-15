@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: beta
+  labels:
+    {{- include "tsi-caas.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.httpport }}
+      targetPort: {{ .Values.service.targethttpport }}
+      protocol: TCP
+      name: http     
+  selector:
+    beta: "true"
