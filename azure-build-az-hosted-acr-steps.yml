@@ -35,7 +35,7 @@ steps:
 
 - powershell: |
    Start-Sleep -Seconds 120  
-  displayName: 'Wait time 120 seconds'
+  displayName: 'Wait time 200 seconds'
           
 - bash: |
    echo  "this is the output " ${{ parameters.ENV }} ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}:$(Build.BuildNumber) ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}
