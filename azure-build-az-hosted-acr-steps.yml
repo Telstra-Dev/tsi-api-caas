@@ -38,7 +38,7 @@ steps:
   displayName: 'Wait time 120 seconds'
           
 - bash: |
-   echo  "this is the output" ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}:$(Build.BuildNumber) ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}
+   echo  "this is the output " ${{ parameters.ENV }} ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}:$(Build.BuildNumber) ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}
    docker build -t ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:$(Build.BuildNumber) -t ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:latest .
    # Push docker image
    docker push ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:latest
