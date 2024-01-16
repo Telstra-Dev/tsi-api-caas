@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: "{{ include "tsi-caas.fullname" . }}-virtualservice"
+spec:
+  hosts:
+  - {{ .Values.ingress.host }}
+  gateways:
+  - istio-system/http-gateway-tsi
+  http:
+  - name: "beta"
+    match:
+    - uri:
+        prefix: /beta{{ .Values.ingress.pathprefix }}
+    rewrite:
+      uri: {{ .Values.ingress.pathprefix }}
+    route:
+    - destination:
+        port:
+          number: {{ .Values.service.httpport }}
+        host: "beta"
+  - name: "active"
+    match:
+    - uri:
+        prefix: {{ .Values.ingress.pathprefix }}
+    route:
+    - destination:
+        port:
+          number: {{ .Values.service.httpport }}
+        host: "active"     

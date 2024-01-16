@@ -24,4 +24,4 @@ spec:
             matchExpressions:
             - key: kubernetes.io/metadata.name
               operator: In
-              values: ["fe-api", {{ .Values.namespace.name }}, "ingress-nginx-tsi", "tsi-api-auth", "tsi-api-storage", "protocol-gateway-smart-sensor", "protocol-gateway-wombat-internal"]
+              values: ["fe-api", {{ .Values.namespace.name }}, "ingress-nginx-tsi", "tsi-api-auth", "tsi-api-storage", "protocol-gateway-smart-sensor", "protocol-gateway-wombat-internal","istio-system"]

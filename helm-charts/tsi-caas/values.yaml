@@ -59,7 +59,7 @@ ingress:
         - path: /caas
           pathType: Prefix
   tls:
-    - secretName: aks-ingress-tls
+    - secretName: tsi-ingress-tls
       hosts:
         - 'feapi.test.tsi.in.telstra.com.au'
 
