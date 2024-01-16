@@ -34,7 +34,7 @@ steps:
           az acr network-rule add -n '${{ parameters.AcrEnvironment }}' --ip-address $agentIp
 
 - powershell: |
-   Start-Sleep -Seconds 20  
+   Start-Sleep -Seconds 120  
   displayName: 'Wait time 120 seconds'
           
 - bash: |
