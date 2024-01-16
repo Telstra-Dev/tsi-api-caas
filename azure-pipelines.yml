@@ -38,29 +38,29 @@ variables:
     value: '$(ARM-SUBSCRIPTION-PROD)'
 
 stages:
-  # - stage: BuildStageNonProd
-  #   jobs:
-  #     - job: CodeBuild
-  #       displayName:  'Building for environment non-prod  ${{variables.ARMSubscriptionNonProd}}'
-  #       pool:
-  #         name: Azure Pipelines
-  #         vmImage: 'ubuntu-latest'
-  #       steps:
-  #         - template: azure-pipelines-generic-az-hosted-ci.yml
-  #           parameters:
-  #             env: 'non-prod'
-  #             RepositoryName: $(RepositoryName)
-  #             SourceCodeRepoName: $(SourceCodeRepoName)
-  #             ACRServiceConnection: $(ACRServiceConnectionNonProd)
-  #             ACREnvironmentType: $(NonProdACREnvironment)
-  #             ARMSubscription: $(ARMSubscriptionNonProd)
+  - stage: BuildStageNonProd
+    jobs:
+      - job: CodeBuild
+        displayName:  'Building for environment non-prod  ${{variables.ARMSubscriptionNonProd}}'
+        pool:
+          name: Azure Pipelines
+          vmImage: 'ubuntu-latest'
+        steps:
+          - template: azure-pipelines-generic-az-hosted-ci.yml
+            parameters:
+              env: 'non-prod'
+              RepositoryName: $(RepositoryName)
+              SourceCodeRepoName: $(SourceCodeRepoName)
+              ACRServiceConnection: $(ACRServiceConnectionNonProd)
+              ACREnvironmentType: $(NonProdACREnvironment)
+              ARMSubscription: $(ARMSubscriptionNonProd)
 
 
   - stage: BuildStageProd
     condition: and (succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release_1_0'))
     jobs:
       - job: CodeBuild
-        displayName: 'Building for environment prod  ${{variables.ARMSubscriptionProd}} ${{variables.ACRServiceConnectionProd}} ${{variables.ProdACREnvironment}}'
+        displayName: 'Building for environment prod'
         pool:
           name: Azure Pipelines
           vmImage: 'ubuntu-latest'

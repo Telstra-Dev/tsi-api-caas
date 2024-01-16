@@ -34,11 +34,10 @@ steps:
           az acr network-rule add -n '${{ parameters.AcrEnvironment }}' --ip-address $agentIp
 
 - powershell: |
-   Start-Sleep -Seconds 10  
-  displayName: 'Wait time 200 seconds'
+   Start-Sleep -Seconds 120  
+  displayName: 'Wait time 120 seconds'
           
-- bash: |
-   echo  "this is the output " ${{ parameters.ACRServiceConnection }} "this is service connection" ${{ parameters.ENV }} ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}:$(Build.BuildNumber) ${{ parameters.AcrEnvironment }} ${{ parameters.RepositoryName }}
+- bash: |   
    docker build -t ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:$(Build.BuildNumber) -t ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:latest .
    # Push docker image
    docker push ${{ parameters.AcrEnvironment }}.azurecr.io/${{ parameters.RepositoryName }}:latest
