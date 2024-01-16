@@ -56,20 +56,20 @@ stages:
               ARMSubscription: $(ARMSubscriptionNonProd)
 
 
-  # - stage: BuildStageProd
-  #   condition: and (succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release_1_0'))
-  #   jobs:
-  #     - job: CodeBuild
-  #       displayName: 'Building for environment prod'
-  #       pool:
-  #         name: Azure Pipelines
-  #         vmImage: 'ubuntu-20.04'
-  #       steps:
-  #         - template: azure-pipelines-generic-az-hosted-ci.yml
-  #           parameters:
-  #             env: 'prod'
-  #             RepositoryName: $(RepositoryName)
-  #             SourceCodeRepoName: $(SourceCodeRepoName)
-  #             ACRServiceConnection: $(ACRServiceConnectionProd)
-  #             ACREnvironmentType: $(ProdACREnvironment)
-  #             ARMSubscription: $(ARMSubscriptionProd)
+  - stage: BuildStageProd
+    condition: and (succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release_1_0'))
+    jobs:
+      - job: CodeBuild
+        displayName: 'Building for environment prod'
+        pool:
+          name: Azure Pipelines
+          vmImage: 'ubuntu-20.04'
+        steps:
+          - template: azure-pipelines-generic-az-hosted-ci.yml
+            parameters:
+              env: 'prod'
+              RepositoryName: $(RepositoryName)
+              SourceCodeRepoName: $(SourceCodeRepoName)
+              ACRServiceConnection: $(ACRServiceConnectionProd)
+              ACREnvironmentType: $(ProdACREnvironment)
+              ARMSubscription: $(ARMSubscriptionProd)
