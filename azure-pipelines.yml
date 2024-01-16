@@ -57,7 +57,7 @@ stages:
 
 
   - stage: BuildStageProd
-    condition: and (succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release_1_0'))
+    condition: and (succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/prod-deployment'))
     jobs:
       - job: CodeBuild
         displayName: 'Building for environment prod'
