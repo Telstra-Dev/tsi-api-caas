@@ -41,7 +41,7 @@ stages:
   - stage: BuildStageNonProd
     jobs:
       - job: CodeBuild
-        displayName:  'Building for environment non-prod'
+        displayName:  'Building for environment non-prod  ${{variables.ARMSubscriptionNonProd}}'
         pool:
           name: Azure Pipelines
           vmImage: 'ubuntu-latest'
@@ -57,10 +57,10 @@ stages:
 
 
   - stage: BuildStageProd
-    condition: and (succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/devops/prod-deployment'))
+    condition: and (succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release_1_0'))
     jobs:
       - job: CodeBuild
-        displayName: 'Building for environment prod'
+        displayName: 'Building for environment prod  ${{variables.ARMSubscriptionProd}} ${{variables.ACRServiceConnectionProd}} ${{variables.ProdACREnvironment}}'
         pool:
           name: Azure Pipelines
           vmImage: 'ubuntu-20.04'
