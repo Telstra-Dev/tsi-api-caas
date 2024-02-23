@@ -37,6 +37,7 @@ namespace Telstra.Core.Api
             //    m.GetService<MyMultiTenantContext>(), m.GetService<ILogger<MyMultiTenantContext>>()));
 
             collection.AddSingleton<IRestClient, RestClient>();
+            collection.AddAutoMapper(typeof(Startup));
             // TODO: evaluate if needed in future (customer service deprecated / was experimental for gRPC?)
             // collection.AddScoped<ICustomerService, CustomerService>();
             collection.AddScoped<IHomeService, HomeService>();

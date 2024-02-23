@@ -104,7 +104,6 @@ namespace Telstra.Core.Api
             services.AddHttpClient<OrganisationService>();
 
             services.AddHealthChecks();
-            services.AddAutoMapper(typeof(Startup));
         }
 
         public virtual void ConfigureContainer(IServiceCollection container)
