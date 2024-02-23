@@ -35,8 +35,6 @@
 		<ProjectReference Include="..\Telstra.Common\Telstra.Common.csproj" />
 		<ProjectReference Include="..\WCA.Consumer.Api\WCA.Consumer.Api.csproj" />
 		<ProjectReference Include="..\Telstra.Core.Data\Telstra.Core.Data.csproj" />
-		<ProjectReference Include="..\Telstra.Core.Repo\Telstra.Core.Repo.csproj" />
-		<ProjectReference Include="..\Telstra.Core.Contracts\Telstra.Core.Contracts.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Tests\" />

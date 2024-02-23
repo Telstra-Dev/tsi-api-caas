@@ -40,12 +40,6 @@
     <ProjectReference Include="..\Telstra.Core.Data\Telstra.Core.Data.csproj">
       <GlobalPropertiesToRemove />
     </ProjectReference>
-    <ProjectReference Include="..\Telstra.Core.Repo\Telstra.Core.Repo.csproj">
-      <GlobalPropertiesToRemove />
-    </ProjectReference>
-    <ProjectReference Include="..\Telstra.Core.Contracts\Telstra.Core.Contracts.csproj">
-      <GlobalPropertiesToRemove />
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Remove="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />

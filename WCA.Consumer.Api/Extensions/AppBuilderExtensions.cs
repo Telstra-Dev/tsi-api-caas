@@ -1,41 +1,13 @@
-﻿using System;
-using System.IO;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Telstra.Common;
-using Telstra.Core.Api.Helpers;
 
-namespace Telstra.Core.Api
+namespace WCA.Consumer.Api.Extensions
 {
     public static class AppBuilderExtensions
     {
-        public static void RegisterMiddlewares(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
-        {
-            
-        }
-
-        public static void UseAuth(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
-        {
-            var settings = configuration.Bind<AppSettings>();
-            if (settings.UseAd)
-            {
-                app.UseAuthentication();
-                app.UseAuthorization();
-            }
-        }
-
-
-        public static void CreateAssetsPaths(this IApplicationBuilder app, IConfiguration configuration)
-        {
-            
-        }
-
+        
         public static void RegisterGlobalExceptionHandler(this IApplicationBuilder app, ILoggerFactory loggerFactory, bool isProd)
         {
             // Global exception handler
@@ -68,11 +40,6 @@ namespace Telstra.Core.Api
                     await context.Response.WriteAsJsonAsync(responseMessage);
                 });
             });
-        }
-
-        public static void AttachResponseInterceptor(this IApplicationBuilder app)
-        {
-            
         }
     }
 }

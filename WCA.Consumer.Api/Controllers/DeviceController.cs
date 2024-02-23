@@ -7,7 +7,6 @@ using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using WCA.Consumer.Api.Helpers;
 
 namespace WCA.Consumer.Api.Controllers
 {

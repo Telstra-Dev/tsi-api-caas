@@ -1,20 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Web;
 using Telstra.Common;
-using Telstra.Common.Models;
 
-namespace Telstra.Core.Api
+namespace WCA.Consumer.Api.Extensions
 {
     public static class ServiceExtensions
     {

@@ -12,7 +12,6 @@ using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Threading;
-using WCA.Consumer.Api.Helpers;
 
 namespace WCA.Consumer.Api.Services
 {

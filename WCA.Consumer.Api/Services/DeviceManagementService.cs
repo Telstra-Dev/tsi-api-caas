@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telstra.Common;
-using WCA.Consumer.Api.Helpers;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 

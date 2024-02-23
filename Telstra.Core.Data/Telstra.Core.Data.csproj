@@ -21,7 +21,6 @@
     <ProjectReference Include="..\Telstra.Common\Telstra.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Contexts\" />
     <Folder Include="Entities\" />
   </ItemGroup>
 </Project>
