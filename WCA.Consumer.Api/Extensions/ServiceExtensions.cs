@@ -36,44 +36,5 @@ namespace Telstra.Core.Api
                        .AddApplicationInsights()
             );
         }
-
-        public static void AddAuth(this IServiceCollection services, IConfiguration configuration, AppSettings appSettings)
-        {
-            
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(configuration, appSettings.AzureAd.KeyInApplicationSettings)
-                    .EnableTokenAcquisitionToCallDownstreamApi()
-                    .AddInMemoryTokenCaches();
-
-            /*services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
-            {
-                options.Authority = appSettings.AzureAd.Authority;
-                //options.Audience = appSettings.AzureAd.ClientId;
-                options.Audience = "885e502b-8889-4dbc-9d2a-9b0a1c1ffb4f";
-                options.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = async failedContext =>
-                    {
-                        // For debugging purposes only!
-                        var s = $"AuthenticationFailed: {failedContext.Exception.Message}";
-                        failedContext.Response.ContentLength = s.Length;
-                        await failedContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(s), 0, s.Length);
-                    }
-                };
-                options.Events.OnTokenValidated = async context =>
-                {
-                    await Task.Delay(0);
-                };
-            });*/
-
-            services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                                            .RequireAuthenticatedUser()
-                                            .Build();
-            });
-
-        }
-
     }
 }
