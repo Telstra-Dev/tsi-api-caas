@@ -184,7 +184,7 @@ namespace WCA.Customer.Api.Tests
                     Location = new SiteLocationModel
                     {
                         Id = $"site-location-model-id-{i}",
-                        Address = "242 Exhibition Street Melbourne",
+                        Address = new SiteAddress { Name = "242 Exhibition Street Melbourne" },
                         GeoLocation = new GeoLocation
                         {
                             Latitude = -37.809864,

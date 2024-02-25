@@ -53,11 +53,12 @@ namespace WCA.Consumer.Api.Services
                     Location = new SiteLocationModel
                     {
                         Id = Convert.ToString(x.Address.Id),
-                        Address = $"{x.Address.SvNote}, {x.Address.State}, {x.Address.Country}",
+                        //Address = $"{x.Address.SvNote}, {x.Address.State}, {x.Address.Country}",
+                        Address = x.Address,
                         GeoLocation = new GeoLocation 
                         {
-                            Longitude = Convert.ToDouble(x.Address.Sites[0].Longitude),
-                            Latitude = Convert.ToDouble(x.Address.Sites[0].Latitude)
+                            Longitude = Convert.ToDouble(x.Address.Longitude),
+                            Latitude = Convert.ToDouble(x.Address.Latitude)
                         }
                     }
                 }).ToList();
@@ -171,11 +172,12 @@ namespace WCA.Consumer.Api.Services
                         Location = new SiteLocationModel
                         {
                             Id = Convert.ToString(foundSite.Address.Id),
-                            Address = $"{foundSite.Address.SvNote}, {foundSite.Address.State}, {foundSite.Address.Country}",
+                            //Address = $"{foundSite.Address.SvNote}, {foundSite.Address.State}, {foundSite.Address.Country}",
+                            Address = foundSite.Address,
                             GeoLocation = new GeoLocation
                             {
-                                Longitude = Convert.ToDouble(foundSite.Address.Sites[0].Longitude),
-                                Latitude = Convert.ToDouble(foundSite.Address.Sites[0].Latitude)
+                                Longitude = Convert.ToDouble(foundSite.Address.Longitude),
+                                Latitude = Convert.ToDouble(foundSite.Address.Latitude)
                             }
                         }
                     };
@@ -200,7 +202,7 @@ namespace WCA.Consumer.Api.Services
 
             // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
 
-            return await SaveSite(newSite);
+            return await SaveSite(newSite, authorisationEmail);
         }
 
         public async Task<bool> UpdateSite(string authorisationEmail, string siteId, SiteModel updateSite)
@@ -212,7 +214,7 @@ namespace WCA.Consumer.Api.Services
 
             // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
 
-            return await SaveSite(updateSite, true);
+            return await SaveSite(updateSite, authorisationEmail, true);
         }
 
         public async Task<bool> DeleteSite(string authorisationEmail, string siteId)
@@ -238,11 +240,11 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        private async Task<bool> SaveSite(SiteModel newSite, bool isUpdate = false)
+        private async Task<bool> SaveSite(SiteModel newSite, string authorisationEmail, bool isUpdate = false)
         {
             try
             {
-                var siteNameModel = new SiteNameModel 
+                var siteNameModel = new SiteNameModel
                 {
                     Id = newSite.SiteId,
                     DisplayName = newSite.Name,
@@ -250,15 +252,16 @@ namespace WCA.Consumer.Api.Services
                     Address = new SiteAddress
                     {
                         Id = Convert.ToInt32(newSite.Location.Id),
-                        SvNote = newSite.Location.Address,
-                        Sites = new List<NameModelSite> 
-                        {
-                            new NameModelSite
-                            {
-                                Longitude = Convert.ToString(newSite.Location.GeoLocation.Longitude),
-                                Latitude = Convert.ToString(newSite.Location.GeoLocation.Latitude)
-                            }
-                        }
+                        Name = newSite.SiteId,
+                        StreetNumber = newSite.Location.Address.StreetNumber,
+                        StreetName = newSite.Location.Address.StreetName,
+                        Suburb = newSite.Location.Address.Suburb,
+                        Postcode = newSite.Location.Address.Postcode,
+                        State= newSite.Location.Address.State,
+                        Country =  newSite.Location.Address.Country,
+                        SvNote = newSite.Location.Address.SvNote,
+                        Longitude = newSite.Location.GeoLocation?.Longitude.ToString(),
+                        Latitude = newSite.Location.GeoLocation?.Latitude.ToString()
                     }
                 };
 
@@ -266,11 +269,11 @@ namespace WCA.Consumer.Api.Services
 
                 if (!isUpdate)
                 {
-                    return await _httpClient.PostAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites", payload, CancellationToken.None);
+                    return await _httpClient.PostAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites?email={authorisationEmail}", payload, CancellationToken.None);
                 }
                 else
                 {
-                    return await _httpClient.PutAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{newSite.SiteId}", payload, CancellationToken.None);
+                    return await _httpClient.PutAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{newSite.SiteId}?email={authorisationEmail}", payload, CancellationToken.None);
                 }
             }
             catch (Exception e)

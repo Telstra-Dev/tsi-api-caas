@@ -14,14 +14,13 @@ namespace WCA.Consumer.Api.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string StreetNumber { get; set; }
+        public string StreetName { get; set; }
+        public string Suburb { get; set; }
+        public string Postcode { get; set; }
         public string State { get; set; }
         public string Country { get; set; }
         public string SvNote { get; set; }
-        public List<NameModelSite> Sites { get; set;}
-    }
-
-    public class NameModelSite
-    {
         public string Latitude { get; set; }
         public string Longitude { get; set; }
     }
