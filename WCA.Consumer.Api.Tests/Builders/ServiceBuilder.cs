@@ -2,9 +2,10 @@
 using System.Collections.Concurrent;
 using System.IO;
 using Microsoft.Extensions.Configuration;
-using Telstra.Core.Data.Contexts;
+using Telstra.Core.Api;
+using Telstra.Core.Api.Tests.Builders;
 
-namespace Telstra.Core.Api.Tests.Builders
+namespace WCA.Consumer.Api.Tests.Builders
 {
     public class ServiceBuilder
     {
@@ -12,7 +13,7 @@ namespace Telstra.Core.Api.Tests.Builders
         {
         }
 
-        public static ConcurrentDictionary<Type, object> _types = new ConcurrentDictionary<Type, object>();
+        private static ConcurrentDictionary<Type, object> _types = new ConcurrentDictionary<Type, object>();
         public static IConfiguration configuration { get; set; }
         public static T GetType<T>(T _default = null) where T : class
         {
@@ -45,10 +46,6 @@ namespace Telstra.Core.Api.Tests.Builders
 
             return new ServiceBuilder();
         }
-
-
-        // public MyDBContext GetDBContext => ServiceBuilder.GetType<MyDBContext>(new MyDBContext())
-
 
     }
 }

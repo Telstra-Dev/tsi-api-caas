@@ -9,7 +9,6 @@ using Telstra.Common;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Telstra.Core.Data.Entities;
-using WCA.Consumer.Api.Helpers;
 using System.Threading;
 using System.Net.Http;
 using Device = Telstra.Core.Data.Entities.Device;

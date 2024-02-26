@@ -18,6 +18,8 @@ using Telstra.Common;
 using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Services;
 using System.Text.Json;
+using WCA.Consumer.Api;
+using WCA.Consumer.Api.Extensions;
 
 namespace Telstra.Core.Api
 {
@@ -45,18 +47,7 @@ namespace Telstra.Core.Api
            {
                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
            });
-
-            // Response Compression
-            services.Configure<GzipCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Optimal;
-            });
-
-            services.AddResponseCompression(options =>
-            {
-                options.EnableForHttps = true;
-                options.Providers.Add<GzipCompressionProvider>();
-            });
+            
 
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
@@ -104,7 +95,6 @@ namespace Telstra.Core.Api
             services.AddHttpClient<OrganisationService>();
 
             services.AddHealthChecks();
-            services.AddAutoMapper(typeof(Startup));
         }
 
         public virtual void ConfigureContainer(IServiceCollection container)
@@ -120,33 +110,23 @@ namespace Telstra.Core.Api
                 app.UseDeveloperExceptionPage();
 
             }
-
-            //app.UseSwagger(c => c.ConfigureSwaggerBehindProxy());
-            //app.UseSwaggerUI(c => c.ConfigureSwaggerOptions(this.appSettings));
+            
             app.RegisterGlobalExceptionHandler(loggerFactory, env.IsProduction());
-            app.UseResponseCompression();
-
-            app.RegisterMiddlewares(env, this.Configuration);
-
-            app.CreateAssetsPaths(this.Configuration);
 
             app.UseCors(x =>
                 x.AllowAnyOrigin()
                  .AllowAnyHeader()
                  .AllowAnyMethod()
             );
-
-            app.AttachResponseInterceptor();
-
-            // app.UseHttpsRedirection();
+            
             app.UseRouting();
-
-            app.UseAuth(env, Configuration);
-
-            //app.UseMultiTenant();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGet("/", () => new {
+                    message = "CAAS API working OK"
+                });
+                
                 endpoints.MapHealthChecks("/api/health", new HealthCheckOptions()
                 {
                     AllowCachingResponses = false
