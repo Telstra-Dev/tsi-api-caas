@@ -2,25 +2,45 @@
 Clone this repository https://dev.azure.com/BuiltEnvironmentEngineering/Telstra Smart Spaces/_git/Telstra.Core.Api?path=%2F&version=GBmaster
 
 # Setting up Environment and variables
-## Telstra.Core.Api-> appsettings.json
-The appsettings stores the configuration values in name-value pairs using the JSON format. ​
+### appsettings.json 
+This will have all default properties that's going to be there all the time 
+with the project in all environments. \
+\
+For environment specific values, create appsettings.{ENV}.json at the
+root of your project. ENV will be the value of "ASPNETCORE_ENVIRONMENT". check your launchsettings.json file
 
-Update the port,userAd,storage setting based on the project requirement.<br/>
-example: the port no. specified needs to be changed depending on the available port.
-```
-​"ports": {
-   ​"http": 1234,
-   ​"https": 5678
- ​},
-```
-​ This can be done by modifying the env variables. <br/>
-eg. WCA_ports_http = [yyyy] <br/>
-​the prefix "WCA" will depend on the values specified in program.cs file 
+### OVERRIDING CONFIG VALUES WITHOUT ACCIDENTALLY COMMITTING IT.
+values in appsettings.json can be safely overriden via 2 methods
+usersecrets and environment variables. 
 
-# Telstra.Core.Api->Program.cs
-Update the environment variable prefix. <br/>
-eg. if project name is "MYWORKPLACE". <br/>
-change the prefix to "MYWORKPLACE"
+Right Click on API Project in Visual Studio -> Manage User Secrets
+Here you can mention custom values of property you want to override
+
+For VSCode, download this extension
+Name: .NET Core User Secrets
+Publisher: Adrian Wilczyński
+
+Right Click on API Project file .csproj and select Manage User Secrets
+
+
+appsettings.json file
+```json
+"connectionsString" : {
+  "db": "{{CHECK IN USER SECRETD}}"
+}
+```
+secrets.json file (Will override the connection string DB value from above)
+[more about user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows)
+```json
+"connectionsString" : {
+  "db": "host=localhost;port=5432 ...... "
+}
+```
+
+Environment Override
+
+```connectionString__db=host=localhost;port=5432 ...... ```
+
 
 # Telstra.Core.Api->Startup.cs
 Configures App
