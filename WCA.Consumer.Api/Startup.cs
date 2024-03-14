@@ -123,7 +123,7 @@ namespace Telstra.Core.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", () => new {
+                endpoints.MapGet("/home/ping", () => new {
                     message = "CAAS API working OK"
                 });
                 
