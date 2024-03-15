@@ -34,7 +34,7 @@ namespace WCA.Customer.Api.Tests
                 }
             };
 
-            var result = await controller.GetSites("fake.user.email@example.com", customerId);
+            var result = await controller.GetSites("fake.user.email@example.com");
 
             Assert.Equal(typeof(NotFoundObjectResult), result.GetType());
             Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);

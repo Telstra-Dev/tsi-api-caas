@@ -11,12 +11,10 @@ namespace WCA.Consumer.Api.Services.Contracts
         public Task<IList<SiteModel>> GetSitesForCustomer(string authorisationEmail, string customerId);
 
         public Task<SiteModel> GetSite(string authorisationEmail, string siteId, string customerId);
-        public Task<SiteModel> GetSiteById(string authorisationEmail, string siteId);
-        public Task<SiteTelemetryProperty> GetSiteTelProperties(string authorisationEmail, string siteId);
+        public Task<SiteModel> GetSiteById(string authorisationEmail, int siteId);
+        public Task<SiteTelemetryProperty> GetSiteTelProperties(string authorisationEmail, int siteId);
 
-        public Task<bool> CreateSite(string authorisationEmail, SiteModel newSite);
-
-        public Task<bool> UpdateSite(string authorisationEmail, string siteId, SiteModel site);
+        public Task<int> CreateOrUpdateSite(string authorisationEmail, SiteModel site);
 
         public Task<bool> DeleteSite(string authorisationEmail, string siteId);
     }

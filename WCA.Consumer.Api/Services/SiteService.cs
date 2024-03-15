@@ -10,6 +10,8 @@ using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
 using System.Threading;
 using System.Linq;
+using Flurl;
+using Flurl.Http;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -44,7 +46,7 @@ namespace WCA.Consumer.Api.Services
 
                 return foundSites.Select(x => new SiteModel 
                 { 
-                    SiteId = x.Id, 
+                    SiteId = x.Id,
                     Name = x.DisplayName,
                     Metadata = new SiteMetadata 
                     {
@@ -52,8 +54,7 @@ namespace WCA.Consumer.Api.Services
                     },
                     Location = new SiteLocationModel
                     {
-                        Id = Convert.ToString(x.Address.Id),
-                        //Address = $"{x.Address.SvNote}, {x.Address.State}, {x.Address.Country}",
+                        // Id = x.Address.Id,
                         Address = x.Address,
                         GeoLocation = new GeoLocation 
                         {
@@ -96,7 +97,7 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<SiteTelemetryProperty> GetSiteTelProperties(string authorisationEmail, string siteId)
+        public async Task<SiteTelemetryProperty> GetSiteTelProperties(string authorisationEmail, int siteId)
         {
             if (string.IsNullOrWhiteSpace(authorisationEmail))
             {
@@ -146,7 +147,7 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<SiteModel> GetSiteById(string authorisationEmail, string siteId)
+        public async Task<SiteModel> GetSiteById(string authorisationEmail, int siteId)
         {
             if (string.IsNullOrWhiteSpace(authorisationEmail))
             {
@@ -155,35 +156,35 @@ namespace WCA.Consumer.Api.Services
 
             try
             {
-                SiteModel foundMappedSite = null;
-                var foundSite = await _httpClient.GetAsync<SiteNameModel>(
-                                                    $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}?email={authorisationEmail}",
-                                                    CancellationToken.None);
-                if (foundSite != null)
+                var site =  await $"{_appSettings.StorageAppHttp.BaseUri}/sites/{siteId}"
+                                    .AppendQueryParam("email", authorisationEmail)
+                                    .AllowAnyHttpStatus()
+                                    .GetJsonAsync<SiteNameModel>();
+                
+                if (site != null)
                 {
-                    foundMappedSite = new SiteModel 
+                    return new SiteModel 
                     {
-                        SiteId = foundSite.Id,
-                        Name = foundSite.DisplayName,
+                        SiteId = site.Id,
+                        Name = site.DisplayName,
                         Metadata = new SiteMetadata 
                         {
-                            Tags = foundSite.Tags
+                            Tags = site.Tags
                         },
                         Location = new SiteLocationModel
                         {
-                            Id = Convert.ToString(foundSite.Address.Id),
-                            //Address = $"{foundSite.Address.SvNote}, {foundSite.Address.State}, {foundSite.Address.Country}",
-                            Address = foundSite.Address,
+                            // Id = site.Address.Id,
+                            Address = site.Address,
                             GeoLocation = new GeoLocation
                             {
-                                Longitude = Convert.ToDouble(foundSite.Address.Longitude),
-                                Latitude = Convert.ToDouble(foundSite.Address.Latitude)
+                                Longitude = Convert.ToDouble(site.Address.Longitude),
+                                Latitude = Convert.ToDouble(site.Address.Latitude)
                             }
                         }
                     };
                 }
 
-                return foundMappedSite;
+                throw new Exception("Site not found");
             }
             catch (Exception ex)
             {
@@ -193,28 +194,54 @@ namespace WCA.Consumer.Api.Services
             }
         }
 
-        public async Task<bool> CreateSite(string authorisationEmail, SiteModel newSite)
+        public async Task<int> CreateOrUpdateSite(string authorisationEmail, SiteModel site)
         {
-            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            try
             {
-                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+                var siteNameModel = new SiteNameModel
+                {
+                    Id = site.SiteId,
+                    DisplayName = site.Name,
+                    Tags = site.Metadata.Tags,
+                    Address = new SiteAddress
+                    {
+                        // Id = site.Location.Address.Id,
+                        Name = site.Location.Address.Name,
+                        StreetNumber = site.Location.Address.StreetNumber,
+                        StreetName = site.Location.Address.StreetName,
+                        Suburb = site.Location.Address.Suburb,
+                        Postcode = site.Location.Address.Postcode,
+                        State= site.Location.Address.State,
+                        Country =  site.Location.Address.Country,
+                        // SvNote = site.Location.Address.SvNote,
+                        Longitude = site.Location.GeoLocation?.Longitude.ToString(),
+                        Latitude = site.Location.GeoLocation?.Latitude.ToString()
+                    }
+                };
+
+                if (site.SiteId == 0)
+                {
+                    return await $"{_appSettings.StorageAppHttp.BaseUri}/sites"
+                        .AllowAnyHttpStatus()
+                        .AppendQueryParam("email", authorisationEmail)
+                        .PostJsonAsync(siteNameModel)
+                        .ReceiveJson<int>();
+                }
+                else
+                {
+                    return await $"{_appSettings.StorageAppHttp.BaseUri}/sites/{site.SiteId}"
+                        .AllowAnyHttpStatus()
+                        .AppendQueryParam("email", authorisationEmail)
+                        .PutJsonAsync(siteNameModel)
+                        .ReceiveJson<int>();
+                    
+                }
             }
-
-            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
-
-            return await SaveSite(newSite, authorisationEmail);
-        }
-
-        public async Task<bool> UpdateSite(string authorisationEmail, string siteId, SiteModel updateSite)
-        {
-            if (string.IsNullOrWhiteSpace(authorisationEmail))
+            catch (Exception e)
             {
-                throw new Exception($"[ValidationError] No authorisationEmail specified.");
+                _logger.LogError("Fail to SaveSite: " + e.Message);
+                throw new Exception(e.Message);
             }
-
-            // TODO: Add RBAC checks. Need to prevent users from modifying objects outside their tenant.
-
-            return await SaveSite(updateSite, authorisationEmail, true);
         }
 
         public async Task<bool> DeleteSite(string authorisationEmail, string siteId)
@@ -236,49 +263,6 @@ namespace WCA.Consumer.Api.Services
             catch (Exception e)
             {
                 _logger.LogError("Fail to DeleteSite: " + e.Message);
-                throw new Exception(e.Message);
-            }
-        }
-
-        private async Task<bool> SaveSite(SiteModel newSite, string authorisationEmail, bool isUpdate = false)
-        {
-            try
-            {
-                var siteNameModel = new SiteNameModel
-                {
-                    Id = newSite.SiteId,
-                    DisplayName = newSite.Name,
-                    Tags = newSite.Metadata.Tags,
-                    Address = new SiteAddress
-                    {
-                        Id = Convert.ToInt32(newSite.Location.Id),
-                        Name = newSite.SiteId,
-                        StreetNumber = newSite.Location.Address.StreetNumber,
-                        StreetName = newSite.Location.Address.StreetName,
-                        Suburb = newSite.Location.Address.Suburb,
-                        Postcode = newSite.Location.Address.Postcode,
-                        State= newSite.Location.Address.State,
-                        Country =  newSite.Location.Address.Country,
-                        SvNote = newSite.Location.Address.SvNote,
-                        Longitude = newSite.Location.GeoLocation?.Longitude.ToString(),
-                        Latitude = newSite.Location.GeoLocation?.Latitude.ToString()
-                    }
-                };
-
-                var payload = JsonConvert.SerializeObject(siteNameModel);
-
-                if (!isUpdate)
-                {
-                    return await _httpClient.PostAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites?email={authorisationEmail}", payload, CancellationToken.None);
-                }
-                else
-                {
-                    return await _httpClient.PutAsync<bool>($"{_appSettings.StorageAppHttp.BaseUri}/sites/{newSite.SiteId}?email={authorisationEmail}", payload, CancellationToken.None);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("Fail to SaveSite: " + e.Message);
                 throw new Exception(e.Message);
             }
         }

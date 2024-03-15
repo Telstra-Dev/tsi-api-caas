@@ -175,7 +175,7 @@ namespace WCA.Customer.Api.Tests
             {
                 list.Add(new SiteModel
                 {
-                    SiteId = $"site-id-{i}",
+                    SiteId = i,
                     Name = $"site-name-{i}",
                     Metadata = new SiteMetadata
                     {
@@ -183,7 +183,7 @@ namespace WCA.Customer.Api.Tests
                     },
                     Location = new SiteLocationModel
                     {
-                        Id = $"site-location-model-id-{i}",
+                        Id = i,
                         Address = new SiteAddress { Name = "242 Exhibition Street Melbourne" },
                         GeoLocation = new GeoLocation
                         {
@@ -508,7 +508,7 @@ namespace WCA.Customer.Api.Tests
                         list.Add(
                             new SiteModel
                             {
-                                SiteId = e.SiteId,
+                                SiteId = 1,
                                 Name = e.Name
                             });
                     }
@@ -519,7 +519,7 @@ namespace WCA.Customer.Api.Tests
                 {
                     return new SiteModel
                     {
-                        SiteId = s.SiteId,
+                        SiteId = 1,
                         Name = s.Name,
                     };
                 });

@@ -19,41 +19,23 @@ namespace WCA.Consumer.Api.Controllers
         {
             _siteService = siteService;
         }
-
-        /// <summary>
-        /// Retrieves sites specified customerId or for logged in customer if no customerId supplied. 
-        /// Logged in customer must own the site otherwise 401 will be returned.
-        /// </summary>
-        /// <param name="customerId"></param>
-        /// <returns></returns>
-        [HttpGet("sites")]
+        
+        [HttpGet("/sites")]
         [ProducesResponseType(typeof(IList<SiteModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
         public async Task<IActionResult> GetSites(
-            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
-            [FromQuery] string customerId
+            [FromHeader(Name = "X-CUsername")] string authorisationEmail
         )
         {
             try
             {
-                if (string.IsNullOrEmpty(customerId))
-                {
-                    //data from flexi DB
-                    var sites = await _siteService.GetSites(authorisationEmail);
-
-                    return Ok(sites);
-                }
+                var newSite = await _siteService.GetSites(authorisationEmail);
+                if (newSite?.Count > 0)
+                    return Ok(newSite);
                 else
-                {
-                    // TODO (@Jason): check the following path - this doesn't seem to make sense from authorisation perspective; we should remove once integration points are confirmed.
-                    var newSite = await _siteService.GetSitesForCustomer(authorisationEmail, customerId);
-                    if (newSite?.Count > 0)
-                        return Ok(newSite);
-                    else
-                        return NotFound(new { message = "No sites exist with this customer" });
-                }
+                    return NotFound(new { message = "No sites exist with this customer" });
             }
             catch (Exception e)
             {
@@ -65,13 +47,13 @@ namespace WCA.Consumer.Api.Controllers
         /// Retrieves sites for given siteId
         /// </summary>
         /// <returns></returns>
-        [HttpGet("sites/{siteId}")]
+        [HttpGet("/sites/{siteId:int}")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
         public async Task<IActionResult> GetSite(
             [FromHeader(Name = "X-CUsername")] string authorisationEmail,
-            [FromRoute] string siteId,
+            [FromRoute] int siteId,
             [FromQuery] bool telemetryProperties = false
         )
         {
@@ -97,18 +79,25 @@ namespace WCA.Consumer.Api.Controllers
         /// Creates a new site
         /// </summary>
         /// <returns></returns>
-        [HttpPost("sites")]
+        [HttpPost("/sites")]
+        [HttpPut("/sites/{siteId:int}")]
         [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [AllowAnonymous]
         public async Task<IActionResult> CreateSite(
             [FromHeader(Name = "X-CUsername")] string authorisationEmail,
-            [FromBody] SiteModel site
+            [FromBody] SiteModel site,
+            [FromRoute] int? siteId = null
         )
         {
             try
             {
-                return Ok(await _siteService.CreateSite(authorisationEmail, site));
+                site.SiteId = siteId ?? 0;
+                var id = await _siteService.CreateOrUpdateSite(authorisationEmail, site);
+                if (id > 0)
+                    return await GetSite(authorisationEmail, id, false);
+
+                return Problem("Site Creation Failed");
             }
             catch (Exception e)
             {
@@ -116,35 +105,6 @@ namespace WCA.Consumer.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Updates a site
-        /// </summary>
-        /// <param name="siteId"></param>
-        /// <returns></returns>
-        [HttpPut("sites/{siteId}")]
-        [ProducesResponseType(typeof(SiteModel), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateSite(
-            [FromHeader(Name = "X-CUsername")] string authorisationEmail,
-            [FromRoute] string siteId,
-            [FromBody] SiteModel site
-        )
-        {
-            try
-            {
-                if (site.SiteId == null)
-                {
-                    site.SiteId = siteId;
-                }
-                var updatedSite = await _siteService.UpdateSite(authorisationEmail, siteId, site);
-
-                return Ok(updatedSite);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-        }
 
         /// <summary>
         /// Delete a site
