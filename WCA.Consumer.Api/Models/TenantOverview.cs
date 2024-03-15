@@ -21,6 +21,7 @@ namespace WCA.Consumer.Api.Models
     public class EdgeDeviceOverview
     {
         public int EdgeDeviceId { get; set; }
+        public string SerialNumber { get; set; }
         public string EdgeDeviceFriendlyName { get; set; }
         public string LastActiveTime { get; set; }
         public HealthStatusModel HealthStatus { get; set; }
@@ -30,6 +31,7 @@ namespace WCA.Consumer.Api.Models
     public class LeafDeviceOverview
     {
         public int LeafId { get; set; }
+        public string PipelineDeviceId { get; set; }
         public string LeafFriendlyName { get; set; }
         public string LastActiveTime { get; set; }
         public long? LastTelemetryTime { get; set; }
