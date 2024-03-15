@@ -68,7 +68,7 @@ namespace WCA.Customer.Api.Tests
             {
                 var siteOverview = new SiteOverview()
                 {
-                    SiteId = "site-test1",
+                    SiteId = 1,
                     SiteFriendlyName = "Test Site 1",
                     HealthStatus = new HealthStatusModel()
                     {
@@ -83,7 +83,7 @@ namespace WCA.Customer.Api.Tests
                 {
                     var edgeDeviceOverview = new EdgeDeviceOverview()
                     {
-                        EdgeDeviceId = "edge-device-test1",
+                        EdgeDeviceId = 1,
                         EdgeDeviceFriendlyName = "Test Edge Device (Gateway) 1",
                         LastActiveTime = "Not found",
                         HealthStatus = new HealthStatusModel()
@@ -99,7 +99,7 @@ namespace WCA.Customer.Api.Tests
                     {
                         var leafDeviceOverview = new LeafDeviceOverview()
                         {
-                            LeafId                  = "leaf-device-test1",
+                            LeafId                  = 1,
                             LeafFriendlyName        = "Test Leaf Device (Camera) 1",
                             LastActiveTime          = "Not found",
                             LastTelemetryTime       = null,
@@ -183,12 +183,11 @@ namespace WCA.Customer.Api.Tests
                     },
                     Location = new SiteLocationModel
                     {
-                        Id = i,
                         Address = new SiteAddress { Name = "242 Exhibition Street Melbourne" },
                         GeoLocation = new GeoLocation
                         {
-                            Latitude = -37.809864,
-                            Longitude = 144.969813,
+                            Latitude = "-37.809864",
+                            Longitude = "144.969813",
                         }
                     },
                 });
@@ -210,12 +209,12 @@ namespace WCA.Customer.Api.Tests
             {
                 list.Add(new Device
                 {
-                    DeviceId = type == DeviceType.gateway ? $"edge-device-id-{i}" : $"leaf-device-id-{i}",
+                    DeviceId = i,
                     Name = type == DeviceType.gateway ? $"edge-device-name-{i}" : $"leaf-device-name-{i}",
                     CustomerId = "customer-id",
                     Type = type.ToString(),
-                    SiteId = "site-id",
-                    EdgeDeviceId = $"edge-device-id-{i}",
+                    SiteId = 1,
+                    EdgeDeviceId = i,
                 });
             }
 
@@ -380,9 +379,9 @@ namespace WCA.Customer.Api.Tests
                 {
                     return new Gateway
                     {
-                        DeviceId = d.DeviceId,
-                        EdgeDevice = d.EdgeDeviceId,
-                        SiteId = d.SiteId,
+                        DeviceId = d.DeviceId.ToString(),
+                        EdgeDevice = d.EdgeDeviceId.ToString(),
+                        SiteId = d.SiteId.ToString(),
                         Name = d.Name,
                         Type = DeviceType.gateway,
                     };
@@ -392,9 +391,9 @@ namespace WCA.Customer.Api.Tests
                 {
                     return new Camera
                     {
-                        DeviceId = d.DeviceId,
-                        EdgeDevice = d.EdgeDeviceId,
-                        SiteId = d.SiteId,
+                        DeviceId = d.DeviceId.ToString(),
+                        EdgeDevice = d.EdgeDeviceId.ToString(),
+                        SiteId = d.SiteId.ToString(),
                         Name = d.Name,
                         Type = DeviceType.camera,
                     };
@@ -404,9 +403,9 @@ namespace WCA.Customer.Api.Tests
                 {
                     return new Device
                     {
-                        DeviceId = d.DeviceId,
-                        EdgeDeviceId = d.EdgeDevice,
-                        SiteId = d.SiteId,
+                        DeviceId = 1,
+                        EdgeDeviceId = 1,
+                        SiteId = 1,
                         Name = d.Name,
                         Type = "camera",
                     };
@@ -416,9 +415,9 @@ namespace WCA.Customer.Api.Tests
                 {
                     return new Device
                     {
-                        DeviceId = d.DeviceId,
-                        EdgeDeviceId = d.EdgeDevice,
-                        SiteId = d.SiteId,
+                        DeviceId = 1,
+                        EdgeDeviceId = 1,
+                        SiteId = 1,
                         Name = d.Name,
                         Type = "gateway",
                     };
@@ -428,9 +427,9 @@ namespace WCA.Customer.Api.Tests
                 {
                     return new Device
                     {
-                        DeviceId = d.DeviceId,
-                        EdgeDeviceId = d.EdgeDevice,
-                        SiteId = d.SiteId,
+                        DeviceId = 1,
+                        EdgeDeviceId = 1,
+                        SiteId = 1,
                         Name = d.Name,
                         Type = d.Type.ToString(),
                     };
@@ -481,8 +480,8 @@ namespace WCA.Customer.Api.Tests
                         new OrgSearchTreeNode
                         {
                             Type = "device",
-                            Id = e.DeviceId,
-                            ParentId = e.SiteId,
+                            Id = e.DeviceId.ToString(),
+                            ParentId = e.SiteId.ToString(),
                             Href = $"/devices/{e.DeviceId}",
                             Text = e.Name,
                         });

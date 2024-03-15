@@ -11,15 +11,8 @@ namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
     [Route("/")]
-    public class SiteController : BaseController
+    public class SiteController(ISiteService siteService) : BaseController
     {
-        readonly ISiteService _siteService;
-
-        public SiteController(ISiteService siteService)
-        {
-            _siteService = siteService;
-        }
-        
         [HttpGet("/sites")]
         [ProducesResponseType(typeof(IList<SiteModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -31,7 +24,7 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                var newSite = await _siteService.GetSites(authorisationEmail);
+                var newSite = await siteService.GetSites(authorisationEmail);
                 if (newSite?.Count > 0)
                     return Ok(newSite);
                 else
@@ -61,12 +54,12 @@ namespace WCA.Consumer.Api.Controllers
             {
                 if (telemetryProperties)
                 {   
-                    var result = await _siteService.GetSiteTelProperties(authorisationEmail, siteId);
+                    var result = await siteService.GetSiteTelProperties(authorisationEmail, siteId);
                     return Ok(result);
                 }
                 else
                 {
-                    return Ok(await _siteService.GetSiteById(authorisationEmail, siteId));
+                    return Ok(await siteService.GetSiteById(authorisationEmail, siteId));
                 }
             }
             catch (Exception e)
@@ -93,7 +86,7 @@ namespace WCA.Consumer.Api.Controllers
             try
             {
                 site.SiteId = siteId ?? 0;
-                var id = await _siteService.CreateOrUpdateSite(authorisationEmail, site);
+                var id = await siteService.CreateOrUpdateSite(authorisationEmail, site);
                 if (id > 0)
                     return await GetSite(authorisationEmail, id, false);
 
@@ -121,7 +114,7 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                var updatedSite = await _siteService.DeleteSite(authorisationEmail, siteId);
+                var updatedSite = await siteService.DeleteSite(authorisationEmail, siteId);
 
                 return Ok(updatedSite);
             }

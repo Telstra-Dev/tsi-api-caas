@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using Telstra.Core.Data.Entities;
 using System.Threading;
 using System.Net.Http;
+using Flurl;
+using Flurl.Http;
 using Device = Telstra.Core.Data.Entities.Device;
 
 namespace WCA.Consumer.Api.Services
@@ -52,8 +54,10 @@ namespace WCA.Consumer.Api.Services
             var overview = new TenantOverview();
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview?email={authorisationEmail}&withHealthStatus={includeHealthStatus}");
-                overview = await _httpClient.SendAsync<TenantOverview>(request, CancellationToken.None);
+                overview = await $"{_appSettings.StorageAppHttp.BaseUri}/organisations/overview"
+                    .AppendQueryParam("email", authorisationEmail)
+                    .AppendQueryParam("withHealthStatus", includeHealthStatus)
+                    .GetJsonAsync<TenantOverview>();
             }
             catch (Exception ex)
             {

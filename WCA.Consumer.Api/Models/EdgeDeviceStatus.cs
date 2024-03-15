@@ -5,7 +5,7 @@ namespace WCA.Consumer.Api.Models
 {
     public class EdgeDeviceStatus
     {
-        public string EdgeDeviceId { get; set; }
+        public int EdgeDeviceId { get; set; }
         public string LastHealthReadingTimestamp { get; set; }
         public List<LeafDeviceStatus> LeafDevices { get; set; }
         public int DeviceRecentlyOnlineMaxMinutes { get; set; }

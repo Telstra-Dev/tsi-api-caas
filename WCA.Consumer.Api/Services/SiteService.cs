@@ -58,8 +58,8 @@ namespace WCA.Consumer.Api.Services
                         Address = x.Address,
                         GeoLocation = new GeoLocation 
                         {
-                            Longitude = Convert.ToDouble(x.Address.Longitude),
-                            Latitude = Convert.ToDouble(x.Address.Latitude)
+                            Longitude = x.Address.Longitude,
+                            Latitude = x.Address.Latitude
                         }
                     }
                 }).ToList();
@@ -177,8 +177,8 @@ namespace WCA.Consumer.Api.Services
                             Address = site.Address,
                             GeoLocation = new GeoLocation
                             {
-                                Longitude = Convert.ToDouble(site.Address.Longitude),
-                                Latitude = Convert.ToDouble(site.Address.Latitude)
+                                Longitude = site.Address.Longitude,
+                                Latitude = site.Address.Latitude
                             }
                         }
                     };

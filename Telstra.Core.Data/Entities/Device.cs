@@ -8,7 +8,7 @@ namespace Telstra.Core.Data.Entities
         [Key]
         [Required]
         [Column("device_id")]
-        public string DeviceId {get; set;}
+        public int DeviceId {get; set;}
 
         [Column("name")]
         public string Name { get; set; }
@@ -17,13 +17,13 @@ namespace Telstra.Core.Data.Entities
         public string CustomerId { get; set; }
         
         [Column("site_id")]
-        public string SiteId { get; set; }
+        public int SiteId { get; set; }
 
         [Column("type")]
         public string Type { get; set; }
 
         [Column("edge_device_id")]
-        public string EdgeDeviceId { get; set; }
+        public int EdgeDeviceId { get; set; }
 
         [Column("edge_capable")]
         public bool IsEdgeCapable { get; set; }

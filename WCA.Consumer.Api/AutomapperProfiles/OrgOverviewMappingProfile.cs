@@ -34,7 +34,7 @@ namespace WCA.Consumer.Api.AutomapperProfiles
                 .ForMember(dest => dest.Status, opts => opts.Ignore());
         }
 
-        private string getParentFromDevice(Device device) {
+        private int getParentFromDevice(Device device) {
             var parentId = device.SiteId;;
             if (device != null)
             {
