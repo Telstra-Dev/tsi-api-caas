@@ -138,6 +138,7 @@ namespace WCA.Consumer.Api.Services
 
         private async Task<HealthStatusModel> GetLeafDeviceHealthStatus(Device device)
         {
+            //TODO: Sunil - This status is spoofed
             // Check cache
             var cacheKey = $"{nameof(GetLeafDeviceHealthStatus)}-{device.DeviceId}";
             var cacheValue = (HealthStatusModel)_cache.Get(cacheKey);
@@ -146,8 +147,8 @@ namespace WCA.Consumer.Api.Services
                 return cacheValue;
             }
 
-            var edgeDeviceLastHealthReadingTimestamp = await GetDeviceLastOnlineTimestamp(device.EdgeDeviceId, "edgedevice") ?? new DateTime().ToString();
-            var edgeDeviceIsOnline = EdgeDeviceStatus.CheckEdgeDeviceRecentlyOnline(edgeDeviceLastHealthReadingTimestamp, _deviceRecentlyOnlineMaxMinutes);
+            var edgeDeviceLastHealthReadingTimestamp = "";
+            var edgeDeviceIsOnline = true;
 
             var leafDeviceStatus = await GetLeafDeviceStatus(device, edgeDeviceIsOnline);
             var health = leafDeviceStatus.GetHealthStatus();
@@ -234,13 +235,14 @@ namespace WCA.Consumer.Api.Services
 
         private async Task<LeafDeviceStatus> GetLeafDeviceStatus(Device leafDevice, bool edgeDeviceIsOnline)
         {
+            //TODO: Sunil - This status method is spoofed
             var leafDeviceStatus = new LeafDeviceStatus()
             {
                 LeafDeviceId                            = leafDevice.DeviceId,
                 EdgeDeviceId                            = leafDevice.EdgeDeviceId,
-                LastHealthReadingTimestamp              = await GetDeviceLastOnlineTimestamp(leafDevice.DeviceId, "camera"),
-                LastTelemetryReadingTimestamp           = await GetLeafDeviceLastOnlineTimestamp(leafDevice.DeviceId, leafDevice.EdgeDeviceId) ?? 0,
-                RequiresConfiguration                   = await GetLeafDeviceRequiresConfiguration(leafDevice.DeviceId, leafDevice.EdgeDeviceId),
+                LastHealthReadingTimestamp              = "",
+                LastTelemetryReadingTimestamp           = 0,
+                RequiresConfiguration                   = false,
                 EdgeDeviceIsOnline                      = edgeDeviceIsOnline,
                 DeviceRecentlyOnlineMaxMinutes          = _deviceRecentlyOnlineMaxMinutes,
                 DeviceRecentlySentTelemetryMaxMinutes   = _deviceRecentlySentTelemetryMaxMinutes,
@@ -251,11 +253,13 @@ namespace WCA.Consumer.Api.Services
 
         private async Task<EdgeDeviceStatus> GetEdgeDeviceStatus(string authorisationEmail, Device edgeDevice)
         {
-            var edgeDeviceLastHealthReadingTimestamp = await GetDeviceLastOnlineTimestamp(edgeDevice.EdgeDeviceId, "edgedevice") ?? new DateTime().ToString();
-            var edgeDeviceIsOnline = EdgeDeviceStatus.CheckEdgeDeviceRecentlyOnline(edgeDeviceLastHealthReadingTimestamp, _deviceRecentlyOnlineMaxMinutes);
+            //TODO: Sunil - This status method is spoofed
+            
+            var edgeDeviceLastHealthReadingTimestamp = "";
+            var edgeDeviceIsOnline = true;
 
             // Check leaf devices
-            var leafDevices = await _deviceService.GetLeafDevicesForGateway(authorisationEmail, edgeDevice.EdgeDeviceId);
+            var leafDevices = Array.Empty<Device>();
             var leafDevicesStatus = new List<LeafDeviceStatus>();
 
             foreach (var leafDevice in leafDevices)
@@ -267,7 +271,7 @@ namespace WCA.Consumer.Api.Services
             var edgeDeviceStatus = new EdgeDeviceStatus()
             {
                 EdgeDeviceId                            = edgeDevice.EdgeDeviceId,
-                LastHealthReadingTimestamp              = await GetDeviceLastOnlineTimestamp(edgeDevice.DeviceId, "edgedevice") ?? new DateTime().ToString(),
+                LastHealthReadingTimestamp              = "",
                 LeafDevices                             = leafDevicesStatus,
                 DeviceRecentlyOnlineMaxMinutes          = _deviceRecentlyOnlineMaxMinutes,
             };

@@ -4,8 +4,8 @@ namespace WCA.Consumer.Api.Models
 {
     public class LeafDeviceStatus
     {
-        public string LeafDeviceId { get; set; }
-        public string EdgeDeviceId { get; set; }
+        public int LeafDeviceId { get; set; }
+        public int EdgeDeviceId { get; set; }
         public string LastHealthReadingTimestamp { get; set; }
         public long LastTelemetryReadingTimestamp { get; set; }
         public bool RequiresConfiguration { get; set; }

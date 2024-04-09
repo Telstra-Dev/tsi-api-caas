@@ -25,10 +25,8 @@ namespace WCA.Consumer.Api
             collection.AddScoped<IOrganisationService, OrganisationService>();
             collection.AddScoped<ISiteService, SiteService>();
             collection.AddScoped<IDeviceService, DeviceService>();
-            collection.AddScoped<ISerialNumberService, SerialNumberService>();
             collection.AddScoped<IHealthStatusService, HealthStatusService>();
             collection.AddScoped<ITagManagerService, TagManagerService>();
-            collection.AddScoped<IDeviceManagementService, DeviceManagementService>();
         }
     }
 }

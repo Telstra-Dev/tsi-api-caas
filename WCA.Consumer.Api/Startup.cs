@@ -57,7 +57,7 @@ namespace Telstra.Core.Api
                         NamingStrategy = new CamelCaseNamingStrategy()
                     };
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
                 })
                 .AddJsonOptions(options =>
                 {
@@ -123,7 +123,7 @@ namespace Telstra.Core.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", () => new {
+                endpoints.MapGet("/home/ping", () => new {
                     message = "CAAS API working OK"
                 });
                 

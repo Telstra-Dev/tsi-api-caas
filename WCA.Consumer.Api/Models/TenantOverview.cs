@@ -12,7 +12,7 @@ namespace WCA.Consumer.Api.Models
 
     public class SiteOverview
     {
-        public string SiteId { get; set; }
+        public int SiteId { get; set; }
         public string SiteFriendlyName { get; set; }
         public HealthStatusModel HealthStatus { get; set; }
         public IList<EdgeDeviceOverview> EdgeDevices { get; set; } = new List<EdgeDeviceOverview>();
@@ -20,7 +20,8 @@ namespace WCA.Consumer.Api.Models
 
     public class EdgeDeviceOverview
     {
-        public string EdgeDeviceId { get; set; }
+        public int EdgeDeviceId { get; set; }
+        public string SerialNumber { get; set; }
         public string EdgeDeviceFriendlyName { get; set; }
         public string LastActiveTime { get; set; }
         public HealthStatusModel HealthStatus { get; set; }
@@ -29,7 +30,8 @@ namespace WCA.Consumer.Api.Models
 
     public class LeafDeviceOverview
     {
-        public string LeafId { get; set; }
+        public int LeafId { get; set; }
+        public string PipelineDeviceId { get; set; }
         public string LeafFriendlyName { get; set; }
         public string LastActiveTime { get; set; }
         public long? LastTelemetryTime { get; set; }

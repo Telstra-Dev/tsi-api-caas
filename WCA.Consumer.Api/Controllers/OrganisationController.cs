@@ -10,15 +10,8 @@ using WCA.Consumer.Api.Services.Contracts;
 namespace WCA.Consumer.Api.Controllers
 {
     [ApiController]
-    public class OrganisationController : BaseController
+    public class OrganisationController(IOrganisationService orgService) : BaseController
     {
-        readonly IOrganisationService _orgService;
-
-        public OrganisationController(IOrganisationService orgService)
-        {
-            _orgService = orgService;
-        }
-
         /// <summary>
         /// Retrieves a single organisation including any organisation hierarchy
         /// </summary>
@@ -37,7 +30,7 @@ namespace WCA.Consumer.Api.Controllers
         )
         {
             // TODO (@Jason): check the following path - this doesn't seem to make sense from authorisation perspective; we should remove once integration points are confirmed.
-            return Ok(await _orgService.GetOrganisation(authorisationEmail, customerId, includeChildren));
+            return Ok(await orgService.GetOrganisation(authorisationEmail, customerId, includeChildren));
         }
 
         /// <summary>
@@ -57,7 +50,7 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                return Ok(await _orgService.GetOrganisationOverview(authorisationEmail, includeHealthStatus));
+                return Ok(await orgService.GetOrganisationOverview(authorisationEmail, includeHealthStatus));
             }
             catch (NullReferenceException e)
             {
@@ -84,7 +77,7 @@ namespace WCA.Consumer.Api.Controllers
         {
             try
             {
-                return Ok(await _orgService.CreateOrganisation(authorisationEmail, org));
+                return Ok(await orgService.CreateOrganisation(authorisationEmail, org));
             }
             catch (Exception e)
             {
@@ -110,7 +103,7 @@ namespace WCA.Consumer.Api.Controllers
             [FromBody] OrganisationModel org
         )
         {
-            return Ok(_orgService.UpdateOrganisation(authorisationEmail, id, org));
+            return Ok(orgService.UpdateOrganisation(authorisationEmail, id, org));
         }
 
         /// <summary>
@@ -126,7 +119,7 @@ namespace WCA.Consumer.Api.Controllers
             [FromRoute] string id
         )
         {
-            return Ok(_orgService.DeleteOrganisation(authorisationEmail, id));
+            return Ok(orgService.DeleteOrganisation(authorisationEmail, id));
         }
     }
 }
