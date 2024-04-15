@@ -14,11 +14,18 @@ namespace WCA.Consumer.Api
         {
             // REGISTER ALL THE DEPENDANCIES HERE
             var appSettings = configuration.Bind<AppSettings>();
+
+            collection.AddApplicationInsightsTelemetry();
+            
             collection.AddSingleton(f => appSettings);
             collection.AddHttpContextAccessor();
             
             collection.AddSingleton<IRestClient, RestClient>();
             collection.AddAutoMapper(typeof(Startup));
+            
+            
+            
+            
             // TODO: evaluate if needed in future (customer service deprecated / was experimental for gRPC?)
             // collection.AddScoped<ICustomerService, CustomerService>();
             collection.AddScoped<IHomeService, HomeService>();
