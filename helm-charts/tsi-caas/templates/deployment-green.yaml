@@ -38,11 +38,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}         
-          volumeMounts:
-          - name: {{ include "tsi-caas.fullname" . }}-appsettings
-            mountPath: /App/appsettings.json
-            subPath: appsettings.json
-            readOnly: true        
+          envFrom:
+            - secretRef:
+                name: {{ include "tsi-caas.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "tsi-caas.fullname" . }}-configmaps
           ports:
             - name: http
               containerPort: 8080
@@ -52,11 +52,7 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      volumes:
-      - name: {{ include "tsi-caas.fullname" . }}-appsettings      
-        configMap:
-          defaultMode: 420
-          name: {{ include "tsi-caas.fullname" . }}-appsettings          
+      
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
