@@ -201,7 +201,6 @@ namespace WCA.Consumer.Api.Services
                 {
                     Id = site.SiteId,
                     DisplayName = site.Name,
-                    TagName = site.Metadata.TagName,
                     Tags = site.Metadata.Tags,
                     Address = new SiteAddress
                     {
