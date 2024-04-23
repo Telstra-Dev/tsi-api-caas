@@ -24,10 +24,10 @@ serviceAccount:
   name: ""
 
 secrets:
-  APP_INSIGHTS_CONNECTION_STRING: 'nil'
+  APP_INSIGHTS_CONNECTION_STRING: '$(CAAS_API_APPLICATION_INSIGHTS_CONNECTION_STRING)'
 
 config:
-  BASE_URI: 'nil'
+  STORAGE_BASE_URI: '$(STORAGE-BASE-URI)'
 
 
 podAnnotations: 

@@ -17,6 +17,7 @@ namespace Telstra.Core.Api
                     .AddJsonFile("appsettings.json", true, true)
                     .AddJsonFile($"appsettings.{ENV_PREFIX}.json", true)
                     .AddEnvironmentVariables("WCA_")
+                    .AddEnvironmentVariables()
                     .AddUserSecrets(typeof(Startup).GetTypeInfo().Assembly)
                     .Build();
 
