@@ -1,6 +1,5 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
@@ -177,8 +176,8 @@ namespace WCA.Consumer.Api.Services
                             Address = site.Address,
                             GeoLocation = new GeoLocation
                             {
-                                Longitude = site.Address.Longitude,
-                                Latitude = site.Address.Latitude
+                                Longitude = site.Address?.Longitude,
+                                Latitude = site.Address?.Latitude
                             }
                         }
                     };
@@ -214,8 +213,8 @@ namespace WCA.Consumer.Api.Services
                         State= site.Location.Address.State,
                         Country =  site.Location.Address.Country,
                         // SvNote = site.Location.Address.SvNote,
-                        Longitude = site.Location.GeoLocation?.Longitude.ToString(),
-                        Latitude = site.Location.GeoLocation?.Latitude.ToString()
+                        Longitude = site.Location?.GeoLocation?.Longitude,
+                        Latitude = site.Location?.GeoLocation?.Latitude
                     }
                 };
 
