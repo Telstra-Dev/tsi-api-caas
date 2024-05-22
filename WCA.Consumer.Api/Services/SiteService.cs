@@ -1,16 +1,16 @@
 using AutoMapper;
+using Flurl;
+using Flurl.Http;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Telstra.Common;
 using Telstra.Core.Data.Entities;
 using WCA.Consumer.Api.Models;
 using WCA.Consumer.Api.Services.Contracts;
-using System.Threading;
-using System.Linq;
-using Flurl;
-using Flurl.Http;
 
 namespace WCA.Consumer.Api.Services
 {
@@ -68,6 +68,51 @@ namespace WCA.Consumer.Api.Services
                 var errorMsg = "Fail to GetSitesForToken: " + e.Message;
                 _logger.LogError(errorMsg);
                 throw new Exception(errorMsg);
+            }
+        }
+
+        public async Task<IList<SiteTagGroup>> GetSitesGroupedByTags(string authorisationEmail)
+        {
+            try
+            {
+                var siteTagGroups = await $"{_appSettings.StorageAppHttp.BaseUri}/sites/group-by-tags"
+                                    .AppendQueryParam("email", authorisationEmail)
+                                    .AllowAnyHttpStatus()
+                                    .GetJsonAsync<IList<SiteTagGroup>>();
+
+                if(siteTagGroups == null)
+                {
+                    _logger.LogError("GetSitesGroupedByTags- No site found");
+                    return null;
+                }
+
+                return siteTagGroups;
+            }
+            catch (Exception e)
+            {
+                var errorMsg = "Fail to GetSites Grouped By Tags: " + e.Message;
+                _logger.LogError(errorMsg, e);
+                throw;
+            }
+        }
+
+        public async Task<List<TelemetryLocation>> GetLocationTelemetry(string authorisationEmail, List<int> siteIds)
+        {
+            try
+            {
+                var request = $"{_appSettings.StorageAppHttp.BaseUri}/sites/location-telemetry"
+                                    .AppendQueryParam("email", authorisationEmail)
+                                    .AllowAnyHttpStatus();
+
+                var result = await request.PostJsonAsync(siteIds).ReceiveJson<List<TelemetryLocation>>();
+
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"GetLocationTelemetry - {e.Message}", e);
+                throw;
             }
         }
 
