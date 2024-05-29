@@ -24,4 +24,19 @@ namespace WCA.Consumer.Api.Models
         public string Latitude { get; set; }
         public string Longitude { get; set; }
     }
+
+    public class SiteName
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class SiteTagGroup
+    {
+        public int Id { get; set; }
+        public string TagName { get; set; }
+        public string TagType { get; set; }
+        public string TagValue { get; set; }
+        public List<SiteName> Sites { get; set; }
+    }
 }

@@ -181,7 +181,7 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
             var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
+            var organisationService = new OrganisationService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = await organisationService.GetOrganisation("fake.user.email@example.com", myOrganisations.First().CustomerId, false);
 
@@ -203,7 +203,7 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
             var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
+            var organisationService = new OrganisationService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
                 organisationService.GetOrganisation("fake.user.email@example.com", customerId, false));
@@ -223,7 +223,7 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
             var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
+            var organisationService = new OrganisationService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var result = await organisationService.CreateOrganisation("fake.user.email@example.com", myOrganisationModel);
 
@@ -245,7 +245,7 @@ namespace WCA.Customer.Api.Tests
             var loggerMock = new Mock<ILogger<OrganisationService>>();
             var healthStatusServiceMock = new Mock<IHealthStatusService>();
 
-            var organisationService = new OrganisationService(null, httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
+            var organisationService = new OrganisationService(httpClientMock.Object, appSettings, mapperMock.Object, loggerMock.Object, healthStatusServiceMock.Object);
 
             var exception = await Assert.ThrowsAsync<Exception>(() =>
                 organisationService.CreateOrganisation("fake.user.email@example.com", myOrganisationModel));

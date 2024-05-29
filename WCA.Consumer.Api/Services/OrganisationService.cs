@@ -1,39 +1,34 @@
 using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using WCA.Consumer.Api.Models;
-using WCA.Consumer.Api.Services.Contracts;
-using System;
-using System.Linq;
-using Telstra.Common;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Telstra.Core.Data.Entities;
-using System.Threading;
-using System.Net.Http;
 using Flurl;
 using Flurl.Http;
-using Device = Telstra.Core.Data.Entities.Device;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Telstra.Common;
+using Telstra.Core.Data.Entities;
+using WCA.Consumer.Api.Models;
+using WCA.Consumer.Api.Services.Contracts;
 
 namespace WCA.Consumer.Api.Services
 {
     public class OrganisationService : IOrganisationService
     {
-        private readonly WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient _grpcClient;
         private readonly IRestClient _httpClient;
         private readonly AppSettings _appSettings;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IHealthStatusService _healthStatusService;
 
-        public OrganisationService(WCA.Storage.Api.Proto.OrgOverview.OrgOverviewClient grpcClient,
-                                    IRestClient httpClient,
+        public OrganisationService(IRestClient httpClient,
                                     AppSettings appSettings,
                                     IMapper mapper,
                                     ILogger<OrganisationService> logger,
                                     IHealthStatusService healthStatusService)
         {
-            _grpcClient = grpcClient;
             _httpClient = httpClient;
             _appSettings = appSettings;
             _mapper = mapper;
