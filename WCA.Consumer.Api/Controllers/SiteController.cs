@@ -56,10 +56,15 @@ namespace WCA.Consumer.Api.Controllers
                 }
 
                 var result = await siteService.GetSitesGroupedByTags(authorisationEmail);
-                if (result?.Count > 0)
+
+                if (result != null && result.Count > 0)
+                {
                     return Ok(result);
+                }
                 else
-                    return NotFound(new { message = "No sites exist with this customer" });
+                {
+                    return Ok(new { message = "No sites exist with this customer." });
+                }
             }
             catch (Exception e)
             {
@@ -178,7 +183,7 @@ namespace WCA.Consumer.Api.Controllers
 
                 if (result == null || !result.Any())
                 {
-                    return NotFound("No telemetry data found for the given site IDs.");
+                    return Ok(new { message = "No telemetry data found for the given site IDs." });
                 }
 
                 return Ok(result);
