@@ -67,7 +67,8 @@ namespace WCA.Consumer.Api.Services
                     Nickname = tsiUser.Nickname,
                     Email = tsiUser.Email,
                     LastActive = DateTime.Now.ToString(),
-                    Roles = umsUser.Roles.Select(role => role.Value.Split(":")[1]).ToArray(),
+                    Roles = umsUser.Roles.Where(r => r.Type.Split(":")[1].ToLower() == "tsi")
+                                            .Select(role => role.Value.Split(":")[1]).ToArray(),
                     Sites = tsiUser.Sites.Select(site => site.SiteId).ToList()
                 };
             }
@@ -275,7 +276,8 @@ namespace WCA.Consumer.Api.Services
                 {
                     //read authorisation user roles
                     var authUser = await _ums.SearchByEmail(authorisationEmail, accessToken);
-                    user.Roles = authUser.Roles.Select(role => role.Value.Split(":")[1]).ToArray();
+                    user.Roles = authUser.Roles.Where(r => r.Type.Split(":")[1].ToLower() == "tsi")
+                                                .Select(role => role.Value.Split(":")[1]).ToArray();
 
                     var response = await _appSettings.StorageAppHttp.BaseUri
                         .AppendPathSegment("user")

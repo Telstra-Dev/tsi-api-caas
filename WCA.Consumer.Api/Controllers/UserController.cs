@@ -56,7 +56,8 @@ namespace WCA.Consumer.Api.Controllers
             {
                 ValidateHeaders(auth, authorisationEmail);
                 var umsUser = await _ums.SearchByEmail(email, auth);
-                var userRoles = umsUser.Roles.Select(role => role.Value.Split(":")[1]).ToArray();
+                var userRoles = umsUser.Roles.Where(r => r.Type.Split(":")[1].ToLower() == "tsi")
+                                                .Select(role => role.Value.Split(":")[1]).ToArray();
                 return Ok(await _userService.FetchPermissions(userRoles, auth));
             }
             catch (Exception e)
