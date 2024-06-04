@@ -8,6 +8,7 @@ namespace WCA.Consumer.Api.Services.Contracts
     {
         Task<T> GetAsync<T>(string uriString, CancellationToken cancellationToken);
         Task<T> PostAsync<T>(string uriString, string payload, CancellationToken cancellationToken);
+        Task<T> PatchAsync<T>(string uriString, string payload, CancellationToken cancellationToken);
         Task<T> PutAsync<T>(string uriString, string payload, CancellationToken cancellationToken);
         Task<T> DeleteAsync<T>(string uriString, CancellationToken cancellationToken);
         Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken);

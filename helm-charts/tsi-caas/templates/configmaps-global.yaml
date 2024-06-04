@@ -4,3 +4,4 @@ metadata:
   name: {{ include "tsi-caas.fullname" . }}-configmaps
 data:
   StorageAppHttp__BaseUri: "{{ .Values.config.STORAGE_BASE_URI }}"
+  UserManagementService__Endpoint: "{{ .Values.config.UMS }}"

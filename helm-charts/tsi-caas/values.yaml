@@ -28,6 +28,7 @@ secrets:
 
 config:
   STORAGE_BASE_URI: '$(STORAGE-BASE-URI)'
+  UMS: '$(USER-MANAGEMENT-SERVICE)'
 
 
 podAnnotations: 

@@ -3,6 +3,6 @@ namespace WCA.Consumer.Api.Models
 {
     public class SiteMetadata
     {
-        public List<int> Tags { get; set; }
+        public List<int> Tags { get; set; } = new List<int>();
     }
 }

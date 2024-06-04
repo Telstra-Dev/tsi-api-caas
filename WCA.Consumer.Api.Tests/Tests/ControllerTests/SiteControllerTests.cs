@@ -10,7 +10,7 @@ using WCA.Consumer.Api.Services.Contracts;
 using WCA.Consumer.Api.Controllers;
 using Xunit;
 using Microsoft.AspNetCore.Http;
-using Telstra.Common;
+using Microsoft.Extensions.Logging;
 
 namespace WCA.Customer.Api.Tests
 {
@@ -25,8 +25,8 @@ namespace WCA.Customer.Api.Tests
 
             var httpContext = new DefaultHttpContext();
             // httpContext.Request.Headers["X-CUsername"] = "fake.user.email@example.com"; // TODO: check if this injection is actually required.
-
-            var controller = new SiteController(serviceMock.Object)
+            var logger = new Mock<ILogger<SiteController>>();
+            var controller = new SiteController(serviceMock.Object, logger.Object)
             {
                 ControllerContext = new ControllerContext()
                 {

@@ -36,6 +36,8 @@ namespace Telstra.Common
         public int DeviceRecentlySentTelemetryMaxMinutes { get; set; } = 5;
         public int ShortCacheTime = 60;
         public DeviceManagementSettings DeviceManagementCredentials { get; set; }
+        public UserManagementServiceSettings UserManagementService { get; set; }
+        public string Environment { get; set; }
     }
 
     public class DBSetting
@@ -66,5 +68,10 @@ namespace Telstra.Common
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string GrantType { get; set; }
+    }
+
+    public class UserManagementServiceSettings
+    {
+        public string Endpoint { get; set; }
     }
 }

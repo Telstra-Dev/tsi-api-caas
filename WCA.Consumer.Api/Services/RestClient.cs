@@ -59,6 +59,16 @@ namespace WCA.Consumer.Api.Services
             return response;
         }
 
+        public async Task<T> PatchAsync<T>(string uriString, string payload, CancellationToken cancellationToken)
+        {
+            HttpContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Patch, uriString);
+            request.Content = httpContent;
+            var response = await SendAsync<T>(request, cancellationToken);
+
+            return response;
+        }
+
         public async Task<T> DeleteAsync<T>(string uriString, CancellationToken cancellationToken)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, uriString);
@@ -78,15 +88,19 @@ namespace WCA.Consumer.Api.Services
                 {
 
                     var contentString = await response.Content.ReadAsStringAsync();
-                    throw new HttpRequestException(contentString);
+                    throw new HttpRequestException(contentString, null, response.StatusCode);
                 }
 
                 return response;
             }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Error calling api {@statusCode} {method} {requestUri} {@error}", response?.StatusCode, request.Method, request.RequestUri, ex.Message);
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LogError("Error calling api {@statusCode} {method} {requestUri} {@error}", response?.StatusCode, request.Method, request.RequestUri, ex.Message);
-
                 throw new HttpRequestException(ex.Message);
             }
         }
